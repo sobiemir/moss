@@ -1,0 +1,29 @@
+div.displaynone h3 {
+	display: none;
+}
+ul li ul {
+	margin-left: 20px;
+}
+div.sphinxsidebar {
+	width: 270px;
+}
+div.bodywrapper {
+	margin: 0 0 0 270px;
+}
+.section dl dd > p, .section > p {
+	text-align: justify;
+}
+
+.section dl.type > dt,
+.section dl.function > dt,
+.section dl.member > dt,
+.section dl.var > dt,
+.section dl.macro > dt {
+	line-height: 1.5em;
+	border-bottom: 1px #ddd solid;
+	margin-bottom: 0.8em;
+}
+/*
+dt > span.sig-paren {
+	padding: 0 5px;
+}*/

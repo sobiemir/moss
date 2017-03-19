@@ -1,0 +1,17 @@
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+*.out
+moss/doc/build/
+moss/tst/gen/
+map/
+img/
+data/
+.vscode/
