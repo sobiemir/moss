@@ -9,38 +9,48 @@
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
  * Source file for "Dynamic Array" module...
+ *
+ * TODO:
+ * - możliwość łączenia tej samej tablicy => ms_array_join(array, array)
+ * - własny destruktor elementów uruchamiany przy usuwaniu ich z tablicy
  */
 
 #include "../inc/array.h"
 
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    NAGŁÓWKI FUNKCJI WBUDOWANYCH I STAŁE
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
 /**
- * Modyfikuje wartość zmiennej capacity, mnożąc ją ze zmienną factor.
+ * Modyfikuje wartość zmiennej capacity, mnożąc ją ze zmienną modifier.
  *
  * @param  capacity Aktualna pojemność tablicy.
- * @param  factor   Dodatkowy współczynnik do obliczeń.
+ * @param  modifier Dodatkowy współczynnik do obliczeń.
  * @return          Nowa pojemność tablicy do przydzielenia.
  */
-static size_t msf_array_increase_multiply( size_t capacity, float factor );
+static size_t msf_array_increase_multiply( size_t capacity, float modifier );
 
 /**
- * Modyfikuje wartość zmiennej capacity, dodając do niej wartość zmiennej factor.
+ * Modyfikuje wartość zmiennej capacity, dodając do niej wartość zmiennej modifier.
  *
  * @param  capacity Aktualna pojemność tablicy.
- * @param  factor   Dodatkowy współczynnik do obliczeń.
+ * @param  modifier Dodatkowy współczynnik do obliczeń.
  * @return          Nowa pojemność tablicy do przydzielenia.
  */
-static size_t msf_array_increase_add( size_t capacity, float factor );
+static size_t msf_array_increase_add( size_t capacity, float modifier );
 
 /**
- * Modyfikuje wartość zmiennej capacity, podnosząc ją do potęgi wartości zmiennej factor.
+ * Modyfikuje wartość zmiennej capacity, podnosząc ją do potęgi wartości zmiennej modifier.
  *
  * @param  capacity Aktualna pojemność tablicy.
- * @param  factor   Dodatkowy współczynnik do obliczeń.
+ * @param  modifier Dodatkowy współczynnik do obliczeń.
  * @return          Nowa pojemność tablicy do przydzielenia.
  */
-static size_t msf_array_increase_power( size_t capacity, float factor );
+static size_t msf_array_increase_power( size_t capacity, float modifier );
 
 /* ================================================================================================================== */
 
@@ -84,12 +94,14 @@ int ms_array_init( void *aptr, size_t size, size_t capacity )
 
     assert( array );
 
-    array->Capacity  = capacity;
-    array->ItemSize  = size;
-    array->Length    = 0;
-    array->Factor    = 2.f;
-    array->Destroy   = FALSE;
-    array->Increator = MSC_ArrayFunctions.IncMultiply;
+    array->Capacity = capacity;
+    array->ItemSize = size;
+    array->Length   = 0;
+    array->Modifier = 2.f;
+    array->Destroy  = FALSE;
+
+    // domyślne funkcje
+    array->FuncIncrease = MSC_ArrayFunctions.IncMultiply;
 
     // przydziel pamięć na elementy tablicy
     array->Items = malloc( array->Capacity * array->ItemSize );
@@ -104,15 +116,20 @@ int ms_array_init( void *aptr, size_t size, size_t capacity )
 
 /* ================================================================================================================== */
 
-MS_ARRAY ms_array_mreturn( size_t size, size_t capacity )
+MS_ARRAY ms_array_return_sset( size_t size, size_t capacity )
 {
     MS_ARRAY array;
     IGRET ms_array_init( &array, size, capacity );
     return array;
 }
 
-/* ZMIANA POJEMNOŚCI */
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    ZMIANA POJEMNOŚCI
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
 int ms_array_realloc( void *aptr, size_t capacity )
 {
@@ -125,10 +142,10 @@ int ms_array_realloc( void *aptr, size_t capacity )
     // powiększ ilość pamięci - w przypadku dokładnego zwiększania, wartość musi być podana w capacity
     if( !capacity )
     {
-        if( !array->Increator )
+        if( !array->FuncIncrease )
             SETERRNOANDRETURN( MSEC_INVALID_VALUE );
 
-        capacity = array->Increator( array->Capacity, array->Factor );
+        capacity = array->FuncIncrease( array->Capacity, array->Modifier );
     
         if( capacity <= array->Capacity )
             capacity = array->Capacity + 1;
@@ -149,7 +166,7 @@ int ms_array_realloc( void *aptr, size_t capacity )
 
 /* ================================================================================================================== */
 
-int ms_array_min_realloc( void *aptr, size_t min )
+int ms_array_realloc_min( void *aptr, size_t min )
 {
     MS_ARRAY *array = aptr;
 
@@ -166,9 +183,9 @@ int ms_array_min_realloc( void *aptr, size_t min )
     while( min > capacity )
     {
         oldcap   = capacity;
-        capacity = !array->Increator
+        capacity = !array->FuncIncrease
             ? min
-            : array->Increator( oldcap, array->Factor );
+            : array->FuncIncrease( oldcap, array->Modifier );
         if( capacity <= oldcap )
             capacity = oldcap + 1;
     }
@@ -180,22 +197,27 @@ int ms_array_min_realloc( void *aptr, size_t min )
     return MSEC_OK;
 }
 
-/* KOPIOWANIE */
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    KOPIOWANIE
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
 int ms_array_copy( void *adst, const void *asrc )
 {
     const MS_ARRAY *src = asrc;
     
     MS_ARRAY *dst = adst;
-    int retval;
+    int ercode;
 
     assert( src );
     assert( src->Items );
     assert( dst );
 
-    if( (retval = ms_array_init(dst, src->ItemSize, src->Capacity)) )
-        return retval;
+    if( (ercode = ms_array_init(dst, src->ItemSize, src->Capacity)) )
+        return ercode;
 
     IGRET memcpy( dst->Items, src->Items, src->Capacity * src->ItemSize );
     dst->Length = src->Length;
@@ -205,10 +227,10 @@ int ms_array_copy( void *adst, const void *asrc )
 
 /* ================================================================================================================== */
 
-void *ms_array_copy_alloc( void *aptr )
+void *ms_array_copy_alloc( const void *aptr )
 {
-    MS_ARRAY *retval,
-             *array = aptr;
+    const MS_ARRAY *array = aptr;
+    MS_ARRAY *retval;
 
     assert( array );
     assert( array->Items );
@@ -224,45 +246,22 @@ void *ms_array_copy_alloc( void *aptr )
     return retval;
 }
 
-/* DODAWANIE ELEMENTÓW */
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    DODAWANIE ELEMENTÓW
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
-int ms_array_mpush( void *aptr, void *item )
-{
-    MS_ARRAY      *array = aptr;
-    unsigned char *mem   = item;
-
-    assert( array );
-    assert( array->Items );
-    assert( mem );
-
-    // sprawdź czy nowy element się zmieści
-    if( array->Length >= array->Capacity )
-    {
-        int retval = !array->Increator
-            ? array->Capacity + 1
-            : 0;
-        if( (retval = ms_array_realloc(array, retval)) )
-            return retval;
-    }
-
-    // kopiuj element do tablicy
-    memcpy( ((unsigned char*)array->Items) + array->ItemSize * array->Length, item, array->ItemSize );
-    ++array->Length;
-
-    return MSEC_OK;
-}
-
-/* ================================================================================================================== */
-
-int ms_array_minsert( void *aptr, size_t index, void *item )
+int ms_array_insert_memval( void *aptr, size_t index, const void *item )
 {
     MS_ARRAY *array = aptr;
-    size_t    iter;
     void     *ptr;
 
     assert( array );
     assert( array->Items );
+    assert( item );
 
     // sprawdź czy indeks nie wyjdzie poza granice
     if( index > array->Length )
@@ -271,20 +270,20 @@ int ms_array_minsert( void *aptr, size_t index, void *item )
     // sprawdź czy nowy element się zmieści
     if( array->Length >= array->Capacity )
     {
-        int retval = !array->Increator
+        int ercode = !array->FuncIncrease
             ? array->Capacity + 1
             : 0;
-        if( (retval = ms_array_realloc(array, retval)) )
-            return retval;
+        if( (ercode = ms_array_realloc(array, ercode)) )
+            return ercode;
     }
     ptr = (unsigned char*)array->Items + array->ItemSize * index;
 
     // przesuń elementy
     if( index != array->Length )
-        memmove( (unsigned char*)ptr + array->ItemSize, ptr, array->ItemSize * (array->Length - index) );
+        IGRET memmove( (unsigned char*)ptr + array->ItemSize, ptr, array->ItemSize * (array->Length - index) );
 
     // dodaj nowy element
-    memcpy( ptr, item, array->ItemSize );
+    IGRET memcpy( ptr, item, array->ItemSize );
     ++array->Length;
 
     return MSEC_OK;
@@ -292,88 +291,14 @@ int ms_array_minsert( void *aptr, size_t index, void *item )
 
 /* ================================================================================================================== */
 
-int ms_array_apush_slice( void *aptrt, void *aptrf, size_t start, size_t count )
+int ms_array_insert_values( void *adst, size_t index, const void *tsrc, size_t size )
 {
-    MS_ARRAY *array1 = aptrt,
-             *array2 = aptrf;
-
-    assert( array1 );
-    assert( array1->Items );
-    assert( array2 );
-    assert( array2->Items );
-
-    // rozmiary muszą się zgadzać oraz indeksy nie mogą wychodzić poza ilość elementów w tablicy
-    if( array1->ItemSize != array2->ItemSize || start >= array2->Length || start + count > array2->Length )
-        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
-
-    // wstawiaj do końca
-    if( count == 0 )
-        count = array2->Length - start;
-
-    return ms_array_tpush( aptrt, (unsigned char*)array2->Items + start * array2->ItemSize, count );
-}
-
-/* ================================================================================================================== */
-
-int ms_array_ainsert_slice( void *aptrt, size_t index, void *aptrf, size_t start, size_t count )
-{
-    MS_ARRAY *array1 = aptrt,
-             *array2 = aptrf;
-
-    assert( array1 );
-    assert( array1->Items );
-    assert( array2 );
-    assert( array2->Items );
-
-    // rozmiary muszą się zgadzać oraz indeksy nie mogą wychodzić poza ilość elementów w tablicy
-    if( array1->ItemSize != array2->ItemSize || start >= array2->Length || start + count > array2->Length )
-        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
-
-    // wstawiaj do końca
-    if( count == 0 )
-        count = array2->Length - start;
-
-    return ms_array_tinsert( aptrt, index, (unsigned char*)array2->Items + start * array2->ItemSize, count );
-}
-
-/* ================================================================================================================== */
-
-int ms_array_tpush( void *aptr, void *tab, size_t size )
-{
-    MS_ARRAY *array = aptr;
-
-    assert( array );
-    assert( array->Items );
-    assert( tab );
-
-    // sprawdź czy nowy element się zmieści
-    if( array->Length + size > array->Capacity )
-    {
-        int retval;
-        if( (retval = ms_array_min_realloc(array, array->Length + size)) )
-            return retval;
-    }
-    // brak rozmiaru, nie przechodź do wstawiania
-    else if( !size )
-        return MSEC_OK;
-
-    // kopiuj elementy do tablicy
-    memcpy( ((unsigned char*)array->Items) + array->ItemSize * array->Length, tab, array->ItemSize * size );
-    array->Length += size;
-
-    return MSEC_OK;
-}
-
-/* ================================================================================================================== */
-
-int ms_array_tinsert( void *aptr, size_t index, void *tab, size_t size )
-{
-    MS_ARRAY *array = aptr;
+    MS_ARRAY *array = adst;
     void     *ptr;
 
     assert( array );
     assert( array->Items );
-    assert( tab );
+    assert( tsrc );
 
     // indeks poza zasięgiem
     if( index > array->Length )
@@ -382,69 +307,166 @@ int ms_array_tinsert( void *aptr, size_t index, void *tab, size_t size )
     // sprawdź czy nowy element się zmieści
     if( array->Length + size > array->Capacity )
     {
-        int retval;
-        if( (retval = ms_array_min_realloc(array, array->Length + size)) )
-            return retval;
+        int ercode;
+        if( (ercode = ms_array_realloc_min(array, array->Length + size)) )
+            return ercode;
     }
     // brak rozmiaru, nie przechodź do kopiowania
     else if( !size )
-        return MSEC_OK;
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
 
     ptr = (unsigned char*)array->Items + array->ItemSize * index;
 
     // przesuń elementy
     // memmove potrafi radzić sobie z nakładającymi się adresami dwóch wskaźników
     if( index != array->Length )
-        memmove( (unsigned char*)ptr + array->ItemSize * size, ptr, array->ItemSize * (array->Length - index) );
+        IGRET memmove( (unsigned char*)ptr + array->ItemSize * size, ptr, array->ItemSize * (array->Length - index) );
 
     // kopiuj elementy do tablicy
-    memcpy( ptr, tab, array->ItemSize * size );
+    IGRET memcpy( ptr, tsrc, array->ItemSize * size );
     array->Length += size;
 
     return MSEC_OK;
 }
 
-/* USUWANIE ELEMENTÓW */
 /* ================================================================================================================== */
 
-void *ms_array_mpop( void *aptr )
+int ms_array_join_slice( void *adst, const void *asrc, size_t offset, size_t count )
 {
-    MS_ARRAY *array = aptr;
-    void *tmp;
+    const MS_ARRAY *src = asrc;
+    MS_ARRAY *dst = adst;
 
-    assert( array );
-    assert( array->Items );
+    assert( src );
+    assert( src->Items );
+    assert( dst );
+    assert( dst->Items );
 
-    if( !array->Length )
-        return NULL;
+    // wstawiaj do końca
+    if( count == 0 )
+        count = src->Length - offset;
 
-    if( !(tmp = malloc(array->ItemSize)) )
-        return NULL;
+    // rozmiary muszą się zgadzać oraz indeksy nie mogą wychodzić poza ilość elementów w tablicy
+    if( src->ItemSize != dst->ItemSize || src->Length == 0 )
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+    if( offset >= src->Length || offset + count > src->Length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
 
-    memcpy( tmp, (unsigned char*)array->Items + (array->Length - 1) * array->ItemSize, array->ItemSize );
-    --array->Length;
-
-    return tmp;
+    return ms_array_push_values( dst, (unsigned char*)src->Items + offset * src->ItemSize, count );
 }
 
 /* ================================================================================================================== */
 
-void ms_array_nrpop( void *aptr )
+int ms_array_join_slice_inverse( void *adst, const void *asrc, size_t offset, size_t count )
+{
+    const MS_ARRAY *src = asrc;
+    MS_ARRAY *dst = adst;
+    size_t osumc = offset + count;
+    int ercode;
+
+    assert( src );
+    assert( src->Items );
+    assert( dst );
+    assert( dst->Items );
+
+    // do końca...
+    if( count == 0 )
+        osumc = offset + (count = src->Length - offset);
+
+    // rozmiary muszą się zgadzać oraz indeksy nie mogą wychodzić poza ilość elementów w tablicy
+    if( src->ItemSize != dst->ItemSize || src->Length == 0 )
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+    if( offset >= src->Length || osumc > src->Length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+
+    if( dst->Length < src->Length - count )
+        if( (ercode = ms_array_realloc_min(dst, src->Length - count)) )
+            return ercode;
+
+    // dodaj pierwszą część
+    if( offset > 0 )
+        if( (ercode = ms_array_push_values(dst, src->Items, offset)) )
+            return ercode;
+    // dodaj drugą część
+    if( osumc < src->Length )
+        if( (ercode = ms_array_push_values(
+            dst,
+            (unsigned char*)src->Items + osumc * src->ItemSize,
+            src->Length - osumc
+        )) )
+            return ercode;
+    
+    return MSEC_OK;
+}
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    USUWANIE ELEMENTÓW
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+int ms_array_slice( void *aptr, size_t offset, size_t count )
 {
     MS_ARRAY *array = aptr;
 
     assert( array );
     assert( array->Items );
 
-    if( !array->Length )
-        return;
+    if( count == 0 )
+        count = array->Length - offset;
 
-    --array->Length;
+    if( array->Length == 0 )
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+    if( offset >= array->Length || offset + count > array->Length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+
+    if( offset != 0 )
+        IGRET memmove(
+            array->Items,
+            (unsigned char*)array->Items + offset * array->ItemSize,
+            count * array->ItemSize
+        );
+
+    array->Length = count;
+    return MSEC_OK;
 }
 
 /* ================================================================================================================== */
 
-void ms_array_remove( void *aptr, size_t index )
+int ms_array_remove_range( void *aptr, size_t offset, size_t count )
+{
+    MS_ARRAY *array = aptr;
+    unsigned char *ptr1,
+                  *ptr2;
+
+    assert( array );
+    assert( array->Items );
+
+    // do końca...
+    if( count == 0 )
+        count = array->Length - offset;
+
+    if( array->Length == 0 )
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+    if( offset >= array->Length || offset + count > array->Length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+
+    if( count + offset == array->Length )
+        array->Length = offset;
+    else
+        ptr1 = (unsigned char*)array->Items + offset * array->ItemSize,
+        ptr2 = ptr1 + count * array->ItemSize,
+
+        IGRET memmove( ptr1, ptr2, (array->Length - (count + offset)) * array->ItemSize ),
+        array->Length -= count;
+    
+    return MSEC_OK;
+}
+
+/* ================================================================================================================== */
+
+int ms_array_remove( void *aptr, size_t index )
 {
     MS_ARRAY      *array = aptr;
     unsigned char *ptr1,
@@ -454,23 +476,31 @@ void ms_array_remove( void *aptr, size_t index )
     assert( array->Items );
 
     // indeks poza zakresem, nic nie rób...
-    if( index >= array->Length )
-        return;
+    if( array->Length == 0 )
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+    else if( index >= array->Length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+
     --array->Length;
 
-    // w przypadku gdy jest to ostatni element, nie przenoś nic...
-    if( index == array->Length )
-        return;
+    // przenoś tylko gdy usuwany element nie jest ostatni
+    if( index != array->Length )
+        // przenieś wszystkie elementy znajdujące się za indeksem
+        ptr1 = (unsigned char*)array->Items + array->ItemSize * index,
+        ptr2 = ptr1 + array->ItemSize,
 
-    // przenieś wszystkie elementy
-    ptr1 = (unsigned char*)array->Items + array->ItemSize * index;
-    ptr2 = ptr1 + array->ItemSize;
-
-    memcpy( ptr1, ptr2, array->ItemSize * (array->Length - index) );
+        IGRET memmove( ptr1, ptr2, array->ItemSize * (array->Length - index) );
+    
+    return MSEC_OK;
 }
 
-/* CZYSZCZENIE DANYCH */
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    CZYSZCZENIE DANYCH
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
 void ms_array_clear( void *aptr )
 {
@@ -495,11 +525,13 @@ void ms_array_clean( void *aptr )
     array->Items = NULL;
 
     // resetuj wszystkie wartości oprócz "Destroy"
-    array->Capacity  = 0;
-    array->ItemSize  = 0;
-    array->Length    = 0;
-    array->Factor    = 2.f;
-    array->Increator = MSC_ArrayFunctions.IncMultiply;
+    array->Capacity = 0;
+    array->ItemSize = 0;
+    array->Length   = 0;
+    array->Modifier = 2.f;
+
+    // oraz funkcje...
+    array->FuncIncrease = MSC_ArrayFunctions.IncMultiply;
 }
 
 /* ================================================================================================================== */
@@ -514,14 +546,16 @@ void ms_array_free( void *aptr )
     ms_array_clean( aptr );
 
     if( array->Destroy )
-    {
         free( array );
-        array = NULL;
-    }
 }
 
-/* BAZA FUNKCJI POCHODNYCH */
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    BAZA FUNKCJI POCHODNYCH
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
 MS_ARRAY ms_array_return( size_t capacity )
 {
@@ -535,36 +569,24 @@ MS_ARRAY ms_array_return( size_t capacity )
 MS_ARRAY ms_array_copy_return( MS_ARRAY *array )
 {
     MS_ARRAY copy;
-    IGRET ms_array_copy( array, &copy );
+    IGRET ms_array_copy( &copy, array );
     return copy;
 }
 
 /* ================================================================================================================== */
 
-int ms_array_push( MS_ARRAY *array, void *item )
+int ms_array_push( MS_ARRAY *array, const void *item )
 {
     assert( array );
     assert( array->Items );
 
-    // sprawdź czy nowy element się zmieści
-    if( array->Length >= array->Capacity )
-    {
-        int retval = !array->Increator
-            ? array->Capacity + 1
-            : 0;
-        if( (retval = ms_array_realloc(array, retval)) )
-            return retval;
-    }
-    array->Items[array->Length++] = item;
-    return MSEC_OK;
+    return ms_array_insert( array, array->Length, item );
 }
 
 /* ================================================================================================================== */
 
-int ms_array_insert( MS_ARRAY *array, size_t index, void *item )
+int ms_array_insert( MS_ARRAY *array, size_t index, const void *item )
 {
-    size_t iter;
-
     assert( array );
     assert( array->Items );
 
@@ -575,38 +597,30 @@ int ms_array_insert( MS_ARRAY *array, size_t index, void *item )
     // sprawdź czy nowy element się zmieści
     if( array->Length >= array->Capacity )
     {
-        int retval = !array->Increator
+        int ercode = !array->FuncIncrease
             ? array->Capacity + 1
             : 0;
-        if( (retval = ms_array_realloc(array, retval)) )
-            return retval;
+        if( (ercode = ms_array_realloc(array, ercode)) )
+            return ercode;
     }
     // przesuń elementy
-    memmove( &array->Items[index + 1], &array->Items[index], array->ItemSize * (array->Length - index) ); 
+    if( index != array->Length )
+        IGRET memmove( &array->Items[index + 1], &array->Items[index], array->ItemSize * (array->Length - index) ); 
 
     // dodaj nowy element
-    array->Items[index] = item;
+    array->Items[index] = (void*)item;
     ++array->Length;
 
     return MSEC_OK;
 }
 
-/* ================================================================================================================== */
-
-void *ms_array_pop( MS_ARRAY *array )
-{
-    assert( array );
-    assert( array->Items );
-
-    if( !array->Length )
-        return NULL;
-
-    // zwróć ostatni element i zmniejsz długość
-    return array->Items[--array->Length];
-}
-
-/* FUNKCJE WEWNĘTRZNE */
-/* ================================================================================================================== */
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    FUNKCJE WEWNĘTRZNE
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
 static size_t msf_array_increase_multiply( size_t capacity, float factor )
 {

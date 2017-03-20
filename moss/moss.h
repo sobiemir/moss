@@ -3,7 +3,8 @@
 
 #include "inc/configuration.h"
 #include "inc/buffer.h"
-#include "inc/allegro/tilemap.h"
-#include "inc/allegro/tile.h"
+#include "inc/array.h"
+// #include "inc/allegro/tilemap.h"
+// #include "inc/allegro/tile.h"
 
 #endif
