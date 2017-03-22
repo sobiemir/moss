@@ -152,7 +152,7 @@ int ms_array_init( void *aptr, size_t size, size_t capacity );
  * @param  capacity Początkowa ilość miejsca do zarezerwowania na elementy tablicy.
  * @return          Utworzona tablica lokalna.
  */
-MS_ARRAY ms_array_return_sset( size_t size, size_t capacity );
+MS_ARRAY ms_array_return_local( size_t size, size_t capacity );
 
 /*
 ======================================================================================================================
@@ -228,7 +228,7 @@ void *ms_array_copy_alloc( const void *aptr );
  * @param  item  Wskaźnik na element do dodania.
  * @return       Kod błędu lub wartość MSEC_OK.
  */
-int ms_array_insert_memval( void *aptr, size_t index, const void *item );
+int ms_array_insert_value( void *aptr, size_t index, const void *item );
 
 /**
  * Dodaje elementy do tablicy w wyznaczonym miejscu.
@@ -404,7 +404,7 @@ void ms_array_free( void *aptr );
  * @return      Kod błedu lub wartość MSEC_OK.
  */
 #define ms_array_push_memval(aptr, item) \
-    ms_array_insert_memval( aptr, (aptr)->Length, item )
+    ms_array_insert_value( aptr, (aptr)->Length, item )
 
 /**
  * Usuwa ostatni element z tablicy.
@@ -440,7 +440,7 @@ MS_ARRAY ms_array_return( size_t capacity );
  * @param  src Wskaźnik na tablicę do skopiowania.
  * @return     Utworzona lokalna kopia tablicy.
  */
-MS_ARRAY ms_array_copy_return( MS_ARRAY *src );
+MS_ARRAY ms_array_copy_return( const MS_ARRAY *src );
 
 /**
  * Wbudowana odmiana funkcji dodającej element w wybrane miejsce do tablicy.

@@ -13,6 +13,7 @@
  * TODO:
  * - możliwość łączenia tej samej tablicy => ms_array_join(array, array)
  * - własny destruktor elementów uruchamiany przy usuwaniu ich z tablicy
+ * - po podaniu rozmiaru 0 w funkcjach inicjalizujących i tworzących, wartość Items powinna być NULL
  */
 
 #include "../inc/array.h"
@@ -116,7 +117,7 @@ int ms_array_init( void *aptr, size_t size, size_t capacity )
 
 /* ================================================================================================================== */
 
-MS_ARRAY ms_array_return_sset( size_t size, size_t capacity )
+MS_ARRAY ms_array_return_local( size_t size, size_t capacity )
 {
     MS_ARRAY array;
     IGRET ms_array_init( &array, size, capacity );
@@ -254,7 +255,7 @@ void *ms_array_copy_alloc( const void *aptr )
 ======================================================================================================================
 */
 
-int ms_array_insert_memval( void *aptr, size_t index, const void *item )
+int ms_array_insert_value( void *aptr, size_t index, const void *item )
 {
     MS_ARRAY *array = aptr;
     void     *ptr;
@@ -566,7 +567,7 @@ MS_ARRAY ms_array_return( size_t capacity )
 
 /* ================================================================================================================== */
 
-MS_ARRAY ms_array_copy_return( MS_ARRAY *array )
+MS_ARRAY ms_array_copy_return( const MS_ARRAY *array )
 {
     MS_ARRAY copy;
     IGRET ms_array_copy( &copy, array );

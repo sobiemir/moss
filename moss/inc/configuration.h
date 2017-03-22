@@ -86,7 +86,7 @@ extern const bool msc_voidptr_in_range;
 
 #endif
 
-enum MS_ERROR_CODE
+enum MSE_ERROR_CODE
 {
     MSEC_OK = 0,
     MSEC_MEMORY_ALLOCATION = 0x8000,

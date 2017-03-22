@@ -126,10 +126,10 @@ Test( test_array, array_alloc )
  * Tworzy tablicę zwracając ją jako zmienną lokalną.
  * Sprawdza czy tworzenie tablicy przebiega prawidłowo.
  */
-Test( test_array, array_return_sset )
+Test( test_array, array_return_local )
 {
     int ercode;
-    MS_ARRAY array = ms_array_return_sset( sizeof(long double), 2 );
+    MS_ARRAY array = ms_array_return_local( sizeof(long double), 2 );
 
     cr_assert_not_null( array.Items );
 
@@ -230,7 +230,7 @@ Test( test_array, array_realloc )
 Test( test_array, array_realloc_min )
 {
     int      ercode;
-    MS_ARRAY array = ms_array_return_sset( sizeof(int), 2 );
+    MS_ARRAY array = ms_array_return_local( sizeof(int), 2 );
 
     cr_assert_not_null( array.Items );
 
@@ -276,12 +276,12 @@ Test( test_array, array_realloc_min )
  * Dodaje element przekazany przez wskaźnik do tablicy.
  * Sprawdza czy wszystko jest w porządku.
  */
-Test( test_array, array_insert_memval )
+Test( test_array, array_insert_value )
 {
     int ercode,
         number;
 
-    MS_ARRAY array = ms_array_return_sset( sizeof(int), 2 );
+    MS_ARRAY array = ms_array_return_local( sizeof(int), 2 );
     cr_assert_not_null( array.Items );
 
     // powiększanie dokładne - tyle ile potrzeba w aktualnym momencie
@@ -306,13 +306,13 @@ Test( test_array, array_insert_memval )
     cr_assert_eq( array.Capacity, 3 );
 
     // próbuj dodać czwarty poza zakres
-    ercode = ms_array_insert_memval( &array, 6, &LIST[3] );
+    ercode = ms_array_insert_value( &array, 6, &LIST[3] );
     cr_assert_eq( ercode, MSEC_OUT_OF_RANGE );
     cr_assert_eq( array.Length, 3 );
     cr_assert_eq( array.Capacity, 3 );
 
     // dodaj czwarty gdzieś po pierwszym indeksie
-    ercode = ms_array_insert_memval( &array, 1, &LIST[3] );
+    ercode = ms_array_insert_value( &array, 1, &LIST[3] );
     cr_assert_eq( ercode, MSEC_OK );
     cr_assert_eq( array.Length, 4 );
     cr_assert_eq( array.Capacity, 4 );
@@ -343,7 +343,7 @@ Test( test_array, array_insert_values )
     int    ercode,
           *items;
 
-    MS_ARRAY array = ms_array_return_sset( sizeof(int), 2 );
+    MS_ARRAY array = ms_array_return_local( sizeof(int), 2 );
     cr_assert_not_null( array.Items );
     
     // dodaj pierwszą część
