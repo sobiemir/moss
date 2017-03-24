@@ -171,7 +171,6 @@ int ms_array_realloc_min( void *aptr, size_t min )
 {
     MS_ARRAY *array = aptr;
 
-    void  *tmp;
     size_t capacity,
            oldcap;
 

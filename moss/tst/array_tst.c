@@ -17,6 +17,38 @@
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
+    FUNKCJE WYWOŁYWANE PO TESTACH
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+ReportHook(POST_TEST)(struct criterion_test_stats *stats)
+{
+    printf( "===============================================================================\n" );
+    printf( "[" TERMCOLORCYAN("TEST") "] %s\n", stats->test->name );
+    printf( "[" TERMCOLORMAGNETA("DESC") "] %s\n", stats->test->data->description );
+
+    if( stats->crashed )
+        printf( "[" TERMCOLORRED("STAT") "] " TERMCOLORRED("Crash!") "\n" );
+    else if( stats->test_status == CR_STATUS_FAILED )
+        printf( "[" TERMCOLORRED("STAT") "] Asserts: [%d passed, %d failed, %d total]\n",
+            stats->passed_asserts, stats->failed_asserts, stats->passed_asserts + stats->failed_asserts);
+    else if( stats->test_status == CR_STATUS_PASSED )
+        printf( "[" TERMCOLORGREEN("STAT") "] Asserts: [%d passed, %d failed, %d total]\n",
+            stats->passed_asserts, stats->failed_asserts, stats->passed_asserts + stats->failed_asserts);
+
+    printf( "[" TERMCOLORYELLOW("INFO") "] Time: %f, Exit Code: %d, Progress: %u\n",
+        stats->elapsed_time, stats->exit_code, stats->progress );
+}
+
+ReportHook(POST_ALL)(struct criterion_global_stats *stats)
+{
+    printf( "===============================================================================\n" );
+}
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
     DANE PRZYKŁADOWE I FUNKCJE POMOCNICZE
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
@@ -98,7 +130,8 @@ MS_ARRAY *mstst_create_pointer_array( size_t size )
  * Tworzy nową tablicę, zwracając do niej wskaźnik.
  * Sprawdza czy tworzenie tablicy przebiega prawidłowo.
  */
-Test( test_array, array_alloc )
+Test( moss_test, array_alloc,
+    .description = "Creates array and returns pointer to it." )
 {
     MS_ARRAY *array = ms_array_alloc( sizeof(long double), 2 );
 
@@ -126,9 +159,9 @@ Test( test_array, array_alloc )
  * Tworzy tablicę zwracając ją jako zmienną lokalną.
  * Sprawdza czy tworzenie tablicy przebiega prawidłowo.
  */
-Test( test_array, array_return_local )
+Test( moss_test, array_return_local,
+    .description = "Creates local array and returns struct." )
 {
-    int ercode;
     MS_ARRAY array = ms_array_return_local( sizeof(long double), 2 );
 
     cr_assert_not_null( array.Items );
@@ -164,7 +197,8 @@ Test( test_array, array_return_local )
  * Zmienia pojemność tablicy do podanej wartości.
  * W przypadku 0 do obliczenia nowej pojemności używana jest przypisana do tablicy funkcja.
  */
-Test( test_array, array_realloc )
+Test( moss_test, array_realloc,
+    .description = "Allocates new memory for array, to increase capacity." )
 {
     int      ercode;
     MS_ARRAY array;
@@ -227,7 +261,8 @@ Test( test_array, array_realloc )
  * Zmienia pojemność tablicy do co najmniej podanej wartości.
  * Nie zmniejsza pojemności, do obliczenia nowej używana jest przypisana do tablicy funkcja.
  */
-Test( test_array, array_realloc_min )
+Test( moss_test, array_realloc_min,
+    .description = "Allocates minimal ammount of memory, to increase capacity." )
 {
     int      ercode;
     MS_ARRAY array = ms_array_return_local( sizeof(int), 2 );
@@ -276,7 +311,8 @@ Test( test_array, array_realloc_min )
  * Dodaje element przekazany przez wskaźnik do tablicy.
  * Sprawdza czy wszystko jest w porządku.
  */
-Test( test_array, array_insert_value )
+Test( moss_test, array_insert_value,
+    .description = "Insers item into array to given position." )
 {
     int ercode,
         number;
@@ -288,19 +324,19 @@ Test( test_array, array_insert_value )
     array.FuncIncrease = NULL;
 
     // dodaj pierwszy element
-    ercode = ms_array_push_memval( &array, &LIST[0] );
+    ercode = ms_array_push_value( &array, &LIST[0] );
     cr_assert_eq( ercode, MSEC_OK );
     cr_assert_eq( array.Length, 1 );
     cr_assert_eq( array.Capacity, 2 );
 
     // dodaj drugi element
-    ercode = ms_array_push_memval( &array, &LIST[1] ); 
+    ercode = ms_array_push_value( &array, &LIST[1] ); 
     cr_assert_eq( ercode, MSEC_OK );
     cr_assert_eq( array.Length, 2 );
     cr_assert_eq( array.Capacity, 2 );
 
     // dodaj trzeci - tutaj powinno nastąpić zwiększenie pojemności tablicy
-    ercode = ms_array_push_memval( &array, &LIST[2] ); 
+    ercode = ms_array_push_value( &array, &LIST[2] ); 
     cr_assert_eq( ercode, MSEC_OK );
     cr_assert_eq( array.Length, 3 );
     cr_assert_eq( array.Capacity, 3 );
@@ -336,7 +372,8 @@ Test( test_array, array_insert_value )
  * Dodaje kilka elementów do tablicy.
  * Elementy przekazywane są w formie standardowej tablicy języka C.
  */
-Test( test_array, array_insert_values )
+Test( moss_test, array_insert_values,
+    .description = "Inserts items into array to given position." )
 {
     size_t x,
            y;
@@ -397,7 +434,8 @@ Test( test_array, array_insert_values )
  * Dodaje elementy z innej tablicy z podanego zakresu.
  * Zakres podawany jest poprzez indeks początkowy i ilość elementów do skopiowania.
  */
-Test( test_array, array_join_slice )
+Test( moss_test, array_join_slice,
+    .description = "Adds items from second array within given range." )
 {
     size_t x,
            y;
@@ -456,7 +494,8 @@ Test( test_array, array_join_slice )
  * Dodaje elementy z innej tablicy spoza podanego przedziału.
  * Zakres podawany jest poprzez indeks początkowy i ilość elementów do skopiowania.
  */
-Test( test_array, array_join_slice_inverse )
+Test( moss_test, array_join_slice_inverse,
+    .description = "Adds items from second array beyond given range." )
 {
     size_t x,
            y;
@@ -525,7 +564,8 @@ Test( test_array, array_join_slice_inverse )
  * Kopiuje całą tablicę z drugiej podanej w parametrze do pierwszej.
  * Tablica nie może być zainicjalizowana, jednak musi być zadeklarowana.
  */
-Test( test_array, array_copy )
+Test( moss_test, array_copy,
+    .description = "Copies array from second given to first." )
 {
     int    ercode;
     size_t iter;
@@ -554,7 +594,8 @@ Test( test_array, array_copy )
  * Kopiuje całą tablicę podaną w parametrze do nowej tablicy.
  * Zwraca wskaźnik do nowej tablicy.
  */
-Test( test_array, array_copy_alloc )
+Test( moss_test, array_copy_alloc,
+    .description = "Copies array from given array and returns pointer to new array." )
 {
     size_t    iter;
     MS_ARRAY *array1 = mstst_create_sample_array( 256 ),
@@ -589,7 +630,8 @@ Test( test_array, array_copy_alloc )
  * Obcina tablicę do elementów w podanym zakresie.
  * Zakres podawany jest poprzez indeks początkowy i ilość elementów do skopiowania.
  */
-Test( test_array, array_slice )
+Test( moss_test, array_slice,
+    .description = "Cuts elements from array beyond given range." )
 {
     int    ercode;
     size_t x,
@@ -648,7 +690,8 @@ Test( test_array, array_slice )
  * Usuwa elementy z tablicy w podanym zakresie.
  * Zakres podawany jest poprzez indeks początkowy i ilość elementów do skopiowania.
  */
-Test( test_array, array_remove_range )
+Test( moss_test, array_remove_range,
+    .description = "Cuts elements from array within given range." )
 {
     int    ercode;
     size_t x,
@@ -699,7 +742,8 @@ Test( test_array, array_remove_range )
  * Usuwa element znajdujący się w tablicy w podanym miejscu.
  * Po usunięciu przesuwa wszystkie elementy znajdujące się po indeksie.
  */
-Test( test_array, array_remove )
+Test( moss_test, array_remove,
+    .description = "Removes element from array, located on given index." )
 {
     MS_ARRAY *array = mstst_create_sample_array( 256 );
     int       ercode,
@@ -753,7 +797,8 @@ Test( test_array, array_remove )
  * Tworzy lokalną kopie tablicy.
  * Funkcja jest podstawą do tworzenia pochodnych o wybranym typie.
  */
-Test( test_array, array_base_return )
+Test( moss_test, array_base_return,
+    .description = "Creates local array, returns struct." )
 {
     MS_ARRAY array = ms_array_return( 2 );
 
@@ -773,7 +818,8 @@ Test( test_array, array_base_return )
  * Dodaje elementy do tablicy we wskazane miejsce.
  * Testuje poprawność wprowadzonych danych.
  */
-Test( test_array, array_base_insert )
+Test( moss_test, array_base_insert,
+    .description = "Inserts item to array into given index." )
 {
     int      ercode;
     MS_ARRAY array = ms_array_return( 2 );
@@ -821,9 +867,9 @@ Test( test_array, array_base_insert )
  * Tworzy lokalną kopię podanej tablicy.
  * Testuje czy kopia wykonana została poprawnie
  */
-Test( test_array, array_copy_return )
+Test( moss_test, array_copy_return,
+    .description = "Copies array from given array to local copy." )
 {
-    int    ercode;
     size_t iter;
 
     MS_ARRAY *array1 = mstst_create_pointer_array( 256 ),

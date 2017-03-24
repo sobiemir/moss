@@ -69,6 +69,15 @@
 
 #define TEMPSWAPVALUES(tmp, a, b) tmp = a, a = b, b = tmp
 
+// kolory w konsoli...
+#define TERMCLEARLINE         "\033[2K\r"
+#define TERMCOLORGREEN(_T_)   "\033[0;32;32m" _T_ "\033[0m"
+#define TERMCOLORCYAN(_T_)    "\033[0;36m"    _T_ "\033[0m"
+#define TERMCOLORRED(_T_)     "\033[0;32;31m" _T_ "\033[0m"
+#define TERMCOLORYELLOW(_T_)  "\033[0;33m"    _T_ "\033[0m"
+#define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
+#define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
+
 typedef void*       mst_voidptr_t;
 typedef long double mst_longdouble_t;
 typedef long long   mst_longlong_t;
