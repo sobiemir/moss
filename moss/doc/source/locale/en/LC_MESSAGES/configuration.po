@@ -1,0 +1,43 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, CodeStepper
+# This file is distributed under the same license as the Moss package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Moss 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-24 00:38+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../source/configuration.rst:17
+msgid "Ustawienia biblioteki i podstawowe typy"
+msgstr ""
+
+#: ../../source/configuration.rst:19
+msgid ""
+"Tablica dynamiczna składająca się z elementów o tym samym typie. "
+"Teoretycznie tablica powinna posiadać wszystkie elementy tego samego "
+"typu, jednak jedyne ograniczenie jakie stawia, to to, aby wszystkie "
+"elementy znajdujące się w tablicy były tego samego rozmiaru. Możliwe jest"
+" utworzenie pochodnych tabeli tylko dla konkretnego typu poprzez makra. "
+"Poniższe funkcje w niektórych przypadkach podczas błędu zapisują do "
+"zmiennej ``errno`` jego kod. Wartość tej zmiennej nie jest nadpisywana "
+"gdy błąd występuje bezpośrednio w bibliotekach języka *C*."
+msgstr ""
+
+#: ../../source/configuration.rst:35
+msgid "Enumeracje"
+msgstr ""
+
+#: ../../source/configuration.rst:41
+msgid "0x0000. Kod oznacza że działanie funkcji przebiegło pomyślnie."
+msgstr ""
+

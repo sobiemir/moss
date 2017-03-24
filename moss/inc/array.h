@@ -403,7 +403,7 @@ void ms_array_free( void *aptr );
  * @param  item Wskaźnik na wstawiany element.
  * @return      Kod błedu lub wartość MSEC_OK.
  */
-#define ms_array_push_memval(aptr, item) \
+#define ms_array_push_value(aptr, item) \
     ms_array_insert_value( aptr, (aptr)->Length, item )
 
 /**

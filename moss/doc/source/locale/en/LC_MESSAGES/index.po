@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, CodeStepper
+# This file is distributed under the same license as the Moss package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Moss 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-24 00:38+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../source/index.rst:7
+msgid "Dokumentacja biblioteki Moss"
+msgstr ""
+
+#: ../../source/index.rst:9
+msgid ""
+"Wychodząc z założenia że programista używając biblioteki wie co robi, "
+"pola struktur nie są blokowane tak jak to ma miejsce w przypadku innych "
+"bibliotek. Wszystkie pola struktur dostępne są z poziomu kodu, to co "
+"można a co nie można zmieniać zależy już tylko od programisty, bo "
+"przecież myślenie nie boli."
+msgstr ""
+
+#: ../../source/index.rst:13
+msgid "Spis treści:"
+msgstr ""
+

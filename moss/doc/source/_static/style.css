@@ -20,15 +20,56 @@ div.bodywrapper {
 .section dl.var > dt,
 .section dl.macro > dt {
 	line-height: 1.5em;
-	border-bottom: 1px #ddd solid;
 	margin-bottom: 0.8em;
+	color: #0000aa;
+	font-family: monospace;
+	font-size: 1.1em;
+	padding: 5px 10px;
+	background: #eee;
+	margin-top: 10px;
+}
+
+.headerlink {
+	margin-left: 5px;
+	font-size: 1.1em !important;
+}
+
+.section dl.type > dt em,
+.section dl.function > dt em,
+.section dl.member > dt em,
+.section dl.var > dt em,
+.section dl.macro > dt em {
+	color: #222;
+}
+
+code.descname {
+	font-size: 1.1em;
 }
 
 .sphinxsidebarwrapper ul li ul {
 	margin-right: 0;
 }
 
-/*
+dt span.sig-paren:first-of-type {
+	padding-right: 6px;
+}
+dt span.sig-paren:last-of-type {
+	padding-left: 6px;
+}
 dt > span.sig-paren {
-	padding: 0 5px;
-}*/
+	color: #222;
+	font-size: inherit;
+}
+table.parameters {
+	border-collapse: separate;
+    border-spacing: 0 4px;
+}
+table.parameters th.field-name {
+	background: #f6ecc8;
+}
+table.parameters td.field-body {
+	padding-left: 13px !important;
+}
+dd table {
+	margin-bottom: 20px;
+}

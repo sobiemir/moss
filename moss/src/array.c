@@ -641,3 +641,5 @@ static size_t msf_array_increase_power( size_t capacity, float factor )
 {
     return (size_t)pow( (double)capacity, factor );
 }
+
+

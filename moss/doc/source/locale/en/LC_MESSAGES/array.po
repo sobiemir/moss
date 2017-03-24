@@ -1,0 +1,1022 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, CodeStepper
+# This file is distributed under the same license as the Moss package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Moss 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-24 01:11+0100\n"
+"PO-Revision-Date: 2017-03-24 00:46+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../source/array.rst:17
+msgid "Tablica dynamiczna elementów tego samego rozmiaru"
+msgstr "Dynamic table for items with the same type"
+
+#: ../../source/array.rst:19
+msgid ""
+"Tablica dynamiczna składająca się z elementów o tym samym typie. W "
+"odróżnieniu od standardowej tablicy języka *C*, ta potrafi automatycznie "
+"zwiększać swój rozmiar po przekroczeniu ilości miejsca, które zostało dla"
+" niej przydzielone. Przydzielanie większej ilości miejsca może odbywać "
+"się zarówno ręcznie jak i automatycznie, zaś mniejszej tylko ręcznie. "
+"Automatyczne przydzielanie wywoływane jest przy dodawaniu elementów do "
+"tablicy, gdzie sprawdzany jest warunek, czy tablica będzie w stanie "
+"przechować podane elementy lub element."
+msgstr ""
+
+#: ../../source/array.rst:26
+msgid ""
+"Teoretycznie tablica powinna składać się tylko z elementów tego samego "
+"typu, jednak podstawowa konstrukcja nie przeszkadza przechowywać innych "
+"typów niż zadeklarowany. Jedynym ograniczeniem jest rozmiar pojedynczego "
+"elementu, który zawsze musi być taki sam. W niektórych przypadkach "
+"funkcje po wystąpieniu błędu oprócz zwracania kodu błędu, zapisują go do "
+"zmiennej ``errno``. Zmienna ta nie jest modyfikowana, gdy błąd pochodzi "
+"ze standardowej biblioteki języka *C*."
+msgstr ""
+
+#: ../../source/array.rst:32
+msgid "Przykład kodu zawierającego operacje na tablicy dynamicznej::"
+msgstr ""
+
+#: ../../source/array.rst:90 ../../source/array.rst:145
+#: ../../source/array.rst:215 ../../source/array.rst:266
+#: ../../source/array.rst:308 ../../source/array.rst:365
+#: ../../source/array.rst:636 ../../source/array.rst:692
+#: ../../source/array.rst:824 ../../source/array.rst:875
+#: ../../source/array.rst:942 ../../source/array.rst:1005
+#: ../../source/array.rst:1079 ../../source/array.rst:1145
+#: ../../source/array.rst:1201 ../../source/array.rst:1249
+#: ../../source/array.rst:1341 ../../source/array.rst:1381
+msgid "Wyjście:"
+msgstr "Output:"
+
+#: ../../source/array.rst:109
+msgid ""
+"Moduł umożliwia tworzenie dynamicznych tablic dedykowanych poprzez "
+"zdefiniowane makra, które obejmują tylko określony typ. Makra tworzą "
+"kopię struktury wraz z funkcjami, opartymi o funkcje bazowe. Pozostałe "
+"funkcje nie są powielane, gdyż ich zastosowanie jest uniwersalne. Dzięki "
+"temu tworzenie takich tablic jest o wiele prostsze niż tworzenie je "
+"własnoręcznie. Wywołanie makra wymaga podania przyrostków dla struktury i"
+" funkcji, dzięki czemu możliwe jest utworzenie unikalnych funkcji "
+"rozpoznawalnych przez język C."
+msgstr ""
+
+#: ../../source/array.rst:116 ../../source/array.rst:1326
+#: ../../source/array.rst:1366
+msgid "Przykład użycia makra::"
+msgstr "Example of using macro::"
+
+#: ../../source/array.rst:161
+msgid "Struktury, stałe i szablony"
+msgstr "Structures, constants and templates"
+
+#: ../../source/array.rst:165
+msgid ""
+"Struktura tablicy dynamicznej do której odwołują się wszystkie funkcje w "
+"module. Każde wywołanie funkcji tworzącej tablicę musi być zakończone "
+"wywołaniem funkcji, zwalniającej zasoby przydzielone dla obiektu, aby "
+"zapobiec wyciekom pamięci. Dzieje się tak głównie dlatego, że dla pola "
+":c:member:`MS_ARRAY.Items`, które w przypadku błędu powinno mieć zawsze "
+"wartość *NULL*, przydzielana jest dynamicznie pamięć podczas tworzenia "
+"tablicy, lub zmiany jej pojemności w przypadku przekroczenia aktualnej. "
+"Szczegóły na temat struktury znajdują się w opisach poszczególnych pól."
+msgstr ""
+
+#: ../../source/array.rst:173
+msgid "Wartości domyślne pól struktury ustawiane podczas tworzenia tablicy:"
+msgstr ""
+
+#: ../../source/array.rst:176
+msgid "Pole"
+msgstr "Field"
+
+#: ../../source/array.rst:176
+msgid "Wartość domyślna"
+msgstr "Default value"
+
+#: ../../source/array.rst:178
+msgid "Capacity"
+msgstr "Capacity"
+
+#: ../../source/array.rst:178 ../../source/array.rst:179
+msgid "parametr"
+msgstr "param"
+
+#: ../../source/array.rst:179
+msgid "ItemSize"
+msgstr "ItemSize"
+
+#: ../../source/array.rst:180
+msgid "Length"
+msgstr "Length"
+
+#: ../../source/array.rst:180
+msgid "0"
+msgstr "0"
+
+#: ../../source/array.rst:181
+msgid "Modifier"
+msgstr "Modifier"
+
+#: ../../source/array.rst:181
+msgid "2.f"
+msgstr "2.f"
+
+#: ../../source/array.rst:182
+msgid "Destroy"
+msgstr "Destroy"
+
+#: ../../source/array.rst:182
+msgid "automatycznie"
+msgstr "auto"
+
+#: ../../source/array.rst:183
+msgid "Items"
+msgstr "Items"
+
+#: ../../source/array.rst:183
+msgid "wskaźnik"
+msgstr "pointer"
+
+#: ../../source/array.rst:184
+msgid "FuncIncrease"
+msgstr "FuncIncrease"
+
+#: ../../source/array.rst:184
+msgid ":c:member:`MSS_ARRAYFUNCTIONS.IncMultiply`"
+msgstr ":c:member:`MSS_ARRAYFUNCTIONS.IncMultiply`"
+
+#: ../../source/array.rst:189
+msgid ""
+"Pojemność tablicy. Po przekroczeniu lub wyrównaniu ilości elementów z tą "
+"wartością, podczas dodawania elementu, następuje przydzielenie większej "
+"ilości miejsca w tablicy dla nowych elementów o wartości obliczanej "
+"zgodnie z ustawioną funkcją zwiększającą pojemność, nazywaną dalej "
+"*inkreatorem*. Wartość ta nie powinna być zmieniana samodzielnie, gdyż "
+"może to prowadzić do błędów naruszenia ochrony pamięci podczas dodawania "
+"elementów oraz w czasie kopiowania tablicy."
+msgstr ""
+
+#: ../../source/array.rst:195
+msgid "Przykład automatycznej zmiany pojemności::"
+msgstr ""
+
+#: ../../source/array.rst:226
+msgid ""
+"Rozmiar pojedynczego elementu. Dodawanie elementu przez wskaźnik opiera "
+"się na założeniu, że każdy element musi mieć taki sam rozmiar. W "
+"przypadku dynamicznych tablic dedykowanych, ograniczeniem jest ten sam "
+"typ. Wartość ta nie powinna być zmieniana samodzielnie, gdyż może to "
+"prowadzić do błędów związanych z naruszeniem ochrony pamięci, "
+"występujących nie tylko podczas dodawania czy usuwania poszczególnych "
+"elementów, ale również podczas kopiowania tablicy."
+msgstr ""
+
+#: ../../source/array.rst:234
+msgid ""
+"Ilość elementów w tablicy. Wartość ta reprezentuje aktualną długość "
+"tablicy i jest porównywana z pojemnością podczas dodawania elementów. Jej"
+" zmniejszenie spowoduje obcięcie ilości elementów od końca, zwiększenie "
+"zaś zebranie śmieci. Ustawienie długości tablicy poza pojemność może "
+"prowadzić do błędów naruszenia ochrony pamięci. Technika samodzielnej "
+"zmiany długości może być przydatna podczas przydzielenia pamięci na "
+"elementy, przechowywane bezpośrednio w tablicy."
+msgstr ""
+
+#: ../../source/array.rst:241
+msgid "Przykład samodzielnej zmiany długości::"
+msgstr ""
+
+#: ../../source/array.rst:277
+msgid ""
+"Modyfikator kontrolujący powiększenie pojemności tablicy. Zastosowanie "
+"modyfikatora, jak i również przyjmowane przez niego wartości, są "
+"uzależnione od aktualnie ustawionej funkcji zwiększającej pojemność "
+"tablicy, do której zmienna jest zawsze przekazywana. Ustawienie złej "
+"wartości może spowodować błędne obliczenia nowej pojemności w "
+"*inkreatorze*. Zastosowania mnożnika można znaleźć w opisach pól "
+"struktury :c:type:`MSS_ARRAYFUNCTIONS`."
+msgstr ""
+
+#: ../../source/array.rst:283
+msgid "Przykład używania mnożnika::"
+msgstr ""
+
+#: ../../source/array.rst:319
+msgid ""
+"Informacja o tym, czy zmienna przechowująca strukturę tablicy ma zostać "
+"zniszczona. Wykorzystywana **tylko i wyłącznie** w funkcji "
+":c:func:`ms_array_free`, odpowiedzialnej za zwalnianie przydzielonych "
+"zasobów przeznaczonych na tablicę. Wartość ustawiana jest na ``TRUE`` "
+"tylko w funkcjach, zwracających wskaźnik do nowej tablicy. Samodzielna "
+"zmiana tej wartości w zależności od typu tablicy może prowadzić do "
+"wycieków lub naruszenia ochrony pamięci."
+msgstr ""
+
+#: ../../source/array.rst:328
+msgid ""
+"Elementy zapisane do tablicy. W zależności od implementacji struktury "
+"tablicy i przechowywanych w niej wartości, przed pobraniem elementu "
+"należy rzutować go do odpowiedniego typu. Pojedynczy element można szybko"
+" pobrać za pomocą jednego z wbudowanych makr, :c:macro:`ms_array_get` lub"
+" :c:macro:`ms_array_getl`. Pole to w implementacji standardowej jest typu"
+" ``void**``, jednak tablica dedykowana zmienia go w zależności od "
+"deklarowanego typu przechowywanego w tablicy. W przypadku pobierania "
+"większej liczby elementów lub nawet całego zbioru, warto przypisać "
+"zmienną do innej zmiennej uprzednio rzutując ją na inny typ."
+msgstr ""
+
+#: ../../source/array.rst:338
+msgid "Dwa sposoby pobierania zmiennych z tablicy::"
+msgstr ""
+
+#: ../../source/array.rst:376
+msgid ""
+"Funkcja zwana inaczej *inkreatorem*, zwiększająca pojemność tablicy, "
+"używana podczas przydzielania pamięci dla jej nowych elementów. Dzięki "
+"temu polu można przypisać własną funkcję obliczającą nową ilość pamięci. "
+"Wszystkie wskaźniki wbudowanych *inkreatorów* znajdują się w stałej "
+":c:data:`MSC_ArrayFunctions` mając w nazwie przedrostek *Inc*. Funkcje te"
+" zawsze po obliczeniach zaokrąglają wynik w dół. Do wnętrza funkcji pod "
+"parametrem ``modifier`` przekazywana jest wartość pola "
+":c:member:`MS_ARRAY.Modifier`. Zmienna ta może być zarówno dodatnia jak i"
+" ujemna, jednak wynik końcowy teoretycznie nie może być mniejszy niż "
+"wprowadzony do funkcji w zmiennej ``capacity``. W praktyce jednak, w "
+"przypadku gdy funkcja zwraca wynik o mniejszej wartości niż aktualna "
+"pojemność tablicy, nowa ustawiona zostaje jako ``capacity + 1``."
+msgstr ""
+
+#: ../../source/array.rst:387
+msgid ""
+"Zestawienie wbudowanych funkcji inkreatora i ich wyniki przy takich "
+"samych parametrach:"
+msgstr ""
+
+#: ../../source/array.rst:390
+msgid "Funkcja inkreatora"
+msgstr ""
+
+#: ../../source/array.rst:390
+msgid "Pojemność"
+msgstr ""
+
+#: ../../source/array.rst:390
+msgid "Mnożnik"
+msgstr ""
+
+#: ../../source/array.rst:390
+msgid "Wynik"
+msgstr ""
+
+#: ../../source/array.rst:392
+msgid "IncAdd"
+msgstr ""
+
+#: ../../source/array.rst:392 ../../source/array.rst:393
+#: ../../source/array.rst:394
+msgid "3"
+msgstr ""
+
+#: ../../source/array.rst:392 ../../source/array.rst:393
+#: ../../source/array.rst:394
+msgid "4.5"
+msgstr ""
+
+#: ../../source/array.rst:392
+msgid "7"
+msgstr ""
+
+#: ../../source/array.rst:393
+msgid "IncMultiply"
+msgstr ""
+
+#: ../../source/array.rst:393
+msgid "13"
+msgstr ""
+
+#: ../../source/array.rst:394
+msgid "IncPower"
+msgstr ""
+
+#: ../../source/array.rst:394
+msgid "140"
+msgstr ""
+
+#: ../../source/array.rst
+msgid "Parametry"
+msgstr ""
+
+#: ../../source/array.rst:399 ../../source/array.rst:418
+#: ../../source/array.rst:428
+msgid "Aktualna pojemność tablicy."
+msgstr ""
+
+#: ../../source/array.rst:400
+msgid "Modyfikator pojemności."
+msgstr ""
+
+#: ../../source/array.rst
+msgid "Zwraca"
+msgstr ""
+
+#: ../../source/array.rst:401 ../../source/array.rst:420
+msgid "Nową pojemność tablicy, przekazywaną do przydzielenia pamięci."
+msgstr ""
+
+#: ../../source/array.rst:405
+msgid ""
+"Struktura zawiera pola, posiadające wskaźniki do wbudowanych funkcji "
+"modułu. Z tej struktury korzysta zmienna :c:data:`MSC_ArrayFunctions`, "
+"dzięki której możliwy jest dostęp do funkcji wbudowanych z zewnątrz. "
+"Poniższe pola opisane są skrótowo z racji tego, iż schemat działania "
+"został opisany dokładnie w polu, do którego dana funkcja przynależy. "
+"Przykładem tego jest pole :c:member:`MS_ARRAY.FuncIncrease`. Aktualnie "
+"struktura przechiwuje tylko funkcji zwiększających pojemność tablicy."
+msgstr ""
+
+#: ../../source/array.rst:414
+msgid ""
+"Modyfikuje wartość zmiennej ``capacity``, mnożąc ją ze zmienną "
+"``modifier``."
+msgstr ""
+
+#: ../../source/array.rst:419
+msgid "Mnożnik pojemności."
+msgstr ""
+
+#: ../../source/array.rst:424
+msgid ""
+"Modyfikuje wartość zmiennej ``capacity``, dodając do niej wartość "
+"zmiennej ``modifier``."
+msgstr ""
+
+#: ../../source/array.rst:429
+msgid "Składnik dodawania."
+msgstr ""
+
+#: ../../source/array.rst:430 ../../source/array.rst:440
+msgid "Nową pojemność tablicy przekazywaną do przydzielenia pamięci."
+msgstr ""
+
+#: ../../source/array.rst:434
+msgid ""
+"Modyfikuje wartość zmiennej ``capacity``, podnosząc ją do potęgi o "
+"wartości ze zmiennej ``modifier``."
+msgstr ""
+
+#: ../../source/array.rst:438
+msgid "Aktualna pojemność tablicy, traktowana jako podstawa potęgi."
+msgstr ""
+
+#: ../../source/array.rst:439
+msgid "Wykładnik potęgi."
+msgstr ""
+
+#: ../../source/array.rst:444
+msgid ""
+"Stała przechowująca wskaźniki do wbudowanych funkcji modułu. Aktualnie "
+"przechowuje tylko funkcje pozwalające na zwiększanie elementów w tablicy."
+" Funkcję obliczającą nową pojemność tablicy można zmienić, przypisując do"
+" pola :c:member:`MS_ARRAY.FuncIncrease` jedną z funkcji podanych w "
+"strukturze, rozpoczynających się od przedrostka *Inc*. Wszystkie funkcje "
+"których wskaźniki zawiera stała, opisane są w polach struktury "
+":c:type:`MSS_ARRAYFUNCTIONS`."
+msgstr ""
+
+#: ../../source/array.rst:450
+msgid "Przykład użycia stałej::"
+msgstr ""
+
+#: ../../source/array.rst:474
+msgid ""
+"Makro tworzące nagłówki funkcji pochodnych opartych o funkcje bazowe. "
+"Dodatkowo tworzy nową strukturę dla tablicy dedykowanej dla konkretnego "
+"typu podanego w parametrze. Wszystkie funkcje operują na tworzonej "
+"strukturze i podanym typie, dzięki czemu elementy mogą być prosto "
+"wstawiane do tablicy. Jako że makro tworzy tylko nagłówki, aby korzystać "
+"z funkcji, których sygnatury zostały utworzone, należy wywołać dodatkowo "
+"makro :c:macro:`MST_ARRAY_BODY`, tworzące ciała funkcji. Generalnie makro"
+" to powinno się wstawiać w jednym z plików nagłówkowych projektu."
+msgstr ""
+
+#: ../../source/array.rst:483 ../../source/array.rst:497
+msgid "Typ w którym przechowywane będą elementy w tablicy."
+msgstr ""
+
+#: ../../source/array.rst:484 ../../source/array.rst:498
+msgid "Przyrostek, który będzie zawarty w nazwie tablicy."
+msgstr ""
+
+#: ../../source/array.rst:485 ../../source/array.rst:499
+msgid "Przyrostek, który będzie zawarty w nazwie funkcji."
+msgstr ""
+
+#: ../../source/array.rst:489
+msgid ""
+"Makro tworzące ciała funkcji pochodnych dedykowanych dla konkretnego "
+"typu, opartych o funkcje bazowe. Wszystkie funkcje operują na strukturze "
+"tworzonej w makrze :c:macro:`MST_ARRAY_HEADER`, dlatego makro to powinno "
+"być wywołane wcześniej. Funkcje umożliwiają szybsze i bezpośrednie "
+"techniki operowania na konkretnych danych w tablicach. Makro to powinno "
+"być wywoływane w plikach źródłowych, jednak nic nie przeszkadza umieścić "
+"go w plikach nagłówkowych."
+msgstr ""
+
+#: ../../source/array.rst:509
+msgid "Tworzenie i inicjalizacja"
+msgstr ""
+
+#: ../../source/array.rst:513
+msgid ""
+"Tworzy nową tablicę oraz rezerwuje początkowe miejsce na dane. W "
+"odróżnieniu od inicjalizacji, funkcja zwraca wskaźnik do utworzonej "
+"tablicy. W przypadku błędu podczas tworzenia, zwrócona zostaje wartość "
+"*NULL*. Funkcja jako jedna z nielicznych ustawia pole "
+":c:member:`MS_ARRAY.Destroy` na wartość *TRUE*. Przydzielone przez "
+"funkcję zasoby zawsze należy zwalniać, co umożliwia funkcja "
+":c:func:`ms_array_free`."
+msgstr ""
+
+#: ../../source/array.rst:519 ../../source/array.rst:541
+#: ../../source/array.rst:567 ../../source/array.rst:608
+#: ../../source/array.rst:668 ../../source/array.rst:730
+#: ../../source/array.rst:765 ../../source/array.rst:854
+#: ../../source/array.rst:913 ../../source/array.rst:976
+#: ../../source/array.rst:1049 ../../source/array.rst:1115
+#: ../../source/array.rst:1176 ../../source/array.rst:1236
+#: ../../source/array.rst:1268
+msgid "Przykład użycia funkcji::"
+msgstr ""
+
+#: ../../source/array.rst:530 ../../source/array.rst:554
+#: ../../source/array.rst:578
+msgid "Rozmiar pojedynczego elementu przechowywanego w tablicy."
+msgstr ""
+
+#: ../../source/array.rst:531 ../../source/array.rst:555
+#: ../../source/array.rst:579
+msgid "Początkowa ilość rezerwowanego miejsca na elementy tablicy."
+msgstr ""
+
+#: ../../source/array.rst:532
+msgid "Wskaźnik na utworzoną tablicę lub wartość *NULL* w przypadku błędu."
+msgstr ""
+
+#: ../../source/array.rst:536
+msgid ""
+"Inicjalizuje istniejącą tablicę i rezerwuje początkowe miejsce na dane. "
+"Wszystkie funkcje tworzące tablice odwołują się bezpośrednio do tej "
+"funkcji. W przypadku błędu zwracany jest jego kod, w przeciwnym razie "
+"wartość :c:member:`MSE_ERROR_CODES.MSEC_OK`. Przydzielone przez funkcję "
+"zasoby zawsze należy zwalniać, co umożliwia funkcja "
+":c:func:`ms_array_free`."
+msgstr ""
+
+#: ../../source/array.rst:553 ../../source/array.rst:648
+#: ../../source/array.rst:835 ../../source/array.rst:890
+#: ../../source/array.rst:1096 ../../source/array.rst:1161
+#: ../../source/array.rst:1215 ../../source/array.rst:1259
+#: ../../source/array.rst:1291 ../../source/array.rst:1307
+#: ../../source/array.rst:1353 ../../source/array.rst:1406
+#: ../../source/array.rst:1439 ../../source/array.rst:1456
+#: ../../source/array.rst:1470
+msgid "Wskaźnik na tablicę."
+msgstr ""
+
+#: ../../source/array.rst:556 ../../source/array.rst:650
+#: ../../source/array.rst:704 ../../source/array.rst:894
+#: ../../source/array.rst:960 ../../source/array.rst:1023
+#: ../../source/array.rst:1099 ../../source/array.rst:1164
+#: ../../source/array.rst:1217 ../../source/array.rst:1409
+#: ../../source/array.rst:1425 ../../source/array.rst:1442
+#: ../../source/array.rst:1471
+msgid "Kod błędu lub wartość :c:member:`MSE_ERROR_CODES.MSEC_OK`."
+msgstr ""
+
+#: ../../source/array.rst
+msgid "Błędy"
+msgstr ""
+
+#: ../../source/array.rst:557 ../../source/array.rst:651
+#: ../../source/array.rst:705 ../../source/array.rst:754
+#: ../../source/array.rst:780 ../../source/array.rst:840
+#: ../../source/array.rst:896 ../../source/array.rst:962
+#: ../../source/array.rst:1025 ../../source/array.rst:1427
+#: ../../source/array.rst:1444 ../../source/array.rst:1459
+#: ../../source/array.rst:1519 ../../source/array.rst:1537
+msgid ":c:member:`MSE_ERROR_CODES.MSEC_MEMORY_ALLOCATION`"
+msgstr ""
+
+#: ../../source/array.rst:561
+msgid ""
+"Tworzy tablicę lokalną oraz rezerwuje początkowe miejsce na dane. Odmiana"
+" tej funkcji pozwala na ustawienie rozmiaru pojedynczego elementu. W "
+"przypadku błędu podczas tworzenia tablicy, pole "
+":c:member:`MS_ARRAY.Items` jest równe *NULL*. Utworzona w ten sposób "
+"tablica nadal wymaga zwolnienia przydzielonych zasobów poprzez wywołanie "
+"funkcji :c:func:`ms_array_free`."
+msgstr ""
+
+#: ../../source/array.rst:580 ../../source/array.rst:1492
+msgid "Utworzoną tablicę lokalną."
+msgstr ""
+
+#: ../../source/array.rst:591
+msgid "Zmiana pojemności"
+msgstr ""
+
+#: ../../source/array.rst:595
+msgid ""
+"Zmniejsza lub zwiększa pojemność tablicy. Funkcja posiada dwa wbudowane "
+"tryby zwiększania pojemności - automatyczny i ręczny. Tryb automatyczny "
+"można uruchomić, podając pod zmienną ``capacity`` wartość 0. Obliczaniem "
+"pojemności w takim wypadku zajmuje się funkcja *inkreatora* podpięta pod "
+"przekazaną tablicę do pola :c:member:`MS_ARRAY.FuncIncrease`. Gdy "
+"*inkreator* nie jest podpięty, zwracany jest błąd, gdyż funkcja nie wie "
+"ile ma przydzielić pamięci. W przypadku zwrócenia przez *inkreator* "
+"pojemności mniejszej niż aktualna, wartość ta jest odrzucana i jako nowa "
+"przyjmowana jest suma ``capacity + 1``. Tryb ręczny uruchamiany jest w "
+"przypadku wpisania wartości innej niż 0 w parametrze ``capacity``. W tym "
+"trybie pojemność może być zarówno zwiększana jak i zmniejszana. Próba "
+"przydziału pojemności mniejszej niż ilość elementów zapisanych w tablicy "
+"skutkuje błędem i natychmiastowym zakończeniem działania funkcji."
+msgstr ""
+
+#: ../../source/array.rst:649
+msgid "Nowa pojemność tablicy lub 0 w przypadku automatu."
+msgstr ""
+
+#: ../../source/array.rst:652
+msgid ":c:member:`MSE_ERROR_CODES.MSEC_INVALID_VALUE`"
+msgstr ""
+
+#: ../../source/array.rst:653
+msgid ":c:member:`MSE_ERROR_CODES.MSEC_DATA_OVERFLOW`"
+msgstr ""
+
+#: ../../source/array.rst:657
+msgid ""
+"Zwiększa pojemność tablicy do najbliższej wartości następującej po "
+"wartości podanej w parametrze ``min``. Podanie wartości mniejszej niż "
+"aktualna pojemność nie kończy się błędem, ale również nie zmienia "
+"pojemności całej tablicy, ponieważ minimum zostało już osiągnięte. "
+"Funkcja wywołuje *inkreatora* dopóty, dopóki wartość przez niego zwracana"
+" nie będzie większa lub równa wartości zmiennej ``min``, przekazanej w "
+"parametrze. W przypadku gdy pole :c:member:`MS_ARRAY.FuncIncrease` będzie"
+" równe wartości *NULL*, jako nowa pojemność przyjęta zostanie wartość "
+"minimalna. Funkcja przydaje się szczególnie w trakcie wstawiania tablic, "
+"gdzie za jednym razem przydzielana jest odpowiednia ilość pamięci, która "
+"pozwoli zmieścić wszystkie elementy w tablicy dynamicznej i ewentualnie "
+"pozostawić miejsce na nowe."
+msgstr ""
+
+#: ../../source/array.rst:702
+msgid "Wskaźnik tablicy przeznaczonej do zmiany pojemności."
+msgstr ""
+
+#: ../../source/array.rst:703
+msgid "Minimalna wartość do której zwiększona zostanie pojemność tablicy."
+msgstr ""
+
+#: ../../source/array.rst:715
+msgid "Kopiowanie"
+msgstr ""
+
+#: ../../source/array.rst:719
+msgid ""
+"Kopiuje tablicę z parametru ``asrc`` do parametru ``adst``. Tablica do "
+"której dane będą kopiowane musi istnieć, ale nie może być wcześniej "
+"zainicjalizowana. W przeciwnym przypadku wszystkie dane zostaną "
+"nadpisane, co może skończyć się wyciekiem pamięci. Utworzoną wcześniej "
+"tablicę można wyczyścić, wykorzystując funkcję :c:func:`ms_array_clean`. "
+"Czyszczenie nie jest uruchamiane automatycznie, gdyż tablica "
+"niezainicjalizowana posiada w strukturze śmieci, co może prowadzić do "
+"błędu podczas zwalniania zasobów, a mianowicie do naruszenia ochrony "
+"pamięci. Zerowanie danych również nie pomoże w każdym przypadku, gdyż "
+"wartość *NULL* nie zawsze składa się ze wszystkich bitów równych 0. "
+"Kopiowane są tylko zapisane dane, tak więc w przypadku wskaźników, "
+"kopiowane są tylko wskaźniki. Przydzielone przez funkcję zasoby zawsze "
+"należy zwalniać, co umożliwia funkcja :c:func:`ms_array_free`."
+msgstr ""
+
+#: ../../source/array.rst:751
+msgid "Wskaźnik na tablicę, do której dane będą kopiowane."
+msgstr ""
+
+#: ../../source/array.rst:752 ../../source/array.rst:778
+msgid "Wskaźnik na kopiowaną tablicę."
+msgstr ""
+
+#: ../../source/array.rst:753
+msgid "Kod błedu lub wartość :c:member:`MSE_ERROR_CODES.MSEC_OK`."
+msgstr ""
+
+#: ../../source/array.rst:758
+msgid ""
+"Tworzy tablicę i kopiuje do niej dane z tablicy podanej w parametrze. "
+"Dane kopiowane są w takim formacie w jakim zostały wstawione, tak więc "
+"gdy tablica posiada wskaźniki do danych, kopiowane są tylko wskaźniki, co"
+" prowadzi do tego, że dwie tablice będą miały dostęp do tych samych "
+"danych. Funkcja jako jedna z nielicznych ustawia wartość pola "
+":c:member:`MS_ARRAY.Destroy` na wartość ``TRUE``. Przydzielone przez "
+"funkcję zasoby zawsze należy zwalniać, co umożliwia funkcja "
+":c:func:`ms_array_free`."
+msgstr ""
+
+#: ../../source/array.rst:779
+msgid "Wskaźnik na utworzoną kopię tablicy lub wartość *NULL*."
+msgstr ""
+
+#: ../../source/array.rst:789
+msgid "Dodawanie elementów"
+msgstr ""
+
+#: ../../source/array.rst:793
+msgid ""
+"Dodaje do tablicy element we wskazane miejsce, przekazany przez wskaźnik."
+" Element kopiowany jest do tablicy z zachowaniem rozmiaru zapisanego w "
+"polu :c:member:`MS_ARRAY.ItemSize`. Przekazanie elementu o innym typie "
+"lub rozmiarze niż zadeklarowany, może prowadzić do naruszenia ochrony "
+"pamięci. Wstawianie elementu w inne miejsce niż na koniec tablicy "
+"powoduje przesunięcie wszystkich wartości znajdujących się za wartością "
+"``index`` o jedno miejsce w prawo. Funkcja sprawdza czy element "
+"przekazany do funkcji, zmieści się w tablicy. Gdy warunek ten nie "
+"zostanie spełniony, wywoływana jest odpowiednia funkcja, zwiększająca "
+"pojemność tablicy."
+msgstr ""
+
+#: ../../source/array.rst:801
+msgid "Przykład dodawania elementów do tablicy::"
+msgstr ""
+
+#: ../../source/array.rst:836
+msgid "Indeks kopiowania elementu."
+msgstr ""
+
+#: ../../source/array.rst:837 ../../source/array.rst:1457
+msgid "Wskaźnik na element do wstawienia."
+msgstr ""
+
+#: ../../source/array.rst:838 ../../source/array.rst:1458
+#: ../../source/array.rst:1517 ../../source/array.rst:1535
+msgid "Kod błędu lub :c:member:`MSE_ERROR_CODES.MSEC_OK`."
+msgstr ""
+
+#: ../../source/array.rst:841
+msgid ":c:member:`MSE_ERROR_CODES.OUT_OF_RANGE`"
+msgstr ""
+
+#: ../../source/array.rst:845
+msgid ""
+"Dodaje do tablicy elementy do wybranego miejsca, przekazane w parametrze."
+" Kopiowanie elementów działa w taki sam sposób jak w przypadku funkcji "
+":c:func:`ms_array_insert_value` z tą różnicą, że od podanego indeksu "
+"wstawianych jest kilka elementów a nie jeden. Wstawianie elementów w inne"
+" miejsce niż na koniec tablicy wiąże się z przeniesieniem wszystkich "
+"danych, których pozycje przewyższają wartość zmiennej ``index``. "
+"Kopiowane elementy w tym przypadku muszą być przekazane w postaci "
+"standardowej tablicy języka *C*. Przekazanie rozmiaru tablicy w wartości "
+"``size`` przekraczającej rozmiar rzeczywisty może spowodować naruszenie "
+"ochrony pamięci."
+msgstr ""
+
+#: ../../source/array.rst:891
+msgid "Indeks od którego elementy mają być kopiowane."
+msgstr ""
+
+#: ../../source/array.rst:892 ../../source/array.rst:1440
+msgid "Wskaźnik na pierwszy element z tablicy standardowej do wstawienia."
+msgstr ""
+
+#: ../../source/array.rst:893 ../../source/array.rst:1441
+msgid "Ilość elementów do dodania."
+msgstr ""
+
+#: ../../source/array.rst:897 ../../source/array.rst:963
+#: ../../source/array.rst:1026 ../../source/array.rst:1101
+#: ../../source/array.rst:1166 ../../source/array.rst:1219
+#: ../../source/array.rst:1411 ../../source/array.rst:1520
+#: ../../source/array.rst:1538
+msgid ":c:member:`MSE_ERROR_CODES.MSEC_OUT_OF_RANGE`"
+msgstr ""
+
+#: ../../source/array.rst:898 ../../source/array.rst:964
+#: ../../source/array.rst:1027 ../../source/array.rst:1102
+#: ../../source/array.rst:1167 ../../source/array.rst:1220
+#: ../../source/array.rst:1412 ../../source/array.rst:1428
+#: ../../source/array.rst:1445 ../../source/array.rst:1472
+#: ../../source/array.rst:1521 ../../source/array.rst:1539
+msgid ":c:member:`MSE_ERROR_CODES.MSEC_INVALID_ARGUMENT`"
+msgstr ""
+
+#: ../../source/array.rst:902
+msgid ""
+"Dodaje do tablicy elementy z podanego zakresu, kopiując je z innej "
+"tablicy. Kontrola zakresu uniemożliwia podanie indeksu w zmiennej "
+"``offset`` oraz rozmiaru zakresu przewyższającego rzeczywistą ilość "
+"zapisanych elementów w tablicy. Funkcja działa w podobny sposób jak "
+"funkcja :c:func:`ms_array_insert_values` z dwoma różnicami. Pierwszą jest"
+" to, że elementy kopiowane muszą być umieszczone w tablicy dynamicznej, "
+"drugą zaś, że nie można podać indeksu od którego wartości będą wstawiane."
+" Podczas łączenia tablic elementy wstawiane są zawsze na samym końcu "
+"tablicy przekazanej w zmiennej ``adst``. W przypadku podania wartości 0 "
+"do zmiennej ``count``, ilość kopiowanych elementów jest obliczana "
+"automatycznie i przyjmuje wartość równą ilości pozostałych elementów do "
+"końca tablicy, licząc od wartości zmiennej ``offset``."
+msgstr ""
+
+#: ../../source/array.rst:956 ../../source/array.rst:1019
+#: ../../source/array.rst:1423
+msgid "Wskaźnik na tablicę do której elementy będą wstawiane."
+msgstr ""
+
+#: ../../source/array.rst:957 ../../source/array.rst:1020
+#: ../../source/array.rst:1424
+msgid "Wskaźnik na tablicę z której elementy będą kopiowane."
+msgstr ""
+
+#: ../../source/array.rst:958
+msgid "Indeks od którego wartości mają być kopiowane."
+msgstr ""
+
+#: ../../source/array.rst:959 ../../source/array.rst:1022
+#: ../../source/array.rst:1098
+msgid "Ilość elementów w zakresie lub 0."
+msgstr ""
+
+#: ../../source/array.rst:968
+msgid ""
+"Dodaje do tablicy elementy z innej tablicy, pomijając wartości znajdujące"
+" się w podanym zakresie. Jak sama nazwa wskazuje, funkcja ta jest "
+"inwersją funkcji :c:func:`ms_array_join_slice`, co oznacza, że dodaje "
+"elementy, które nie obejmuje podany zakres. Wszystkie kopiowane elementy "
+"umieszczane są na samym końcu tablicy. W przypadku podania wartości 0 do "
+"zmiennej ``count``, ilość kopiowanych elementów jest obliczana "
+"automatycznie i przyjmuje wartość równą ilości pozostałych elementów do "
+"końca tablicy, licząc od wartości zmiennej ``offset``."
+msgstr ""
+
+#: ../../source/array.rst:1021
+msgid "Indeks od którego wartości nie będą kopiowane."
+msgstr ""
+
+#: ../../source/array.rst:1036
+msgid "Usuwanie elementów"
+msgstr ""
+
+#: ../../source/array.rst:1040
+msgid ""
+"Pozostawia w tablicy elementy z podanego zakresu. Funkcja działa w taki "
+"sam sposób jak funkcja :c:func:`ms_array_join_slice` z tą różnicą, że "
+"operacje wykonywane są bezpośrednio na przekazanej tablicy. Wszystkie "
+"elementy znajdujące się poza podanym zakresem są usuwane. Podanie "
+"wartości zmiennej ``offset`` innej niż 0, powoduje przesunięcie "
+"wszystkich elementów znajdujących się w podanym zakresie i wyrównanie ich"
+" do indeksu zerowego. Wartość 0 w zmiennej ``count`` traktowana jest jako"
+" ilość elementów pozostałych do końca tablicy, licząc od wartości "
+"``offset``."
+msgstr ""
+
+#: ../../source/array.rst:1097
+msgid "Indeks od którego wartości nie będą usuwane."
+msgstr ""
+
+#: ../../source/array.rst:1106
+msgid ""
+"Usuwa z tablicy elementy znajdujące się w podanym zakresie. Funkcja "
+"działa w taki sam sposób jak funkcja "
+":c:func:`ms_array_join_slice_inverse` z tą różnicą, że operacje "
+"wykonywane są bezpośrednio na przekazanej tablicy. Jest inwersją funkcji "
+":c:func:`ms_array_slice`, choć nazwa na to nie wskazuje. Podanie wartości"
+" zmiennej ``count`` innej niż 0, powoduje przesunięcie wszystkich "
+"elementów znajdujących się poza indeksem o wartości ``offset + count`` i "
+"wyrównanie ich do indeksu zerowego. Wartość 0 w zmiennej ``count`` "
+"traktowana jest jako ilość elementów pozostałych do końca tablicy, licząc"
+" od wartości ``offset``."
+msgstr ""
+
+#: ../../source/array.rst:1162 ../../source/array.rst:1407
+msgid "Indeks od którego wartości będą usuwane."
+msgstr ""
+
+#: ../../source/array.rst:1163 ../../source/array.rst:1408
+msgid "Ilość elementów do usunięcia z tablicy lub 0."
+msgstr ""
+
+#: ../../source/array.rst:1171
+msgid ""
+"Usuwa element o podanym indeksie z tablicy. W przypadku gdy indeks jest "
+"mniejszy niż wartość :c:member:`MS_ARRAY.Length` pomniejszona o jeden, "
+"wszystkie elementy znajdujące się poza indeksem są przesuwane. Próba "
+"usunięcia elementu który nie istnieje, kończy się zwróceniem przez "
+"funkcję błędu."
+msgstr ""
+
+#: ../../source/array.rst:1216
+msgid "Indeks elementu do usunięcia."
+msgstr ""
+
+#: ../../source/array.rst:1229
+msgid "Czyszczenie danych"
+msgstr ""
+
+#: ../../source/array.rst:1233
+msgid ""
+"Czyści tablicę usuwając jej wszystkie elementy. Funkcja nie zwalnia "
+"pamięci po elementach i nie zmniejsza jej."
+msgstr ""
+
+#: ../../source/array.rst:1263
+msgid ""
+"Czyści tablicę zwalniając zasoby przydzielone dla elementów. Po takiej "
+"operacji tablica wymaga ponownej inicjalizacji. W przypaku gdy struktura "
+"tablicy jest zmienną lokalną, wywołanie tej funkcji zwalnia z użycia "
+"funkcji :c:func:`ms_array_free`."
+msgstr ""
+
+#: ../../source/array.rst:1295
+msgid ""
+"Zwalnia zasoby przydzielone zarówno do tablicy jak i jej elementów. Każdy"
+" blok kodu składający się z utworzenia tablicy, należy zakończyć tą "
+"funkcją, aby zapobiec wyciekom pamięci. Jedyny przypadek w którym funkcji"
+" nie trzeba wywoływać został opisany i pokazany w przykładzie użycia "
+"funkcji :c:member:`ms_array_clean`."
+msgstr ""
+
+#: ../../source/array.rst:1300
+msgid "Przykład zwalniania zasobów::"
+msgstr ""
+
+#: ../../source/array.rst:1316
+msgid "Makra"
+msgstr ""
+
+#: ../../source/array.rst:1320
+msgid ""
+"Pobiera element z tablicy o podanym typie i indeksie. Makro rzutuje "
+"elementy tablicy do typu podanego w parametrze i zwraca wartość "
+"znajdującą się w podanym indeksie. Zalecane jest rzutowanie bezpośrednie "
+"do zmiennej w przypadku pobierania większej ilości elementów. Makro "
+"działa na zmiennej zawierającej wskaźnik do tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1354 ../../source/array.rst:1394
+msgid "Typ pobieranego elementu."
+msgstr ""
+
+#: ../../source/array.rst:1355 ../../source/array.rst:1395
+msgid "Indeks elementu do pobrania."
+msgstr ""
+
+#: ../../source/array.rst:1356 ../../source/array.rst:1396
+msgid "Element pobrany z tablicy o typie podanym w parametrze."
+msgstr ""
+
+#: ../../source/array.rst:1360
+msgid ""
+"Pobiera element z tablicy o podanym typie i indeksie. Makro rzutuje "
+"elementy tablicy do typu podanego w parametrze i zwraca wartość "
+"znajdującą się w podanym indeksie. Zalecane jest rzutowanie bezpośrednie "
+"do zmiennej w przypadku pobierania większej ilości elementów. Makro "
+"działa na zmiennej lokalnej tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1393
+msgid "Tablica z której element ma być pobrany."
+msgstr ""
+
+#: ../../source/array.rst:1400
+msgid ""
+"Usuwa z tablicy elementy znajdujące się w podanym zakresie. Makro jest "
+"aliasem do funkcji o nazwie :c:func:`ms_array_remove_range`, tam też "
+"znajduje się dokładny opis działania funkcji."
+msgstr ""
+
+#: ../../source/array.rst:1416
+msgid ""
+"Dodaje do tablicy elementy z innej tablicy z podanego zakresu. Makro jest"
+" aliasem do funkcji o nazwie :c:func:`ms_array_join_slice`, tam też "
+"znajduje się dokładny opis działania funkcji. Makro uzupełnia dwa "
+"ostatnie parametry wartością 0, co powoduje kopiowanie całej tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1432
+msgid ""
+"Dodaje do tablicy elementy, przekazane w parametrze, na sam koniec "
+"tablicy dynamicznej. Makro jest aliasem do funkcji o nazwie "
+":c:func:`ms_array_insert_values`, tam też znajduje się dokładny opis "
+"działania funkcji. Makro uzupełnia indeks o rozmiar tablicy, co powoduje "
+"wstawianie elementów na sam koniec."
+msgstr ""
+
+#: ../../source/array.rst:1449
+msgid ""
+"Dodaje do tablicy element, przekazany przez wskaźnik, na sam koniec "
+"tablicy dynamicznej. Makro jest aliasem do funkcji o nazwie "
+":c:func:`ms_array_insert_value`, tam też znajduje się dokładny opis "
+"działania funkcji. Makro uzupełnia indeks o rozmiar tablicy, co powoduje "
+"wstawianie elementu na sam koniec."
+msgstr ""
+
+#: ../../source/array.rst:1463
+msgid ""
+"Usuwa ostatni element z tablicy. Makro jest aliasem do funkcji o nazwie "
+":c:func:`ms_array_remove`, tam też znajduje się dokładny opis działania "
+"funkcji. Makro uzupełnia indeks o rozmiar tablicy pomniejszony o jeden, "
+"co powoduje usunięcie ostatniego elementu."
+msgstr ""
+
+#: ../../source/array.rst:1481
+msgid "Baza funkcji pochodnych"
+msgstr ""
+
+#: ../../source/array.rst:1485
+msgid ""
+"Zwraca tablicę lokalna bez podawania rozmiaru elementu. Funkcja jest "
+"podstawą do tworzenia funkcji pochodnych operujących na tablicy, "
+"działających na różnych typach. Zasada działania jest taka sama jak w "
+"przypadku funkcji :c:func:`ms_array_return_local`."
+msgstr ""
+
+#: ../../source/array.rst:1491
+msgid "Początkowa ilość zarezerwowanego miejsca na elementy tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1496
+msgid ""
+"Kopiuje podaną w parametrze tablicę, tworząc jej lokalny odpowiednik. "
+"Funkcja jest podstawą do tworzenia funkcji pochodnych operujących na "
+"tablicy, działających na różnych typach. Zasada działania jest podobna do"
+" funkcji :c:func:`ms_array_copy_alloc` z tą różnicą, iż nie przydziela "
+"miejsca na samą strukturę tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1503
+msgid "Wskaźnik na tablicę do skopiowania."
+msgstr ""
+
+#: ../../source/array.rst:1504
+msgid "Utworzoną lokalną kopię tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1508
+msgid ""
+"Dodaje element do tablicy na sam koniec. Funkcja jest podstawą do "
+"tworzenia funkcji pochodnych operujących na tablicy, działających na "
+"różnych typach. Zasada działania podobna do makra "
+":c:func:`ms_array_push_value` z tą różnicą, iż nie należy podawać "
+"wskaźnika do elementu, który ma zostać umieszczony w tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1515
+msgid "Tablica do której ma zostać dodany element."
+msgstr ""
+
+#: ../../source/array.rst:1516 ../../source/array.rst:1534
+msgid "Element do wstawienia."
+msgstr ""
+
+#: ../../source/array.rst:1525
+msgid ""
+"Doaje element do tablicy w wybrane miejsce. Funkcja jest podstawą do "
+"tworzenia funkcji pochodnych operujących na tablicy, działających na "
+"różnych typach. Zasada działania jest podobna do funkcji "
+":c:func:`ms_array_insert_value` z tą różnicą, iż nie należy podawać "
+"wskaźnika do elementu, który ma zostać umieszczony w tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1532
+msgid "Wskaźnik do tablicy."
+msgstr ""
+
+#: ../../source/array.rst:1533
+msgid "Indeks w tablicy do którego wstawiony ma być element."
+msgstr ""
+
+#~ msgid ""
+#~ "Tablica dynamiczna składająca się z "
+#~ "elementów o tym samym typie. W "
+#~ "odróżnieniu od standardowej tablicy języka "
+#~ "*C*, ta potrafi automatycznie zwiększać "
+#~ "swój rozmiar po przekroczeniu ilości "
+#~ "miejsca, które zostało dla niej "
+#~ "przydzielone. Przydzielanie większej ilości "
+#~ "miejsca może udbywać się zarówno ręcznie"
+#~ " jak i automatycznie, zaś mniejszej "
+#~ "tylko ręcznie. Automatyczne przydzielanie "
+#~ "wywoływane jest przy dodawaniu elementów "
+#~ "do tablicy, gdzie sprawdzany jest "
+#~ "warunek, czy tablica będzie w stanie "
+#~ "przechować podane elementy lub element."
+#~ msgstr ""
+

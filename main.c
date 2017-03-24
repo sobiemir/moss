@@ -161,47 +161,45 @@ typedef struct S_TILEDATA
 }
 TILEDATA;
 
+MST_ARRAY_HEADER( float, FLOAT, _float );
+MST_ARRAY_BODY( float, FLOAT, _float );
+
 int at_mapstd_get_dims( const char *name, int *w, int *h );
 int at_mapstd_parse( const char *name, MAPDATA *const map );
 void at_map_free( MAPDATA *const map );
 
+int setmemarray()
+{
+    #define DESTRUCTARRAY(a,ercode,txt) \
+        return \
+            printf( txt ", code %d.\n", ercode ), \
+            ms_array_free( &a ), \
+            ercode
+
+    MS_ARRAYFLOAT afloat = ms_array_return_float( 3 );
+    int           ercode;
+    size_t        iter;
+
+    /* dodaj elementy do tablicy */
+    if( (ercode = ms_array_push_float(&afloat, 3.1f)) )
+        DESTRUCTARRAY( afloat, ercode, "Array push failed" );
+    if( (ms_array_insert_float(&afloat, 0, 1.65f)) )
+        DESTRUCTARRAY( afloat, ercode, "Array insert failed" );
+    if( (ms_array_insert_float( &afloat, 1, 2.11f )) )
+        DESTRUCTARRAY( afloat, ercode, "Array insert failed" );
+
+    /* wyświetl elementy */
+    for( iter = 0; iter < afloat.Length; ++iter )
+        printf( "Array Float => Value: %f\n", afloat.Items[iter] );
+
+    ms_array_free( &afloat );
+
+    return MSEC_OK;
+}
+
 int main( int argc, char **argv )
 {
-    MS_ARRAY array;
-
-    size_t aidx = 0;
-
-    // MS_TILEMAP tilemap;
-    // MS_TILE *tarr;
-    void *tmpitm;
-
-    TILEDATA tiles[5];
-    int al = 0;
-
-    int a[] = {
-        20,
-        40,
-        11,
-        14,
-        1,
-        6,
-        8,
-        22,
-        27,
-        33,
-        2,
-        5,
-        6,
-        8,
-        9,
-        37,
-        31,
-        34,
-        28,
-        21
-    };
-
-    array_join_slice();
+    setmemarray();
 
 //     ms_array_init( &array, sizeof(int), 20 );
 //     while( al < 20 )

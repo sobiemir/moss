@@ -1,60 +1,175 @@
+/*
+ * Moss Library >> http://moss.aculo.pl
+ *
+ *    /'\_/`\                           
+ *   /\      \    ___     ____    ____  
+ *   \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *     \ \_\\ \_\ \____/\/\____/\/\____/
+ *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *
+ * Template file for "Dynamic Array" module...
+ */
+
 #ifndef __MSH_ARRAY_TEMPLATE__
 #define __MSH_ARRAY_TEMPLATE__
 
-#define __MST_ARRAY_COMPARE_UNSIGNED(_Type_) \
-    _Type_ at = *(_Type_*)a, \
-           bt = *(_Type_*)b; \
-    return at < bt \
-        ? -1 \
-        : at == bt \
-            ? 0 \
-            : 1
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    STRUKTURA DLA TABLICY DEDYKOWANEJ DLA KONKRETNEGO TYPU
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
-#define __MST_ARRAY_COMPARE_SIGNED(_Type_) \
-    return *(_Type_*)a - *(_Type_*)b
-
-
-#define __MST_ARRAY_TSEARCH_LOOP(_Type_) \
+#define __MST_ARRAY_STRUCT(_Postfix, _Type) \
+    typedef struct MSS_ARRAY ## _Postfix \
     { \
-        _Type_ *ptr  = tptr, \
-                tmp  = *(_Type_*)item, \
-               *lptr = ptr + (items - 1); \
-        while( ptr != lptr && *lptr != itmp ) \
-            ptr++; \
-        tptr \
+        size_t Capacity; \
+        size_t ItemSize; \
+        size_t Length; \
+        float Modifier; \
+        bool Destroy; \
+        _Type *Items; \
+        size_t (*FuncIncrease)(size_t capacity, float modifier); \
+    } \
+    MS_ARRAY ## _Postfix;
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    FUNKCJA TWORZĄCA ZMIENNĄ LOKALNĄ TABLICY
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+#define __MST_ARRAY_RETURN_H(_SPostfix, _FPostfix) \
+    MS_ARRAY ## _SPostfix ms_array_return ## _FPostfix \
+        ( size_t capacity );
+
+#define __MST_ARRAY_RETURN(_SPostfix, _FPostfix) \
+    MS_ARRAY ## _SPostfix ms_array_return ## _FPostfix \
+        ( size_t capacity ) \
+    { \
+        MS_ARRAY ## _SPostfix array; \
+        IGRET ms_array_init( &array, sizeof(*array.Items), capacity ); \
+        return array; \
     }
 
-#define __MST_ARRAY_TREVERSE_FORLOOP(_Type_) \
-    _Type_ tmp, *ptr1 = (_Type_*)tptr, *ptr2 = (_Type_*)tptr + (items - 1); \
-    for( iter = 0; iter < half; ++iter, ptr1++, ptr2-- ) \
-        tmp = *ptr1, *ptr1 = *ptr2, *ptr2 = tmp;
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    FUNKCJA ZWRACAJĄCA KOPIĘ LOKALNĄ TABLICY
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
-#define __MST_ARRAY_TSEARCH_FORLOOP(_Type_) \
-    _Type_ *ptr = tptr, itmp = *(_Type_*)item, *lptr = ptr + (items - 1); \
-    while( ptr != lptr && *ptr != itmp ) ptr++; \
-    tptr = ptr != lptr || *ptr == itmp ? ptr : NULL;
+#define __MST_ARRAY_COPY_RETURN_H(_SPostfix, _FPostfix) \
+    MS_ARRAY ## _SPostfix ms_array_copy_return ## _FPostfix \
+        ( const MS_ARRAY ## _SPostfix *array );
 
-#define __MST_ARRAY_TRSEARCH_FORLOOP(_Type_) \
-    _Type_ *ptr = tptr, itmp = *(_Type_*)item, *lptr = ptr + (items - 1); \
-    while( ptr != lptr && *lptr != itmp ) ptr--; \
-    tptr = ptr != lptr || *lptr == itmp ? lptr : NULL;
+#define __MST_ARRAY_COPY_RETURN(_SPostfix, _FPostfix) \
+    MS_ARRAY ## _SPostfix ms_array_copy_return ## _FPostfix \
+        ( const MS_ARRAY ## _SPostfix *array ) \
+    { \
+        MS_ARRAY ## _SPostfix copy; \
+        IGRET ms_array_copy( &copy, array ); \
+        return copy; \
+    }
 
-#define __MST_ARRAY_DESTROY(_Type_, _SName_, _FName_) \
-void ms_##_FName_##_destroy( MS_##_SName_ *array ) { \
-    if( !array ) return; \
-    _msf_array_clean( array ); \
-    if( array->Destroy ) { free( array ); array = NULL; } \
-}
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    FUNKCJA POZWALAJĄCA NA DODANIE ELEMENTU DO TABLICY NA KONIEC
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
 
-#define __MST_ARRAY_INIT(_Type_, _SName_, _FName_) \
-int ms_##_FName_##_init( MS_##_SName_ *array, size_t capacity, bool zerofill ) { \
-    assert( array ); \
-    if( array->Items ) _msf_array_clean( array ); \
-    array->Capacity = capacity; array->ItemSize = sizeof *array->Items; array->Size = 0; \
-    array->Factor = 1.f; array->Destroy = false; array->ZeroFill = zerofill; \
-    array->Items = zerofill ? calloc( array->Capacity, array->ItemSize ) : malloc( array->Capacity * array->ItemSize ); \
-    if( !array->Items ) { ms_##_FName_##_destroy( array ); SETERRNOANDRETURN( MSEC_MEMORY_ALLOCATION ); } \
-    return MSEC_OK; \
-}
+#define __MST_ARRAY_PUSH_H(_Type, _SPostfix, _FPostfix) \
+    int ms_array_push ## _FPostfix \
+        ( MS_ARRAY ## _SPostfix *array, _Type item );
+
+#define __MST_ARRAY_PUSH(_Type, _SPostfix, _FPostfix) \
+    int ms_array_push ## _FPostfix \
+        ( MS_ARRAY ## _SPostfix *array, _Type item ) \
+    { \
+        assert( array ); \
+        assert( array->Items ); \
+        return ms_array_insert ## _FPostfix( array, array->Length, item ); \
+    }
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    FUNKCJA POZWALAJĄCA NA DODANIE ELEMENTU DO TABLICY W WYBRANE MIEJSCE
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+#define __MST_ARRAY_INSERT_H(_Type, _SPostfix, _FPostfix) \
+    int ms_array_insert ## _FPostfix \
+        ( MS_ARRAY ## _SPostfix *array, size_t index, _Type item );
+
+#define __MST_ARRAY_INSERT(_Type, _SPostfix, _FPostfix) \
+    int ms_array_insert ## _FPostfix \
+        ( MS_ARRAY ## _SPostfix *array, size_t index, _Type item ) \
+    { \
+        assert( array ); \
+        assert( array->Items ); \
+        if( index > array->Length ) \
+            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE ); \
+        if( array->Length >= array->Capacity ) \
+        { \
+            int ercode = !array->FuncIncrease \
+                ? array->Capacity + 1 \
+                : 0; \
+            if( (ercode = ms_array_realloc(array, ercode)) ) \
+                return ercode; \
+        } \
+        if( index != array->Length ) \
+            IGRET memmove( &array->Items[index + 1], &array->Items[index], \
+                array->ItemSize * (array->Length - index) ); \
+        array->Items[index] = item; \
+        ++array->Length; \
+        return MSEC_OK; \
+    }
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+    MAKRA TWORZĄCE NAGŁÓWKI I FUNKCJE
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+/**
+ * Makro tworzące nagłówki funkcji z funkcji bazowych.
+ * Dodatkowo tworzy strukturę tablicy operującą na podanym typie.
+ * Makro tworzy tylko nagłówki, ciała funkcji tworzy makro MST_ARRAY_BODY.
+ *
+ * @param type type Typ, który ma przyjmować tablica.
+ * @param literal spfix Przyrostek dla struktury tablicy.
+ * @param literal fpfix Przyrostek dla funkcji operujących na strukturze.
+ */
+#define MST_ARRAY_HEADER(type, spfix, fpfix) \
+    __MST_ARRAY_STRUCT( spfix, type ); \
+    __MST_ARRAY_COPY_RETURN_H( spfix, fpfix ); \
+    __MST_ARRAY_INSERT_H( type, spfix, fpfix ); \
+    __MST_ARRAY_PUSH_H( type, spfix, fpfix ); \
+    __MST_ARRAY_RETURN_H( spfix, fpfix )
+
+/**
+ * Makro tworzące ciała funkcji z funkcji bazowych.
+ * Warto przed tym wywołać makro tworzące nagłówki funkcji.
+ *
+ * @param type type Typ, który ma przyjmować tablica.
+ * @param literal spfix Przyrostek dla struktury tablicy.
+ * @param literal fpfix Przyrostek dla funkcji operujących na strukturze.
+ */
+#define MST_ARRAY_BODY(type, spfix, fpfix) \
+    __MST_ARRAY_COPY_RETURN( spfix, fpfix ); \
+    __MST_ARRAY_INSERT( type, spfix, fpfix ); \
+    __MST_ARRAY_PUSH( type, spfix, fpfix ); \
+    __MST_ARRAY_RETURN( spfix, fpfix )
 
 #endif
