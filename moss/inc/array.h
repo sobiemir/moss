@@ -15,7 +15,6 @@
 #define __MSH_ARRAY__
 
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 
 #include "configuration.h"
