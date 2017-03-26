@@ -4,8 +4,6 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "moss/moss.h"
-#include "moss/trunk/xxhash.h"
-#include "moss/trunk/xxhsum.c"
 
 #define FPS 60
 
@@ -42,8 +40,8 @@ int main( int argc, char **argv )
     printf( "64_FNV-1  : %lx\n", ms_hash_64_fnv1(str, strlen(str)) );
     printf( "64_FNV-1A : %lx\n", ms_hash_64_fnv1a(str, strlen(str)) );
     printf( "64_MURMUR2: %lx\n", ms_hash_64_murmur2(str, strlen(str)) );
-    printf( "32_XXHASH : %x => %x\n", ms_hash_32_xxhash(str, strlen(str)), XXH32( str, strlen(str), 1234 ) );
-    printf( "64_XXHASH : %lx => %llx\n", ms_hash_64_xxhash(str, strlen(str)), XXH64( str, strlen(str), 1234 ) );
+    printf( "32_XXHASH : %x\n", ms_hash_32_xxhash(str, strlen(str)) );
+    printf( "64_XXHASH : %lx\n", ms_hash_64_xxhash(str, strlen(str)) );
 
     return 0;
 }
