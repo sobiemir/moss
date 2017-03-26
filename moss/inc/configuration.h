@@ -78,8 +78,10 @@
 #define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
 #define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
 
-#define ROTL32(x, r) (x << r) | (x >> (32 - r))
-#define ROTR32(x, r) (x >> r) | (x << (32 - r))
+#define ROTL32(x, r) ((x << r) | (x >> (32 - r)))
+#define ROTR32(x, r) ((x >> r) | (x << (32 - r)))
+#define ROTL64(x, r) ((x << r) | (x >> (64 - r)))
+#define ROTR64(x, r) ((x >> r) | (x << (64 - r)))
 
 typedef void*       mst_voidptr_t;
 typedef long double mst_longdouble_t;

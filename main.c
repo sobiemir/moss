@@ -4,6 +4,8 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "moss/moss.h"
+#include "moss/trunk/xxhash.h"
+#include "moss/trunk/xxhsum.c"
 
 #define FPS 60
 
@@ -26,7 +28,7 @@ const int LIST[] =
 
 int main( int argc, char **argv )
 {
-    const char *str = "Hello, world!";
+    const char *str = "SDBMAlgorithm";
     
     printf( "32_DJB2   : %x\n", ms_hash_32_djb2(str, strlen(str)) );
     printf( "32_DJB2-A : %x\n", ms_hash_32_djb2a(str, strlen(str)) );
@@ -34,9 +36,14 @@ int main( int argc, char **argv )
     printf( "32_FNV-1A : %x\n", ms_hash_32_fnv1a(str, strlen(str)) );
     printf( "32_JOAAT  : %x\n", ms_hash_32_joaat(str, strlen(str)) );
     printf( "32_MURMUR3: %x\n", ms_hash_32_murmur3(str, strlen(str)) );
+    printf( "32_MURMUR2: %x\n", ms_hash_32_murmur2(str, strlen(str)) );
+    printf( "32_MURMUR : %x\n", ms_hash_32_murmur(str, strlen(str)) );
     printf( "32_SDBM   : %x\n", ms_hash_32_sdbm(str, strlen(str)) );
-    printf( "64_FNV-1  : %zu\n", ms_hash_64_fnv1(str, strlen(str)) );
-    printf( "64_FNV-1A : %zu\n", ms_hash_64_fnv1a(str, strlen(str)) );
+    printf( "64_FNV-1  : %lx\n", ms_hash_64_fnv1(str, strlen(str)) );
+    printf( "64_FNV-1A : %lx\n", ms_hash_64_fnv1a(str, strlen(str)) );
+    printf( "64_MURMUR2: %lx\n", ms_hash_64_murmur2(str, strlen(str)) );
+    printf( "32_XXHASH : %x => %x\n", ms_hash_32_xxhash(str, strlen(str)), XXH32( str, strlen(str), 1234 ) );
+    printf( "64_XXHASH : %lx => %llx\n", ms_hash_64_xxhash(str, strlen(str)), XXH64( str, strlen(str), 1234 ) );
 
     return 0;
 }
