@@ -28,8 +28,11 @@ int main( int argc, char **argv )
 {
     const char *str = "SDBMAlgorithm";
     const wchar_t *wcs = L"SDBMAlgorithm";
-    
+
     printf( "32_DJB2   : %08x\n", ms_hash_32_djb2(str, strlen(str)) );
+    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2_mbs(str) );
+    printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2_wcs(wcs) );
     printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2a(str, strlen(str)) );
     printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2a_mbs(str) );
     printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2a(wcs, wcslen(wcs) * sizeof(wchar_t)) );

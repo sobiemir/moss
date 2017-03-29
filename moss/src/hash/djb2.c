@@ -43,8 +43,6 @@ uint32_t ms_hash_32_djb2a( const void *data, size_t length )
     return hash;
 }
 
-#ifdef MSD_HASH_FOR_MBS
-
 /* ================================================================================================================== */
 
 uint32_t ms_hash_32_djb2_mbs( const char *data )
@@ -74,9 +72,6 @@ uint32_t ms_hash_32_djb2a_mbs( const char *data )
 
     return hash;
 }
-
-#endif
-#ifdef MSD_HASH_FOR_WCS
 
 /* ================================================================================================================== */
 
@@ -123,5 +118,3 @@ uint32_t ms_hash_32_djb2a_wcs( const wchar_t *data )
 
     return hash;
 }
-
-#endif
