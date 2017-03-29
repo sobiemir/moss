@@ -14,6 +14,7 @@
 #ifndef __MSH_HASH__
 #define __MSH_HASH__
 
+#include <wchar.h>
 #include "configuration.h"
 
 /*
@@ -39,6 +40,9 @@
  */
 uint32_t ms_hash_32_djb2( const void *data, size_t length );
 
+uint32_t ms_hash_32_djb2_mbs( const char *data );
+uint32_t ms_hash_32_djb2_wcs( const wchar_t *data );
+
 /**
  * Funkcja skrótu oparta na algorytmie DJB2.
  * Ta wersja algorytmu używa alternatywy wykluczającej (XOR) podczas operacji na pobieranym znaku.
@@ -52,6 +56,10 @@ uint32_t ms_hash_32_djb2( const void *data, size_t length );
  * @return        Skrót w postaci 32 bitowej liczby.
  */
 uint32_t ms_hash_32_djb2a( const void *data, size_t length );
+
+
+uint32_t ms_hash_32_djb2a_mbs( const char *data );
+uint32_t ms_hash_32_djb2a_wcs( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie zastosowanym w SDBM.

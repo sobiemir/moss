@@ -27,21 +27,25 @@ const int LIST[] =
 int main( int argc, char **argv )
 {
     const char *str = "SDBMAlgorithm";
+    const wchar_t *wcs = L"SDBMAlgorithm";
     
-    printf( "32_DJB2   : %x\n", ms_hash_32_djb2(str, strlen(str)) );
-    printf( "32_DJB2-A : %x\n", ms_hash_32_djb2a(str, strlen(str)) );
-    printf( "32_FNV-1  : %x\n", ms_hash_32_fnv1(str, strlen(str)) );
-    printf( "32_FNV-1A : %x\n", ms_hash_32_fnv1a(str, strlen(str)) );
-    printf( "32_JOAAT  : %x\n", ms_hash_32_joaat(str, strlen(str)) );
-    printf( "32_MURMUR3: %x\n", ms_hash_32_murmur3(str, strlen(str)) );
-    printf( "32_MURMUR2: %x\n", ms_hash_32_murmur2(str, strlen(str)) );
-    printf( "32_MURMUR : %x\n", ms_hash_32_murmur(str, strlen(str)) );
-    printf( "32_SDBM   : %x\n", ms_hash_32_sdbm(str, strlen(str)) );
-    printf( "64_FNV-1  : %lx\n", ms_hash_64_fnv1(str, strlen(str)) );
-    printf( "64_FNV-1A : %lx\n", ms_hash_64_fnv1a(str, strlen(str)) );
-    printf( "64_MURMUR2: %lx\n", ms_hash_64_murmur2(str, strlen(str)) );
-    printf( "32_XXHASH : %x\n", ms_hash_32_xxhash(str, strlen(str)) );
-    printf( "64_XXHASH : %lx\n", ms_hash_64_xxhash(str, strlen(str)) );
+    printf( "32_DJB2   : %08x\n", ms_hash_32_djb2(str, strlen(str)) );
+    printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2a(str, strlen(str)) );
+    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2a_mbs(str) );
+    printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2a_wcs(wcs) );
+    printf( "32_FNV-1  : %08x\n", ms_hash_32_fnv1(str, strlen(str)) );
+    printf( "32_FNV-1A : %08x\n", ms_hash_32_fnv1a(str, strlen(str)) );
+    printf( "32_JOAAT  : %08x\n", ms_hash_32_joaat(str, strlen(str)) );
+    printf( "32_MURMUR3: %08x\n", ms_hash_32_murmur3(str, strlen(str)) );
+    printf( "32_MURMUR2: %08x\n", ms_hash_32_murmur2(str, strlen(str)) );
+    printf( "32_MURMUR : %08x\n", ms_hash_32_murmur(str, strlen(str)) );
+    printf( "32_SDBM   : %08x\n", ms_hash_32_sdbm(str, strlen(str)) );
+    printf( "32_XXHASH : %08x\n", ms_hash_32_xxhash(str, strlen(str)) );
+    printf( "64_FNV-1  : %016lx\n", ms_hash_64_fnv1(str, strlen(str)) );
+    printf( "64_FNV-1A : %016lx\n", ms_hash_64_fnv1a(str, strlen(str)) );
+    printf( "64_MURMUR2: %016lx\n", ms_hash_64_murmur2(str, strlen(str)) );
+    printf( "64_XXHASH : %016lx\n", ms_hash_64_xxhash(str, strlen(str)) );
 
     return 0;
 }

@@ -17,3 +17,4 @@ to co można a co nie można zmieniać zależy już tylko od programisty, bo prz
 
    configuration
    array
+   hash

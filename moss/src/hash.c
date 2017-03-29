@@ -8,80 +8,39 @@
  *     \ \_\\ \_\ \____/\/\____/\/\____/
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Template file for "Hash" module...
+ * Source file for "Hash" module...
  */
 #include "../inc/hash.h"
 
-#define MSD_HASH_LOOP_UNROLL 4
-#define MSD_HASH_SEED 1234
+/* ================================================================================================================== */
 
-#define MSX_LOOP_UNROLL_ONELINE_MACRONUM(macro, count) MSX_LOOP_UNROLL_ONELINE(macro, count)
-#define MSX_LOOP_UNROLL_ONELINE(macro, count) __MSX_LOOP_UNROLL_ONELINE_ ## count ( macro )
+// uint32_t ms_hash_32_djb2( const void *data, size_t length )
+// {
+//     uint32_t    hash = 5381;
+//     const char *cdat = data;
 
-#define __MSX_LOOP_UNROLL_ONELINE_16(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_15(_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_15(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_14(_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_14(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_13(_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_13(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_12(_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_12(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_11(_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_11(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_10(_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_10(_Macro) _Macro, __MSX_LOOP_UNROLL_ONELINE_9 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_9(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_8 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_8(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_7 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_7(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_6 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_6(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_5 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_5(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_4 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_4(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_3 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_3(_Macro)  _Macro, __MSX_LOOP_UNROLL_ONELINE_2 (_Macro)
-#define __MSX_LOOP_UNROLL_ONELINE_2(_Macro)  _Macro, _Macro
+//     assert( data );
 
-#define MSX_CASE_UNROLL_NOBREAK_MACRONUM(macro, count) MSX_CASE_UNROLL_NOBREAK(macro, count)
-#define MSX_CASE_UNROLL_NOBREAK(macro, count) __MSX_CASE_UNROLL_NOBREAK_ ## count ( macro )
+//     for( ; length > 0; --length )
+//         hash = ((hash << 5) + hash) + *cdat++;
 
-#define __MSX_CASE_UNROLL_NOBREAK_16(_Macro) case 15: _Macro; __MSX_CASE_UNROLL_NOBREAK_15(_Macro )
-#define __MSX_CASE_UNROLL_NOBREAK_15(_Macro) case 14: _Macro; __MSX_CASE_UNROLL_NOBREAK_14(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_14(_Macro) case 13: _Macro; __MSX_CASE_UNROLL_NOBREAK_13(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_13(_Macro) case 12: _Macro; __MSX_CASE_UNROLL_NOBREAK_12(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_12(_Macro) case 11: _Macro; __MSX_CASE_UNROLL_NOBREAK_11(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_11(_Macro) case 10: _Macro; __MSX_CASE_UNROLL_NOBREAK_10(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_10(_Macro) case 9:  _Macro; __MSX_CASE_UNROLL_NOBREAK_9(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_9(_Macro)  case 8:  _Macro; __MSX_CASE_UNROLL_NOBREAK_8(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_8(_Macro)  case 7:  _Macro; __MSX_CASE_UNROLL_NOBREAK_7(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_7(_Macro)  case 6:  _Macro; __MSX_CASE_UNROLL_NOBREAK_6(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_6(_Macro)  case 5:  _Macro; __MSX_CASE_UNROLL_NOBREAK_5(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_5(_Macro)  case 4:  _Macro; __MSX_CASE_UNROLL_NOBREAK_4(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_4(_Macro)  case 3:  _Macro; __MSX_CASE_UNROLL_NOBREAK_3(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_3(_Macro)  case 2:  _Macro; __MSX_CASE_UNROLL_NOBREAK_2(_Macro)
-#define __MSX_CASE_UNROLL_NOBREAK_2(_Macro)  case 1:  _Macro
+//     return hash;
+// }
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_djb2( const void *data, size_t length )
-{
-    uint32_t    hash = 5381;
-    const char *cdat = data;
+// uint32_t ms_hash_32_djb2a( const void *data, size_t length )
+// {
+//     uint32_t    hash = 5381;
+//     const char *cdat = data;
 
-    assert( data );
+//     assert( data );
 
-    for( ; length > 0; --length )
-        hash = ((hash << 5) + hash) + *cdat++;
+//     for( ; length > 0; --length )
+//         hash = ((hash << 5) + hash) ^ (uint32_t)*cdat++;
 
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint32_t ms_hash_32_djb2a( const void *data, size_t length )
-{
-    uint32_t    hash = 5381;
-    const char *cdat = data;
-
-    assert( data );
-
-    for( ; length > 0; --length )
-        hash = ((hash << 5) + hash) ^ (uint32_t)*cdat++;
-
-    return hash;
-}
+//     return hash;
+// }
 
 /* ================================================================================================================== */
 
@@ -276,14 +235,14 @@ uint32_t ms_hash_32_murmur( const void *data, size_t length )
 
 /* ================================================================================================================== */
 
+#define MSH_32XXH_PRIME1 2654435761u
+#define MSH_32XXH_PRIME2 2246822519u
+#define MSH_32XXH_PRIME3 3266489917u
+#define MSH_32XXH_PRIME4 668265263u
+#define MSH_32XXH_PRIME5 374761393u
+
 uint32_t ms_hash_32_xxhash( const void *data, size_t length )
 {
-#   define MSH_32XXH_PRIME1 2654435761u
-#   define MSH_32XXH_PRIME2 2246822519u
-#   define MSH_32XXH_PRIME3 3266489917u
-#   define MSH_32XXH_PRIME4 668265263u
-#   define MSH_32XXH_PRIME5 374761393u
-
     uint32_t hash = 0;
 
     const uint32_t *cdat = data;
@@ -430,13 +389,14 @@ uint64_t ms_hash_64_murmur2( const void *data, size_t length )
 
 /* ================================================================================================================== */
 
+#define MSH_64XXH_PRIME1 11400714785074694791ull
+#define MSH_64XXH_PRIME2 14029467366897019727ull
+#define MSH_64XXH_PRIME3 1609587929392839161ull
+#define MSH_64XXH_PRIME4 9650029242287828579ull
+#define MSH_64XXH_PRIME5 2870177450012600261ull
+
 uint64_t ms_hash_64_xxhash( const void *data, size_t length )
 {
-#   define MSH_64XXH_PRIME1 11400714785074694791ull
-#   define MSH_64XXH_PRIME2 14029467366897019727ull
-#   define MSH_64XXH_PRIME3 1609587929392839161ull
-#   define MSH_64XXH_PRIME4 9650029242287828579ull
-#   define MSH_64XXH_PRIME5 2870177450012600261ull
 
     uint64_t hash = 0,
              ch8b;
