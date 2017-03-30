@@ -8,7 +8,7 @@
  *     \ \_\\ \_\ \____/\/\____/\/\____/
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, DJB2 section...
+ * Source file for "Hash" module, JOAAT section...
  */
 
 #include "../../inc/hash.h"

@@ -14,56 +14,6 @@
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_murmur3( const void *data, size_t length )
-{
-    uint32_t hash = MSD_HASH_SEED,
-             ch4b;
-    size_t   iter;
-
-    const uint32_t *cdat = data;
-    const uint8_t  *adat;
-
-    assert( data );
-
-    // murmur3 pobiera porcjami 4 bajtowymi
-    for( iter = length >> 2; iter; --iter )
-        ch4b  = *cdat++,
-        ch4b *= 0xcc9e2d51,
-        ch4b  = ROTL32(ch4b, 15),
-        ch4b *= 0x1b873593,
-        hash ^= ch4b,
-        hash  = ROTL32(hash, 13),
-        hash += (hash << 2) + 0xe6546b64;
-
-    adat = (const uint8_t*)cdat;
-    ch4b = 0;
-
-    // konsumpcja pozostałych wartości
-    switch( length & 3 )
-    {
-        case 3: ch4b |= adat[2] << 16;
-        case 2: ch4b |= adat[1] << 8;
-        case 1: ch4b |= adat[0];
-                ch4b *= 0xcc9e2d51;
-                ch4b  = ROTL32(ch4b, 15);
-                ch4b *= 0x1b873593;
-                hash ^= ch4b;
-    }
-
-    // trochę magii
-    hash ^= length;
-    hash ^= hash >> 16;
-    hash *= 0x85ebca6b;
-    hash ^= hash >> 13;
-    hash *= 0xc2b2ae35;
-    hash ^= hash >> 16;
-
-    // i wynik gotowy
-    return hash;
-}
-
-/* ================================================================================================================== */
-
 uint32_t ms_hash_32_murmur2( const void *data, size_t length )
 {
     uint32_t hash = MSD_HASH_SEED ^ length,

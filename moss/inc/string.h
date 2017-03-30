@@ -17,7 +17,7 @@
 #include <stdlib.h>
 
 #include "configuration.h"
-#include "../tpl/string_tpl.h"
+// #include "../tpl/string_tpl.h"
 
  typedef struct MSS_STRING
 {

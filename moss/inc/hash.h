@@ -139,6 +139,9 @@ uint32_t ms_hash_32_fnv1a_wcs( const wchar_t *data );
  */
 uint32_t ms_hash_32_murmur3( const void *data, size_t length );
 
+uint32_t ms_hash_32_murmur3_mbs( const char *data );
+uint32_t ms_hash_32_murmur3_wcs( const wchar_t *data );
+
 /**
  * Funkcja skrótu oparta na algorytmie MurmurHash2.
  * Druga odsłona algorytmu MurmurHash.

@@ -49,7 +49,6 @@ int main( int argc, char **argv )
     printf( "32_JOAAT2 : %08x\n", ms_hash_32_joaat_mbs(str) );
     printf( "32_JOAAT  : %08x\n", ms_hash_32_joaat(wcs, wcslen(wcs) * sizeof(wchar_t)) );
     printf( "32_JOAAT2 : %08x\n", ms_hash_32_joaat_wcs(wcs) );
-    printf( "32_MURMUR3: %08x\n", ms_hash_32_murmur3(str, strlen(str)) );
     printf( "32_MURMUR2: %08x\n", ms_hash_32_murmur2(str, strlen(str)) );
     printf( "32_MURMUR : %08x\n", ms_hash_32_murmur(str, strlen(str)) );
     printf( "32_SDBM   : %08x\n", ms_hash_32_sdbm(str, strlen(str)) );
@@ -67,6 +66,11 @@ int main( int argc, char **argv )
     printf( "64_FNV-1A2: %016lx\n", ms_hash_64_fnv1a_wcs(wcs) );
     printf( "64_MURMUR2: %016lx\n", ms_hash_64_murmur2(str, strlen(str)) );
     printf( "64_XXHASH : %016lx\n", ms_hash_64_xxhash(str, strlen(str)) );
+
+    printf( "32_MURMUR3: %08x\n", ms_hash_32_murmur3(str, strlen(str)) );
+    printf( "32_MURMUR3: %08x\n", ms_hash_32_murmur3_mbs(str) );
+    printf( "32_MURMUR3: %08x\n", ms_hash_32_murmur3(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_MURMUR3: %08x\n", ms_hash_32_murmur3_wcs(wcs) );
 
     return 0;
 }
