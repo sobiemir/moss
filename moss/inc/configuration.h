@@ -5,6 +5,15 @@
 #define MSD_ERRORINERRNO
 #define MSD_HASSTDBOOL
 
+#define MSD_HASH_MBS_FUNCTIONS
+#define MSD_HASH_WCS_FUNCTIONS
+
+#define MSD_HASH_MURMUR
+#define MSD_HASH_JOAAT
+#define MSD_HASH_FNV1
+#define MSD_HASH_SDBM
+#define MSD_HASH_DJB2
+
 #define IGRET
 #define IGVAR
 
@@ -78,10 +87,21 @@
 #define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
 #define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
 
-#define ROTL32(x, r) ((x << r) | (x >> (32 - r)))
-#define ROTR32(x, r) ((x >> r) | (x << (32 - r)))
-#define ROTL64(x, r) ((x << r) | (x >> (64 - r)))
-#define ROTR64(x, r) ((x >> r) | (x << (64 - r)))
+#define MSX_ROTL32(x, r) ((x << r) | (x >> (32 - r)))
+#define MSX_ROTR32(x, r) ((x >> r) | (x << (32 - r)))
+#define MSX_ROTL64(x, r) ((x << r) | (x >> (64 - r)))
+#define MSX_ROTR64(x, r) ((x >> r) | (x << (64 - r)))
+
+#define MSX_FIND8B0IN32B(bits) \
+    (!(bits & 0x000000FF) \
+        ? 1 \
+        : !(bits & 0x0000FF00) \
+            ? 2 \
+            : !(bits & 0x00FF0000) \
+                ? 3 \
+                : !(bits & 0xFF000000) \
+                    ? 4 \
+                    : 0)
 
 typedef void*       mst_voidptr_t;
 typedef long double mst_longdouble_t;

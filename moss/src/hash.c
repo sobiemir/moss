@@ -110,13 +110,13 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
         size_t   iter = length >> 4; /* dziel na 16, będą pobierane 4 porcje po 4 bajty */
 
         do
-            (val1 += *cdat++ * MSH_32XXH_PRIME2), (val1 = ROTL32(val1, 13)), (val1 *= MSH_32XXH_PRIME1),
-            (val2 += *cdat++ * MSH_32XXH_PRIME2), (val2 = ROTL32(val2, 13)), (val2 *= MSH_32XXH_PRIME1),
-            (val3 += *cdat++ * MSH_32XXH_PRIME2), (val3 = ROTL32(val3, 13)), (val3 *= MSH_32XXH_PRIME1),
-            (val4 += *cdat++ * MSH_32XXH_PRIME2), (val4 = ROTL32(val4, 13)), (val4 *= MSH_32XXH_PRIME1);
+            (val1 += *cdat++ * MSH_32XXH_PRIME2), (val1 = MSX_ROTL32(val1, 13)), (val1 *= MSH_32XXH_PRIME1),
+            (val2 += *cdat++ * MSH_32XXH_PRIME2), (val2 = MSX_ROTL32(val2, 13)), (val2 *= MSH_32XXH_PRIME1),
+            (val3 += *cdat++ * MSH_32XXH_PRIME2), (val3 = MSX_ROTL32(val3, 13)), (val3 *= MSH_32XXH_PRIME1),
+            (val4 += *cdat++ * MSH_32XXH_PRIME2), (val4 = MSX_ROTL32(val4, 13)), (val4 *= MSH_32XXH_PRIME1);
         while( --iter );
 
-        hash = ROTL32( val1, 1 ) + ROTL32( val2, 7 ) + ROTL32( val3, 12 ) + ROTL32( val4, 18 );
+        hash = MSX_ROTL32( val1, 1 ) + MSX_ROTL32( val2, 7 ) + MSX_ROTL32( val3, 12 ) + MSX_ROTL32( val4, 18 );
     }
     else
         hash = MSD_HASH_SEED + MSH_32XXH_PRIME5;
@@ -127,15 +127,15 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
     /* przejmuj odpadki */
     if( length > 11 )
         hash   += *cdat++ * MSH_32XXH_PRIME3,
-        hash    = ROTL32( hash, 17 ) * MSH_32XXH_PRIME4,
+        hash    = MSX_ROTL32( hash, 17 ) * MSH_32XXH_PRIME4,
         length -= 4;
     if( length > 7 )
         hash   += *cdat++ * MSH_32XXH_PRIME3,
-        hash    = ROTL32( hash, 17 ) * MSH_32XXH_PRIME4,
+        hash    = MSX_ROTL32( hash, 17 ) * MSH_32XXH_PRIME4,
         length -= 4;
     if( length > 3 )
         hash   += *cdat++ * MSH_32XXH_PRIME3,
-        hash    = ROTL32( hash, 17 ) * MSH_32XXH_PRIME4,
+        hash    = MSX_ROTL32( hash, 17 ) * MSH_32XXH_PRIME4,
         length -= 4;
 
     // length &= 0x3;
@@ -145,13 +145,13 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
     {
         case 3:
             hash += *adat++ * MSH_32XXH_PRIME5;
-            hash  = ROTL32( hash, 11 ) * MSH_32XXH_PRIME1;
+            hash  = MSX_ROTL32( hash, 11 ) * MSH_32XXH_PRIME1;
         case 2:
             hash += *adat++ * MSH_32XXH_PRIME5;
-            hash  = ROTL32( hash, 11 ) * MSH_32XXH_PRIME1;
+            hash  = MSX_ROTL32( hash, 11 ) * MSH_32XXH_PRIME1;
         case 1:
             hash += *adat++ * MSH_32XXH_PRIME5;
-            hash  = ROTL32( hash, 11 ) * MSH_32XXH_PRIME1;
+            hash  = MSX_ROTL32( hash, 11 ) * MSH_32XXH_PRIME1;
     }
 
     hash ^= hash >> 15;
@@ -233,30 +233,30 @@ uint64_t ms_hash_64_xxhash( const void *data, size_t length )
         size_t   iter = length >> 5; /* dziel na 32, będą pobierane 4 porcje po 8 bajtów */
 
         do
-            val1 += *cdat++ * MSH_64XXH_PRIME2, val1 = ROTL64(val1, 31), val1 *= MSH_64XXH_PRIME1,
-            val2 += *cdat++ * MSH_64XXH_PRIME2, val2 = ROTL64(val2, 31), val2 *= MSH_64XXH_PRIME1,
-            val3 += *cdat++ * MSH_64XXH_PRIME2, val3 = ROTL64(val3, 31), val3 *= MSH_64XXH_PRIME1,
-            val4 += *cdat++ * MSH_64XXH_PRIME2, val4 = ROTL64(val4, 31), val4 *= MSH_64XXH_PRIME1;
+            val1 += *cdat++ * MSH_64XXH_PRIME2, val1 = MSX_ROTL64(val1, 31), val1 *= MSH_64XXH_PRIME1,
+            val2 += *cdat++ * MSH_64XXH_PRIME2, val2 = MSX_ROTL64(val2, 31), val2 *= MSH_64XXH_PRIME1,
+            val3 += *cdat++ * MSH_64XXH_PRIME2, val3 = MSX_ROTL64(val3, 31), val3 *= MSH_64XXH_PRIME1,
+            val4 += *cdat++ * MSH_64XXH_PRIME2, val4 = MSX_ROTL64(val4, 31), val4 *= MSH_64XXH_PRIME1;
         while( --iter );
 
-        hash  = ROTL64( val1, 1 ) + ROTL64( val2, 7 ) + ROTL64( val3, 12 ) + ROTL64( val4, 18 );
+        hash  = MSX_ROTL64( val1, 1 ) + MSX_ROTL64( val2, 7 ) + MSX_ROTL64( val3, 12 ) + MSX_ROTL64( val4, 18 );
         val1 *= MSH_64XXH_PRIME2;
-        val1  = ROTL64(val1, 31);
+        val1  = MSX_ROTL64(val1, 31);
         val1 *= MSH_64XXH_PRIME1;
         hash ^= val1;
         hash  = hash * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4;
         val2 *= MSH_64XXH_PRIME2;
-        val2  = ROTL64(val2, 31);
+        val2  = MSX_ROTL64(val2, 31);
         val2 *= MSH_64XXH_PRIME1;
         hash ^= val2;
         hash  = hash * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4;
         val3 *= MSH_64XXH_PRIME2;
-        val3  = ROTL64(val3, 31);
+        val3  = MSX_ROTL64(val3, 31);
         val3 *= MSH_64XXH_PRIME1;
         hash ^= val3;
         hash  = hash * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4;
         val4 *= MSH_64XXH_PRIME2;
-        val4  = ROTL64(val4, 31);
+        val4  = MSX_ROTL64(val4, 31);
         val4 *= MSH_64XXH_PRIME1;
         hash ^= val4;
         hash  = hash * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4;
@@ -270,30 +270,30 @@ uint64_t ms_hash_64_xxhash( const void *data, size_t length )
     /* przejmuj odpadki */
     if( length > 23 )
         ch8b    = *cdat++ * MSH_64XXH_PRIME2,
-        ch8b    = ROTL64( ch8b, 31 ),
+        ch8b    = MSX_ROTL64( ch8b, 31 ),
         ch8b   *= MSH_64XXH_PRIME1,
         hash   ^= ch8b,
-        hash    = ROTL64( hash, 27 ) * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4,
+        hash    = MSX_ROTL64( hash, 27 ) * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4,
         length -= 8;
     if( length > 15 )
         ch8b    = *cdat++ * MSH_64XXH_PRIME2,
-        ch8b    = ROTL64( ch8b, 31 ),
+        ch8b    = MSX_ROTL64( ch8b, 31 ),
         ch8b   *= MSH_64XXH_PRIME1,
         hash   ^= ch8b,
-        hash    = ROTL64( hash, 27 ) * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4,
+        hash    = MSX_ROTL64( hash, 27 ) * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4,
         length -= 8;
     if( length > 7 )
         ch8b    = *cdat++ * MSH_64XXH_PRIME2,
-        ch8b    = ROTL64( ch8b, 31 ),
+        ch8b    = MSX_ROTL64( ch8b, 31 ),
         ch8b   *= MSH_64XXH_PRIME1,
         hash   ^= ch8b,
-        hash    = ROTL64( hash, 27 ) * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4,
+        hash    = MSX_ROTL64( hash, 27 ) * MSH_64XXH_PRIME1 + MSH_64XXH_PRIME4,
         length -= 8;
 
     vdat = (const uint32_t*)cdat;
     if( length > 3 )
         hash   ^= *vdat++ * MSH_64XXH_PRIME1,
-        hash    = ROTL64( hash, 23 ) * MSH_64XXH_PRIME2 + MSH_64XXH_PRIME3,
+        hash    = MSX_ROTL64( hash, 23 ) * MSH_64XXH_PRIME2 + MSH_64XXH_PRIME3,
         length -= 4;
 
     // length &= 0x7;
@@ -303,13 +303,13 @@ uint64_t ms_hash_64_xxhash( const void *data, size_t length )
     {
         case 3:
             hash ^= *adat++ * MSH_64XXH_PRIME5;
-            hash  = ROTL64( hash, 11 ) * MSH_64XXH_PRIME1;
+            hash  = MSX_ROTL64( hash, 11 ) * MSH_64XXH_PRIME1;
         case 2:
             hash ^= *adat++ * MSH_64XXH_PRIME5;
-            hash  = ROTL64( hash, 11 ) * MSH_64XXH_PRIME1;
+            hash  = MSX_ROTL64( hash, 11 ) * MSH_64XXH_PRIME1;
         case 1:
             hash ^= *adat++ * MSH_64XXH_PRIME5;
-            hash  = ROTL64( hash, 11 ) * MSH_64XXH_PRIME1;
+            hash  = MSX_ROTL64( hash, 11 ) * MSH_64XXH_PRIME1;
     }
 
     hash ^= hash >> 33;
