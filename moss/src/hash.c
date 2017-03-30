@@ -14,77 +14,6 @@
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_murmur2( const void *data, size_t length )
-{
-    uint32_t hash = MSD_HASH_SEED ^ length,
-             ch4b;
-    
-    const uint32_t *cdat = data;
-    const uint8_t  *adat;
-
-    assert( data );
-
-    for( ; length > 3; length -= 4 )
-        ch4b  = *cdat++,
-        ch4b *= 0x5bd1e995,
-        ch4b ^= ch4b >> 24,
-        ch4b *= 0x5bd1e995,
-        hash *= 0x5bd1e995,
-        hash ^= ch4b;
-    
-    adat = (const uint8_t*)cdat;
-    switch( length )
-    {
-        case 3: hash ^= adat[2] << 16;
-        case 2: hash ^= adat[1] << 8;
-        case 1: hash ^= adat[0];
-                hash *= 0x5bd1e995;
-    }
-
-    hash ^= hash >> 13;
-    hash *= 0x5bd1e995;
-    hash ^= hash >> 15;
-    
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint32_t ms_hash_32_murmur( const void *data, size_t length )
-{
-    uint32_t hash = MSD_HASH_SEED ^ (length * 0xc6a4a793),
-             ch4b;
-    
-    const uint32_t *cdat = data;
-    const uint8_t  *adat;
-
-    assert( data );
-
-    for( ; length > 3; length -= 4 )
-        hash += *cdat++,
-        hash *= 0xc6a4a793,
-        hash ^= hash >> 16;
-
-    adat = (const uint8_t*)cdat;
-    switch( length )
-    {
-        case 3: hash += adat[2] << 16;
-        case 2: hash += adat[1] << 8;
-        case 1: hash += adat[0];
-                hash *= 0xc6a4a793;
-                hash ^= hash >> 16;
-    }
-    
-    hash *= 0xc6a4a793;
-    hash ^= hash >> 10;
-    hash *= 0xc6a4a793;
-    hash ^= hash >> 17;
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
 #define MSH_32XXH_PRIME1 2654435761u
 #define MSH_32XXH_PRIME2 2246822519u
 #define MSH_32XXH_PRIME3 3266489917u
@@ -159,46 +88,6 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
     hash ^= hash >> 13;
     hash *= MSH_32XXH_PRIME3;
     hash ^= hash >> 16;
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint64_t ms_hash_64_murmur2( const void *data, size_t length )
-{
-    uint64_t hash = MSD_HASH_SEED ^ (length * 0xc6a4a7935bd1e995ull),
-             ch4b;
-    
-    const uint64_t *cdat = data;
-    const uint8_t  *adat;
-
-    assert( data );
-
-    for( ; length > 7; length -= 8 )
-        ch4b  = *cdat++,
-        ch4b *= 0xc6a4a7935bd1e995ull,
-        ch4b ^= ch4b >> 47ull,
-        ch4b *= 0xc6a4a7935bd1e995ull,
-        hash ^= ch4b,
-        hash *= 0xc6a4a7935bd1e995ull;
-
-    adat = (const uint8_t*)cdat;
-    switch( length )
-    {
-        case 7: hash ^= (uint64_t)adat[6] << 48ull;
-        case 6: hash ^= (uint64_t)adat[5] << 40ull;
-        case 5: hash ^= (uint64_t)adat[4] << 32ull;
-        case 4: hash ^= (uint64_t)adat[3] << 24ull;
-        case 3: hash ^= (uint64_t)adat[2] << 16ull;
-        case 2: hash ^= (uint64_t)adat[1] << 8ull;
-        case 1: hash ^= (uint64_t)adat[0];
-                hash *= 0xc6a4a7935bd1e995ull;
-    }
-    
-    hash ^= hash >> 47ull;
-    hash *= 0xc6a4a7935bd1e995ull;
-    hash ^= hash >> 47ull;
 
     return hash;
 }
