@@ -29,9 +29,6 @@ int main( int argc, char **argv )
     const char *str = "SDBMAlgorithm";
     const wchar_t *wcs = L"SDBMAlgorithm";
 
-    // printf( "32_XXHASH : %08x\n", ms_hash_32_xxhash(str, strlen(str)) );
-    // printf( "64_XXHASH : %016lx\n", ms_hash_64_xxhash(str, strlen(str)) );
-
     printf( "32_MURMUR3    : %08x\n",   ms_hash_32_murmur3(str, strlen(str)) );
     printf( "32_MURMUR3_MBS: %08x\n",   ms_hash_mbs_32_murmur3(str) );
     printf( "32_MURMUR3_V2 : %08x\n",   ms_hash_32_murmur3(wcs, wcslen(wcs) * sizeof(wchar_t)) );
@@ -62,6 +59,8 @@ int main( int argc, char **argv )
     printf( "32_FNV-1A_MBS : %08x\n",   ms_hash_mbs_32_fnv1a(str) );
     printf( "32_FNV-1A_V2  : %08x\n",   ms_hash_32_fnv1a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
     printf( "32_FNV-1A_WCS : %08x\n",   ms_hash_wcs_32_fnv1a(wcs) );
+    printf( "32_XXHASH     : %08x\n",   ms_hash_32_xxhash(str, strlen(str)) );
+    printf( "32_XXHASH_MBS : %08x\n",   ms_hash_mbs_32_xxhash(str) );
     printf( "64_MURMUR2    : %016lx\n", ms_hash_64_murmur2(str, strlen(str)) );
     printf( "64_FNV-1      : %016lx\n", ms_hash_64_fnv1(str, strlen(str)) );
     printf( "64_FNV-1_MBS  : %016lx\n", ms_hash_mbs_64_fnv1(str) );
@@ -71,6 +70,7 @@ int main( int argc, char **argv )
     printf( "64_FNV-1A_MBS : %016lx\n", ms_hash_mbs_64_fnv1a(str) );
     printf( "64_FNV-1A_V2  : %016lx\n", ms_hash_64_fnv1a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
     printf( "64_FNV-1A_WCS : %016lx\n", ms_hash_wcs_64_fnv1a(wcs) );
+    printf( "64_XXHASH     : %016lx\n", ms_hash_64_xxhash(str, strlen(str)) );
 
     return 0;
 }
