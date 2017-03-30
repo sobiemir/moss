@@ -29,14 +29,6 @@ int main( int argc, char **argv )
     const char *str = "SDBMAlgorithm";
     const wchar_t *wcs = L"SDBMAlgorithm";
 
-    printf( "32_DJB2   : %08x\n", ms_hash_32_djb2(str, strlen(str)) );
-    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2_mbs(str) );
-    printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2_wcs(wcs) );
-    printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2a(str, strlen(str)) );
-    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2a_mbs(str) );
-    printf( "32_DJB2-A : %08x\n", ms_hash_32_djb2a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "32_DJB2-A2: %08x\n", ms_hash_32_djb2a_wcs(wcs) );
     printf( "32_FNV-1  : %08x\n", ms_hash_32_fnv1(str, strlen(str)) );
     printf( "32_FNV-12 : %08x\n", ms_hash_32_fnv1_mbs(str) );
     printf( "32_FNV-1  : %08x\n", ms_hash_32_fnv1(wcs, wcslen(wcs) * sizeof(wchar_t)) );
@@ -71,6 +63,14 @@ int main( int argc, char **argv )
     printf( "32_MURMUR3_WCS: %08x\n",   ms_hash_wcs_32_murmur3(wcs) );
     printf( "32_MURMUR2    : %08x\n",   ms_hash_32_murmur2(str, strlen(str)) );
     printf( "32_MURMUR     : %08x\n",   ms_hash_32_murmur(str, strlen(str)) );
+    printf( "32_DJB2       : %08x\n",   ms_hash_32_djb2(str, strlen(str)) );
+    printf( "32_DJB2_MBS   : %08x\n",   ms_hash_mbs_32_djb2(str) );
+    printf( "32_DJB2_V2    : %08x\n",   ms_hash_32_djb2(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_DJB2_WCS   : %08x\n",   ms_hash_wcs_32_djb2(wcs) );
+    printf( "32_DJB2-A     : %08x\n",   ms_hash_32_djb2a(str, strlen(str)) );
+    printf( "32_DJB2-A_MBS : %08x\n",   ms_hash_mbs_32_djb2a(str) );
+    printf( "32_DJB2-A_V2  : %08x\n",   ms_hash_32_djb2a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_DJB2-A_WCS : %08x\n",   ms_hash_wcs_32_djb2a(wcs) );
     printf( "64_MURMUR2    : %016lx\n", ms_hash_64_murmur2(str, strlen(str)) );
 
     return 0;

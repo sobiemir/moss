@@ -40,8 +40,8 @@
  */
 uint32_t ms_hash_32_djb2( const void *data, size_t length );
 
-uint32_t ms_hash_32_djb2_mbs( const char *data );
-uint32_t ms_hash_32_djb2_wcs( const wchar_t *data );
+uint32_t ms_hash_mbs_32_djb2( const char *data );
+uint32_t ms_hash_wcs_32_djb2( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie DJB2.
@@ -58,8 +58,8 @@ uint32_t ms_hash_32_djb2_wcs( const wchar_t *data );
 uint32_t ms_hash_32_djb2a( const void *data, size_t length );
 
 
-uint32_t ms_hash_32_djb2a_mbs( const char *data );
-uint32_t ms_hash_32_djb2a_wcs( const wchar_t *data );
+uint32_t ms_hash_mbs_32_djb2a( const char *data );
+uint32_t ms_hash_wcs_32_djb2a( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie zastosowanym w SDBM.

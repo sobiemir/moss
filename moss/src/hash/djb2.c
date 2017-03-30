@@ -8,15 +8,15 @@
  *     \ \_\\ \_\ \____/\/\____/\/\____/
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, DJB2 section...
+ * Source file for "Hash" module, DJB family...
+ * License: MIT, see LICENSE file for details
+ *
+ * Algorithms:
+ * - DJB2  [Public Domain]
+ * - DJB2A [Public Domain]
  */
 
 #include "../../inc/hash.h"
-
-/**
- * Algorytm DJB2  - Public Domain
- * Algorytm DJB2a - Public Domain
- */
 
 /* ================================================================================================================== */
 
@@ -48,9 +48,11 @@ uint32_t ms_hash_32_djb2a( const void *data, size_t length )
     return hash;
 }
 
+#ifdef MSD_HASH_MBS_FUNCTIONS
+
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_djb2_mbs( const char *data )
+uint32_t ms_hash_mbs_32_djb2( const char *data )
 {
     uint32_t hash = 5381;
     int      c;
@@ -65,7 +67,7 @@ uint32_t ms_hash_32_djb2_mbs( const char *data )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_djb2a_mbs( const char *data )
+uint32_t ms_hash_mbs_32_djb2a( const char *data )
 {
     uint32_t hash = 5381;
     int      c;
@@ -78,9 +80,12 @@ uint32_t ms_hash_32_djb2a_mbs( const char *data )
     return hash;
 }
 
+#endif
+#ifdef MSD_HASH_WCS_FUNCTIONS
+
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_djb2_wcs( const wchar_t *data )
+uint32_t ms_hash_wcs_32_djb2( const wchar_t *data )
 {
     uint32_t hash = 5381;
     wint_t   c;
@@ -103,7 +108,7 @@ uint32_t ms_hash_32_djb2_wcs( const wchar_t *data )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_djb2a_wcs( const wchar_t *data )
+uint32_t ms_hash_wcs_32_djb2a( const wchar_t *data )
 {
     uint32_t hash = 5381;
     wint_t   c;
@@ -123,3 +128,5 @@ uint32_t ms_hash_32_djb2a_wcs( const wchar_t *data )
 
     return hash;
 }
+
+#endif
