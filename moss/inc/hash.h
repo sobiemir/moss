@@ -74,6 +74,9 @@ uint32_t ms_hash_32_djb2a_wcs( const wchar_t *data );
  */
 uint32_t ms_hash_32_sdbm( const void *data, size_t length );
 
+uint32_t ms_hash_32_sdbm_mbs( const char *data );
+uint32_t ms_hash_32_sdbm_wcs( const wchar_t *data );
+
 /**
  * Funkcja skrótu oparta na algorytmie JOAAT (Jenkins One At A Time).
  *
@@ -87,6 +90,9 @@ uint32_t ms_hash_32_sdbm( const void *data, size_t length );
  */
 uint32_t ms_hash_32_joaat( const void *data, size_t length );
 
+uint32_t ms_hash_32_joaat_mbs( const char *data );
+uint32_t ms_hash_32_joaat_wcs( const wchar_t *data );
+
 /**
  * Funkcja skrótu oparta na algorytmie FNV-1.
  * 
@@ -98,6 +104,9 @@ uint32_t ms_hash_32_joaat( const void *data, size_t length );
  * @return        Skrót w postaci 32 bitowej liczby.
  */
 uint32_t ms_hash_32_fnv1( const void *data, size_t length );
+
+uint32_t ms_hash_32_fnv1_mbs( const char *data );
+uint32_t ms_hash_32_fnv1_wcs( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie FNV-1a.
@@ -111,6 +120,9 @@ uint32_t ms_hash_32_fnv1( const void *data, size_t length );
  * @return        Skrót w postaci 32 bitowej liczby.
  */
 uint32_t ms_hash_32_fnv1a( const void *data, size_t length );
+
+uint32_t ms_hash_32_fnv1a_mbs( const char *data );
+uint32_t ms_hash_32_fnv1a_wcs( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie MurmurHash3.
@@ -189,6 +201,9 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length );
  */
 uint64_t ms_hash_64_fnv1( const void *data, size_t length );
 
+uint64_t ms_hash_64_fnv1_mbs( const char *data );
+uint64_t ms_hash_64_fnv1_wcs( const wchar_t *data );
+
 /**
  * Funkcja skrótu oparta na algorytmie FNV-1a.
  * Od zwykłego algorytmu FNV-1 różni się tym, że zamieniona jest kolejność wykonywania działań.
@@ -202,6 +217,9 @@ uint64_t ms_hash_64_fnv1( const void *data, size_t length );
  * @return        Skrót w postaci 64 bitowej liczby.
  */
 uint64_t ms_hash_64_fnv1a( const void *data, size_t length );
+
+uint64_t ms_hash_64_fnv1a_mbs( const char *data );
+uint64_t ms_hash_64_fnv1a_wcs( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie MurmurHash2.

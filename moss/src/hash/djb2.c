@@ -13,6 +13,11 @@
 
 #include "../../inc/hash.h"
 
+/**
+ * Algorytm DJB2  - Public Domain
+ * Algorytm DJB2a - Public Domain
+ */
+
 /* ================================================================================================================== */
 
 uint32_t ms_hash_32_djb2( const void *data, size_t length )
