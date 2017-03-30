@@ -29,33 +29,8 @@ int main( int argc, char **argv )
     const char *str = "SDBMAlgorithm";
     const wchar_t *wcs = L"SDBMAlgorithm";
 
-    printf( "32_FNV-1  : %08x\n", ms_hash_32_fnv1(str, strlen(str)) );
-    printf( "32_FNV-12 : %08x\n", ms_hash_32_fnv1_mbs(str) );
-    printf( "32_FNV-1  : %08x\n", ms_hash_32_fnv1(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "32_FNV-12 : %08x\n", ms_hash_32_fnv1_wcs(wcs) );
-    printf( "32_FNV-1A : %08x\n", ms_hash_32_fnv1a(str, strlen(str)) );
-    printf( "32_FNV-1A2: %08x\n", ms_hash_32_fnv1a_mbs(str) );
-    printf( "32_FNV-1A : %08x\n", ms_hash_32_fnv1a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "32_FNV-1A2: %08x\n", ms_hash_32_fnv1a_wcs(wcs) );
-    printf( "32_JOAAT  : %08x\n", ms_hash_32_joaat(str, strlen(str)) );
-    printf( "32_JOAAT2 : %08x\n", ms_hash_32_joaat_mbs(str) );
-    printf( "32_JOAAT  : %08x\n", ms_hash_32_joaat(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "32_JOAAT2 : %08x\n", ms_hash_32_joaat_wcs(wcs) );
-    printf( "32_MURMUR : %08x\n", ms_hash_32_murmur(str, strlen(str)) );
-    printf( "32_SDBM   : %08x\n", ms_hash_32_sdbm(str, strlen(str)) );
-    printf( "32_SDBM   : %08x\n", ms_hash_32_sdbm_mbs(str) );
-    printf( "32_SDBM   : %08x\n", ms_hash_32_sdbm(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "32_SDBM   : %08x\n", ms_hash_32_sdbm_wcs(wcs) );
-    printf( "32_XXHASH : %08x\n", ms_hash_32_xxhash(str, strlen(str)) );
-    printf( "64_FNV-1  : %016lx\n", ms_hash_64_fnv1(str, strlen(str)) );
-    printf( "64_FNV-12 : %016lx\n", ms_hash_64_fnv1_mbs(str) );
-    printf( "64_FNV-1  : %016lx\n", ms_hash_64_fnv1(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "64_FNV-12 : %016lx\n", ms_hash_64_fnv1_wcs(wcs) );
-    printf( "64_FNV-1A : %016lx\n", ms_hash_64_fnv1a(str, strlen(str)) );
-    printf( "64_FNV-1A2: %016lx\n", ms_hash_64_fnv1a_mbs(str) );
-    printf( "64_FNV-1A : %016lx\n", ms_hash_64_fnv1a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
-    printf( "64_FNV-1A2: %016lx\n", ms_hash_64_fnv1a_wcs(wcs) );
-    printf( "64_XXHASH : %016lx\n", ms_hash_64_xxhash(str, strlen(str)) );
+    // printf( "32_XXHASH : %08x\n", ms_hash_32_xxhash(str, strlen(str)) );
+    // printf( "64_XXHASH : %016lx\n", ms_hash_64_xxhash(str, strlen(str)) );
 
     printf( "32_MURMUR3    : %08x\n",   ms_hash_32_murmur3(str, strlen(str)) );
     printf( "32_MURMUR3_MBS: %08x\n",   ms_hash_mbs_32_murmur3(str) );
@@ -71,7 +46,31 @@ int main( int argc, char **argv )
     printf( "32_DJB2-A_MBS : %08x\n",   ms_hash_mbs_32_djb2a(str) );
     printf( "32_DJB2-A_V2  : %08x\n",   ms_hash_32_djb2a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
     printf( "32_DJB2-A_WCS : %08x\n",   ms_hash_wcs_32_djb2a(wcs) );
+    printf( "32_SDBM       : %08x\n",   ms_hash_32_sdbm(str, strlen(str)) );
+    printf( "32_SDBM_MBS   : %08x\n",   ms_hash_mbs_32_sdbm(str) );
+    printf( "32_SDBM_V2    : %08x\n",   ms_hash_32_sdbm(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_SDBM_WCS   : %08x\n",   ms_hash_wcs_32_sdbm(wcs) );
+    printf( "32_JOAAT      : %08x\n",   ms_hash_32_joaat(str, strlen(str)) );
+    printf( "32_JOAAT_MBS  : %08x\n",   ms_hash_mbs_32_joaat(str) );
+    printf( "32_JOAAT_V2   : %08x\n",   ms_hash_32_joaat(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_JOAAT_WCS  : %08x\n",   ms_hash_wcs_32_joaat(wcs) );
+    printf( "32_FNV-1      : %08x\n",   ms_hash_32_fnv1(str, strlen(str)) );
+    printf( "32_FNV-1_MBS  : %08x\n",   ms_hash_mbs_32_fnv1(str) );
+    printf( "32_FNV-1_V2   : %08x\n",   ms_hash_32_fnv1(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_FNV-1_WCS  : %08x\n",   ms_hash_wcs_32_fnv1(wcs) );
+    printf( "32_FNV-1A     : %08x\n",   ms_hash_32_fnv1a(str, strlen(str)) );
+    printf( "32_FNV-1A_MBS : %08x\n",   ms_hash_mbs_32_fnv1a(str) );
+    printf( "32_FNV-1A_V2  : %08x\n",   ms_hash_32_fnv1a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "32_FNV-1A_WCS : %08x\n",   ms_hash_wcs_32_fnv1a(wcs) );
     printf( "64_MURMUR2    : %016lx\n", ms_hash_64_murmur2(str, strlen(str)) );
+    printf( "64_FNV-1      : %016lx\n", ms_hash_64_fnv1(str, strlen(str)) );
+    printf( "64_FNV-1_MBS  : %016lx\n", ms_hash_mbs_64_fnv1(str) );
+    printf( "64_FNV-1_V2   : %016lx\n", ms_hash_64_fnv1(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "64_FNV-1_WCS  : %016lx\n", ms_hash_wcs_64_fnv1(wcs) );
+    printf( "64_FNV-1A     : %016lx\n", ms_hash_64_fnv1a(str, strlen(str)) );
+    printf( "64_FNV-1A_MBS : %016lx\n", ms_hash_mbs_64_fnv1a(str) );
+    printf( "64_FNV-1A_V2  : %016lx\n", ms_hash_64_fnv1a(wcs, wcslen(wcs) * sizeof(wchar_t)) );
+    printf( "64_FNV-1A_WCS : %016lx\n", ms_hash_wcs_64_fnv1a(wcs) );
 
     return 0;
 }

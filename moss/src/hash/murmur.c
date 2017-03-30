@@ -8,7 +8,7 @@
  *     \ \_\\ \_\ \____/\/\____/\/\____/
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, Murmur family
+ * Source file for "Hash" module, Murmur family...
  * License: MIT, see LICENSE file for details
  *
  * Algorithms:

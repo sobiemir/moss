@@ -74,8 +74,8 @@ uint32_t ms_hash_wcs_32_djb2a( const wchar_t *data );
  */
 uint32_t ms_hash_32_sdbm( const void *data, size_t length );
 
-uint32_t ms_hash_32_sdbm_mbs( const char *data );
-uint32_t ms_hash_32_sdbm_wcs( const wchar_t *data );
+uint32_t ms_hash_mbs_32_sdbm( const char *data );
+uint32_t ms_hash_wcs_32_sdbm( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie JOAAT (Jenkins One At A Time).
@@ -90,8 +90,8 @@ uint32_t ms_hash_32_sdbm_wcs( const wchar_t *data );
  */
 uint32_t ms_hash_32_joaat( const void *data, size_t length );
 
-uint32_t ms_hash_32_joaat_mbs( const char *data );
-uint32_t ms_hash_32_joaat_wcs( const wchar_t *data );
+uint32_t ms_hash_mbs_32_joaat( const char *data );
+uint32_t ms_hash_wcs_32_joaat( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie FNV-1.
@@ -105,8 +105,8 @@ uint32_t ms_hash_32_joaat_wcs( const wchar_t *data );
  */
 uint32_t ms_hash_32_fnv1( const void *data, size_t length );
 
-uint32_t ms_hash_32_fnv1_mbs( const char *data );
-uint32_t ms_hash_32_fnv1_wcs( const wchar_t *data );
+uint32_t ms_hash_mbs_32_fnv1( const char *data );
+uint32_t ms_hash_wcs_32_fnv1( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie FNV-1a.
@@ -121,8 +121,8 @@ uint32_t ms_hash_32_fnv1_wcs( const wchar_t *data );
  */
 uint32_t ms_hash_32_fnv1a( const void *data, size_t length );
 
-uint32_t ms_hash_32_fnv1a_mbs( const char *data );
-uint32_t ms_hash_32_fnv1a_wcs( const wchar_t *data );
+uint32_t ms_hash_mbs_32_fnv1a( const char *data );
+uint32_t ms_hash_wcs_32_fnv1a( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie MurmurHash3.
@@ -204,8 +204,8 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length );
  */
 uint64_t ms_hash_64_fnv1( const void *data, size_t length );
 
-uint64_t ms_hash_64_fnv1_mbs( const char *data );
-uint64_t ms_hash_64_fnv1_wcs( const wchar_t *data );
+uint64_t ms_hash_mbs_64_fnv1( const char *data );
+uint64_t ms_hash_wcs_64_fnv1( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie FNV-1a.
@@ -221,8 +221,8 @@ uint64_t ms_hash_64_fnv1_wcs( const wchar_t *data );
  */
 uint64_t ms_hash_64_fnv1a( const void *data, size_t length );
 
-uint64_t ms_hash_64_fnv1a_mbs( const char *data );
-uint64_t ms_hash_64_fnv1a_wcs( const wchar_t *data );
+uint64_t ms_hash_mbs_64_fnv1a( const char *data );
+uint64_t ms_hash_wcs_64_fnv1a( const wchar_t *data );
 
 /**
  * Funkcja skrótu oparta na algorytmie MurmurHash2.

@@ -8,15 +8,15 @@
  *     \ \_\\ \_\ \____/\/\____/\/\____/
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, FNV1 section...
+ * Source file for "Hash" module, FNV family...
+ * License: MIT, see LICENSE file for details
+ *
+ * Algorithms:
+ * - FNV-1  [Public Domain]
+ * - FNV-1A [Public Domain]
  */
 
 #include "../../inc/hash.h"
-
-/**
- * Algorytm FNV-1  - Public Domain
- * Algorytm FNV-1a - Public Domain
- */
 
 /* ================================================================================================================== */
 
@@ -54,7 +54,43 @@ uint32_t ms_hash_32_fnv1a( const void *data, size_t length )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_fnv1_mbs( const char *data )
+uint64_t ms_hash_64_fnv1( const void *data, size_t length )
+{
+    uint64_t    hash = 14695981039346656037ull;
+    const char *cdat = data;
+
+    assert( data );
+
+    for( ; length > 0; --length )
+        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
+                (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
+        hash ^= *cdat++;
+
+    return hash;
+}
+
+/* ================================================================================================================== */
+
+uint64_t ms_hash_64_fnv1a( const void *data, size_t length )
+{
+    uint64_t    hash = 14695981039346656037ull;
+    const char *cdat = data;
+
+    assert( data );
+
+    for( ; length > 0; --length )
+        hash ^= *cdat++,
+        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
+                (hash << 7ull) + (hash << 8ull) + (hash << 40ull);
+
+    return hash;
+}
+
+#ifdef MSD_HASH_MBS_FUNCTIONS
+
+/* ================================================================================================================== */
+
+uint32_t ms_hash_mbs_32_fnv1( const char *data )
 {
 	uint32_t hash = 2166136261u;
     int      c;
@@ -71,7 +107,61 @@ uint32_t ms_hash_32_fnv1_mbs( const char *data )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_fnv1_wcs( const wchar_t *data )
+uint32_t ms_hash_mbs_32_fnv1a( const char *data )
+{
+	uint32_t hash = 2166136261u;
+    int      c;
+
+    assert( data );
+
+    while( (c = (uint8_t)*data++) )
+        hash ^= c,
+        hash += (hash << 1) + (hash << 4) + (hash << 7) +
+                (hash << 8) + (hash << 24);
+
+    return hash;
+}
+
+/* ================================================================================================================== */
+
+uint64_t ms_hash_mbs_64_fnv1( const char *data )
+{
+    uint64_t hash = 14695981039346656037ull;
+    int      c;
+
+    assert( data );
+
+    while( (c = (uint8_t)*data++) )
+        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
+                (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
+        hash ^= c;
+
+    return hash;
+}
+
+/* ================================================================================================================== */
+
+uint64_t ms_hash_mbs_64_fnv1a( const char *data )
+{
+    uint64_t hash = 14695981039346656037ull;
+    int      c;
+
+    assert( data );
+
+    while( (c = (uint8_t)*data++) )
+        hash ^= c,
+        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
+                (hash << 7ull) + (hash << 8ull) + (hash << 40ull);
+
+    return hash;
+}
+
+#endif
+#ifdef MSD_HASH_WCS_FUNCTIONS
+
+/* ================================================================================================================== */
+
+uint32_t ms_hash_wcs_32_fnv1( const wchar_t *data )
 {
     uint32_t hash = 2166136261u;
     wint_t   c;
@@ -105,27 +195,9 @@ uint32_t ms_hash_32_fnv1_wcs( const wchar_t *data )
     return hash;
 }
 
-
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_fnv1a_mbs( const char *data )
-{
-	uint32_t hash = 2166136261u;
-    int      c;
-
-    assert( data );
-
-    while( (c = (uint8_t)*data++) )
-        hash ^= c,
-        hash += (hash << 1) + (hash << 4) + (hash << 7) +
-                (hash << 8) + (hash << 24);
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint32_t ms_hash_32_fnv1a_wcs( const wchar_t *data )
+uint32_t ms_hash_wcs_32_fnv1a( const wchar_t *data )
 {
     uint32_t hash = 2166136261u;
     wint_t   c;
@@ -161,41 +233,7 @@ uint32_t ms_hash_32_fnv1a_wcs( const wchar_t *data )
 
 /* ================================================================================================================== */
 
-uint64_t ms_hash_64_fnv1( const void *data, size_t length )
-{
-    uint64_t    hash = 14695981039346656037ull;
-    const char *cdat = data;
-
-    assert( data );
-
-    for( ; length > 0; --length )
-        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
-                (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
-        hash ^= *cdat++;
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint64_t ms_hash_64_fnv1_mbs( const char *data )
-{
-    uint64_t hash = 14695981039346656037ull;
-    int      c;
-
-    assert( data );
-
-    while( (c = (uint8_t)*data++) )
-        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
-                (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
-        hash ^= c;
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint64_t ms_hash_64_fnv1_wcs( const wchar_t *data )
+uint64_t ms_hash_wcs_64_fnv1( const wchar_t *data )
 {
     uint64_t hash = 14695981039346656037ull;
     wint_t   c;
@@ -231,41 +269,7 @@ uint64_t ms_hash_64_fnv1_wcs( const wchar_t *data )
 
 /* ================================================================================================================== */
 
-uint64_t ms_hash_64_fnv1a( const void *data, size_t length )
-{
-    uint64_t    hash = 14695981039346656037ull;
-    const char *cdat = data;
-
-    assert( data );
-
-    for( ; length > 0; --length )
-        hash ^= *cdat++,
-        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
-                (hash << 7ull) + (hash << 8ull) + (hash << 40ull);
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint64_t ms_hash_64_fnv1a_mbs( const char *data )
-{
-    uint64_t hash = 14695981039346656037ull;
-    int      c;
-
-    assert( data );
-
-    while( (c = (uint8_t)*data++) )
-        hash ^= c,
-        hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
-                (hash << 7ull) + (hash << 8ull) + (hash << 40ull);
-
-    return hash;
-}
-
-/* ================================================================================================================== */
-
-uint64_t ms_hash_64_fnv1a_wcs( const wchar_t *data )
+uint64_t ms_hash_wcs_64_fnv1a( const wchar_t *data )
 {
     uint64_t hash = 14695981039346656037ull;
     wint_t   c;
@@ -298,3 +302,5 @@ uint64_t ms_hash_64_fnv1a_wcs( const wchar_t *data )
 
     return hash;
 }
+
+#endif

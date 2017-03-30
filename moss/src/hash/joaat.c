@@ -8,14 +8,14 @@
  *     \ \_\\ \_\ \____/\/\____/\/\____/
  *      \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, JOAAT section...
+ * Source file for "Hash" module, JOAAT family...
+ * License: MIT, see LICENSE file for details
+ *
+ * Algorithms:
+ * - JOAAT [Public Domain] (Jenkins One At A Time)
  */
 
 #include "../../inc/hash.h"
-
-/**
- * Algorytm JoaaT (Jenkins one at a Time) - Public Domain
- */
 
 /* ================================================================================================================== */
 
@@ -38,9 +38,11 @@ uint32_t ms_hash_32_joaat( const void *data, size_t length )
     return hash;
 }
 
+#ifdef MSD_HASH_MBS_FUNCTIONS
+
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_joaat_mbs( const char *data )
+uint32_t ms_hash_mbs_32_joaat( const char *data )
 {
 	uint32_t hash = 0;
     int      c;
@@ -59,9 +61,12 @@ uint32_t ms_hash_32_joaat_mbs( const char *data )
     return hash;
 }
 
+#endif
+#ifdef MSD_HASH_WCS_FUNCTIONS
+
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_joaat_wcs( const wchar_t *data )
+uint32_t ms_hash_wcs_32_joaat( const wchar_t *data )
 {
 	uint32_t hash = 0;
     wint_t   c;
@@ -102,3 +107,5 @@ uint32_t ms_hash_32_joaat_wcs( const wchar_t *data )
 
     return hash;
 }
+
+#endif
