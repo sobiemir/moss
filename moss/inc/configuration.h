@@ -96,12 +96,56 @@
     (!(bits & 0x000000FF) \
         ? 1 \
         : !(bits & 0x0000FF00) \
-            ? 2 \
-            : !(bits & 0x00FF0000) \
-                ? 3 \
-                : !(bits & 0xFF000000) \
-                    ? 4 \
-                    : 0)
+        ? 2 \
+        : !(bits & 0x00FF0000) \
+        ? 3 \
+        : !(bits & 0xFF000000) \
+        ? 4 \
+        : 0)
+
+#define MSX_FIND8B0IN64B(bits) \
+    (!(bits & 0x00000000000000FFull) \
+        ? 1 \
+        : !(bits & 0x000000000000FF00ull) \
+        ? 2 \
+        : !(bits & 0x0000000000FF0000ull) \
+        ? 3 \
+        : !(bits & 0x00000000FF000000ull) \
+        ? 4 \
+        : !(bits & 0x000000FF00000000ull) \
+        ? 5 \
+        : !(bits & 0x0000FF0000000000ull) \
+        ? 6 \
+        : !(bits & 0x00FF000000000000ull) \
+        ? 7 \
+        : !(bits & 0xFF00000000000000ull) \
+        ? 8 \
+        : 0)
+
+#define MSX_FIND16B0IN32B(bits) \
+    (!(bits & 0x0000FFFF) \
+        ? 1 \
+        : !(bits & 0xFFFF0000) \
+        ? 2 \
+        : 0)
+
+#define MSX_FIND16B0IN64B(bits) \
+    (!(bits & 0x000000000000FFFFull) \
+        ? 1 \
+        : !(bits & 0x00000000FFFF0000ull) \
+        ? 2 \
+        : !(bits & 0x0000FFFF00000000ull) \
+        ? 3 \
+        : !(bits & 0xFFFF000000000000ull) \
+        ? 4 \
+        : 0)
+
+#define MSX_FIND32B0IN64B(bits) \
+    (!(bits & 0x00000000FFFFFFFFull) \
+        ? 1 \
+        : !(bits & 0xFFFFFFFF00000000ull) \
+        ? 2 \
+        : 0)
 
 typedef void*       mst_voidptr_t;
 typedef long double mst_longdouble_t;

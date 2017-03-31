@@ -67,7 +67,31 @@
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_32_zerocheck( const uint32_t *data )
+inline static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value )
+{
+    value *= MSN_H64XX_2;
+    value  = MSX_ROTL64( value, 31 );
+    value *= MSN_H64XX_1;
+    hash  ^= value;
+
+    return hash * MSN_H64XX_1 + MSN_H64XX_4;
+}
+
+/* ================================================================================================================== */
+
+inline static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 )
+{
+    c64  *= MSN_H64XX_2;
+    c64   = MSX_ROTL64( c64, 31 );
+    c64  *= MSN_H64XX_1;
+    hash ^= c64;
+
+    return MSX_ROTL64( hash, 27 ) * MSN_H64XX_1 + MSN_H64XX_4;
+}
+
+/* ================================================================================================================== */
+
+inline static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data )
 {
     size_t nbit;
 
@@ -85,6 +109,94 @@ inline static size_t msf_hash_mbs_32_zerocheck( const uint32_t *data )
 
 /* ================================================================================================================== */
 
+inline static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data )
+{
+    size_t nbit;
+
+    if( (nbit = MSX_FIND8B0IN64B(data[0])) )
+        return nbit;
+    if( (nbit = MSX_FIND8B0IN64B(data[1])) )
+        return 8 + nbit;
+    if( (nbit = MSX_FIND8B0IN64B(data[2])) )
+        return 16 + nbit;
+    if( (nbit = MSX_FIND8B0IN64B(data[3])) )
+        return 24 + nbit;
+
+    return 0;
+}
+
+/* ================================================================================================================== */
+
+inline static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data )
+{
+    size_t nbit;
+
+    if( (nbit = MSX_FIND16B0IN64B(data[0])) )
+        return nbit;
+    if( (nbit = MSX_FIND16B0IN64B(data[1])) )
+        return 4 + nbit;
+    if( (nbit = MSX_FIND16B0IN64B(data[2])) )
+        return 8 + nbit;
+    if( (nbit = MSX_FIND16B0IN64B(data[3])) )
+        return 12 + nbit;
+
+    return 0;
+}
+
+/* ================================================================================================================== */
+
+inline static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data )
+{
+    size_t nbit;
+
+    if( (nbit = MSX_FIND32B0IN64B(data[0])) )
+        return nbit;
+    if( (nbit = MSX_FIND32B0IN64B(data[1])) )
+        return 2 + nbit;
+    if( (nbit = MSX_FIND32B0IN64B(data[2])) )
+        return 4 + nbit;
+    if( (nbit = MSX_FIND32B0IN64B(data[3])) )
+        return 6 + nbit;
+
+    return 0;
+}
+
+/* ================================================================================================================== */
+
+inline static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data )
+{
+    size_t nbit;
+
+    if( (nbit = MSX_FIND16B0IN32B(data[0])) )
+        return nbit;
+    if( (nbit = MSX_FIND16B0IN32B(data[1])) )
+        return 2 + nbit;
+    if( (nbit = MSX_FIND16B0IN32B(data[2])) )
+        return 4 + nbit;
+    if( (nbit = MSX_FIND16B0IN32B(data[3])) )
+        return 6 + nbit;
+    
+    return 0;
+}
+
+/* ================================================================================================================== */
+
+inline static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data )
+{
+    if( !data[0] )
+        return 1;
+    if( !data[1] )
+        return 2;
+    if( !data[2] )
+        return 3;
+    if( !data[3] )
+        return 4;
+    
+    return 0;
+}
+
+/* ================================================================================================================== */
+
 uint32_t ms_hash_32_xxhash( const void *data, size_t length )
 {
     uint32_t hash = 0;
@@ -94,14 +206,14 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
 
     assert( data );
 
-    /* jeżeli wartość jest większa niż 15 */
+    /* długość ciągu znaków w tym przypadku musi być większa niż 15 */
     if( length > 0xF )
     {
         uint32_t val1 = MSD_HASH_SEED + MSN_H32XX_1 + MSN_H32XX_2,
                  val2 = MSD_HASH_SEED + MSN_H32XX_2,
                  val3 = MSD_HASH_SEED,
                  val4 = MSD_HASH_SEED - MSN_H32XX_1;
-        size_t   iter = length >> 4; /* dziel na 16, będą pobierane 4 porcje po 4 bajty */
+        size_t   iter = length >> 4; /* div by 16, dziel na 16, będą pobierane 4 porcje po 4 bajty */
 
         do
             (val1 += *cdat++ * MSN_H32XX_2), (val1 = MSX_ROTL32(val1, 13)), (val1 *= MSN_H32XX_1),
@@ -132,7 +244,7 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
         hash    = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
         length -= 4;
 
-    // pozostałości mniejsze niż 4 bajty
+    /* pozostałości mniejsze niż 4 bajty */
     adat = (const uint8_t*)cdat;
 
     switch( length )
@@ -161,8 +273,8 @@ uint32_t ms_hash_32_xxhash( const void *data, size_t length )
 
 uint32_t ms_hash_mbs_32_xxhash( const char *data )
 {
-    uint32_t hash = 0,
-             nbit,
+    uint32_t hash = 0;
+    size_t   nbit,
              slen = 0;
 
     const uint32_t *cdat = (const uint32_t*)data;
@@ -177,7 +289,7 @@ uint32_t ms_hash_mbs_32_xxhash( const char *data )
     assert( data );
 
     // szukaj zera jeszcze przed rozpoczęciem pętli
-    nbit = msf_hash_mbs_32_zerocheck( cdat );
+    nbit = msf_hash_mbs_32s8b0_check( cdat );
 
     if( !nbit )
     {
@@ -194,7 +306,7 @@ uint32_t ms_hash_mbs_32_xxhash( const char *data )
 
             // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
             // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
-            nbit  = msf_hash_mbs_32_zerocheck( cdat );
+            nbit = msf_hash_mbs_32s8b0_check( cdat );
         
         hash = MSX_ROTL32( val1, 1  ) + MSX_ROTL32( val2, 7  ) +
                MSX_ROTL32( val3, 12 ) + MSX_ROTL32( val4, 18 );
@@ -247,99 +359,138 @@ uint32_t ms_hash_mbs_32_xxhash( const char *data )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_wcs_32_xxhash( const char *data )
+uint32_t ms_hash_wcs_32_xxhash( const wchar_t *data )
 {
-    // uint32_t hash = 0,
-    //          nbit,
-    //          slen = 0;
+    uint32_t hash = 0;
+    size_t   nbit,
+             slen = 0;
 
-    // const uint32_t *cdat = (const uint32_t*)data;
-    // const uint8_t  *adat;
+    const uint32_t *cdat = (const uint32_t*)data;
 
-    // // wartości przy optymalizacji i tak już powinny być znane...
-    // uint32_t val1 = MSD_HASH_SEED + MSN_H32XX_1 + MSN_H32XX_2,
-    //          val2 = MSD_HASH_SEED + MSN_H32XX_2,
-    //          val3 = MSD_HASH_SEED,
-    //          val4 = MSD_HASH_SEED - MSN_H32XX_1;
+    // wartości przy optymalizacji i tak już powinny być znane...
+    uint32_t val1 = MSD_HASH_SEED + MSN_H32XX_1 + MSN_H32XX_2,
+             val2 = MSD_HASH_SEED + MSN_H32XX_2,
+             val3 = MSD_HASH_SEED,
+             val4 = MSD_HASH_SEED - MSN_H32XX_1;
 
-    // assert( data );
+    assert( data );
 
-    // // szukaj zera jeszcze przed rozpoczęciem pętli
-    // nbit = msf_hash_mbs_32_zerocheck( cdat );
+    if( sizeof(wchar_t) == 2 )
+    {
+        const uint8_t *adat;
 
-    // if( !nbit )
-    // {
-    //     // przetwarzaj, dopóki kod poniżej nie znajdzie 0 w ciągu
-    //     while( !nbit )
-    //         // po każdej pętli dodawaj do wartości 16 - ilość sprawdzonych znaków w których nie ma zera
-    //         slen += 16,
+        // szukaj zera jeszcze przed rozpoczęciem pętli
+        nbit = msf_hash_mbs_32s16b0_check( cdat );
 
-    //         // przetwarzaj elementy bez zera
-    //         (val1 += *cdat++ * MSN_H32XX_2), (val1 = MSX_ROTL32(val1, 13)), (val1 *= MSN_H32XX_1),
-    //         (val2 += *cdat++ * MSN_H32XX_2), (val2 = MSX_ROTL32(val2, 13)), (val2 *= MSN_H32XX_1),
-    //         (val3 += *cdat++ * MSN_H32XX_2), (val3 = MSX_ROTL32(val3, 13)), (val3 *= MSN_H32XX_1),
-    //         (val4 += *cdat++ * MSN_H32XX_2), (val4 = MSX_ROTL32(val4, 13)), (val4 *= MSN_H32XX_1),
+        if( !nbit )
+        {
+            while( !nbit )
+                // po każdej pętli dodawaj do wartości 16 - ilość sprawdzonych znaków w których nie ma zera
+                slen += 16,
 
-    //         // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
-    //         // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
-    //         nbit  = msf_hash_mbs_32_zerocheck( cdat );
-        
-    //     hash = MSX_ROTL32( val1, 1  ) + MSX_ROTL32( val2, 7  ) +
-    //            MSX_ROTL32( val3, 12 ) + MSX_ROTL32( val4, 18 );
-    // }
-    // else
-    //     hash = MSD_HASH_SEED + MSN_H32XX_5;
+                // przetwarzaj elementy bez zera
+                (val1 += *cdat++ * MSN_H32XX_2), (val1 = MSX_ROTL32(val1, 13)), (val1 *= MSN_H32XX_1),
+                (val2 += *cdat++ * MSN_H32XX_2), (val2 = MSX_ROTL32(val2, 13)), (val2 *= MSN_H32XX_1),
+                (val3 += *cdat++ * MSN_H32XX_2), (val3 = MSX_ROTL32(val3, 13)), (val3 *= MSN_H32XX_1),
+                (val4 += *cdat++ * MSN_H32XX_2), (val4 = MSX_ROTL32(val4, 13)), (val4 *= MSN_H32XX_1),
 
-    // // długość już jest znana
-    // slen += nbit - 1;
-    // hash += slen;
+                // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
+                // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
+                nbit = msf_hash_mbs_32s16b0_check( cdat );
 
-    // // dalej jest to samo co w głównej funkcji...
-    // // jedyną różnicą są liczby podniesione o 1 z racji nbit i zwracanej wartości
-    // if( nbit > 12 )
-    //     hash += *cdat++ * MSN_H32XX_3,
-    //     hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
-    //     nbit -= 4;
-    // if( nbit > 8 )
-    //     hash += *cdat++ * MSN_H32XX_3,
-    //     hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
-    //     nbit -= 4;
-    // if( nbit > 3 )
-    //     hash += *cdat++ * MSN_H32XX_3,
-    //     hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
-    //     nbit -= 4;
+            hash = MSX_ROTL32( val1, 1  ) + MSX_ROTL32( val2, 7  ) +
+                   MSX_ROTL32( val3, 12 ) + MSX_ROTL32( val4, 18 );
+        }
+        else
+            hash = MSD_HASH_SEED + MSN_H32XX_5;
 
-    // adat = (const uint8_t*)cdat;
+        // długość już jest znana
+        slen += nbit ? (nbit - 1) << 1 : 0;
+        hash += slen;
 
-    // switch( nbit )
-    // {
-    //     case 4: 
-    //         hash += *adat++ * MSN_H32XX_5;
-    //         hash  = MSX_ROTL32( hash, 11 ) * MSN_H32XX_1;
-    //     case 3:
-    //         hash += *adat++ * MSN_H32XX_5;
-    //         hash  = MSX_ROTL32( hash, 11 ) * MSN_H32XX_1;
-    //     case 2:
-    //         hash += *adat++ * MSN_H32XX_5;
-    //         hash  = MSX_ROTL32( hash, 11 ) * MSN_H32XX_1;
-    // }
+        // dalej jest to samo co w głównej funkcji...
+        // jedyną różnicą są liczby podniesione o 1 z racji nbit i zwracanej wartości
+        if( nbit > 6 )
+            hash += *cdat++ * MSN_H32XX_3,
+            hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
+            nbit -= 2;
+        if( nbit > 4 )
+            hash += *cdat++ * MSN_H32XX_3,
+            hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
+            nbit -= 2;
+        if( nbit > 2 )
+            hash += *cdat++ * MSN_H32XX_3,
+            hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
+            nbit -= 2;
 
-    // hash ^= hash >> 15;
-    // hash *= MSN_H32XX_2;
-    // hash ^= hash >> 13;
-    // hash *= MSN_H32XX_3;
-    // hash ^= hash >> 16;
+        adat = (const uint8_t*)cdat;
 
-    // return hash;
+        if( nbit == 2 )
+            hash += *adat++ * MSN_H32XX_5;
+            hash  = MSX_ROTL32( hash, 11 ) * MSN_H32XX_1;
+            hash += *adat++ * MSN_H32XX_5;
+            hash  = MSX_ROTL32( hash, 11 ) * MSN_H32XX_1;
+    }
+    else if( sizeof(wchar_t) == 4 )
+    {
+        // szukaj zera jeszcze przed rozpoczęciem pętli
+        nbit = msf_hash_mbs_32s32b0_check( cdat );
+
+        if( !nbit )
+        {
+            while( !nbit )
+                // po każdej pętli dodawaj do wartości 16 - ilość sprawdzonych znaków w których nie ma zera
+                slen += 16,
+
+                // przetwarzaj elementy bez zera
+                (val1 += *cdat++ * MSN_H32XX_2), (val1 = MSX_ROTL32(val1, 13)), (val1 *= MSN_H32XX_1),
+                (val2 += *cdat++ * MSN_H32XX_2), (val2 = MSX_ROTL32(val2, 13)), (val2 *= MSN_H32XX_1),
+                (val3 += *cdat++ * MSN_H32XX_2), (val3 = MSX_ROTL32(val3, 13)), (val3 *= MSN_H32XX_1),
+                (val4 += *cdat++ * MSN_H32XX_2), (val4 = MSX_ROTL32(val4, 13)), (val4 *= MSN_H32XX_1),
+
+                // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
+                // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
+                nbit = msf_hash_mbs_32s32b0_check( cdat );
+
+            hash = MSX_ROTL32( val1, 1  ) + MSX_ROTL32( val2, 7  ) +
+                   MSX_ROTL32( val3, 12 ) + MSX_ROTL32( val4, 18 );
+        }
+        else
+            hash = MSD_HASH_SEED + MSN_H32XX_5;
+
+        // długość już jest znana
+        slen += nbit ? (nbit - 1) << 2 : 0;
+        hash += slen;
+
+        // dalej jest to samo co w głównej funkcji...
+        // jedyną różnicą są liczby podniesione o 1 z racji nbit i zwracanej wartości
+        if( nbit > 3 )
+            hash += *cdat++ * MSN_H32XX_3,
+            hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
+            nbit -= 1;
+        if( nbit > 2 )
+            hash += *cdat++ * MSN_H32XX_3,
+            hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4,
+            nbit -= 1;
+        if( nbit > 1 )
+            hash += *cdat++ * MSN_H32XX_3,
+            hash  = MSX_ROTL32( hash, 17 ) * MSN_H32XX_4;
+    }
+
+    hash ^= hash >> 15;
+    hash *= MSN_H32XX_2;
+    hash ^= hash >> 13;
+    hash *= MSN_H32XX_3;
+    hash ^= hash >> 16;
+
+    return hash;
 }
 
 /* ================================================================================================================== */
 
 uint64_t ms_hash_64_xxhash( const void *data, size_t length )
 {
-
-    uint64_t hash = 0,
-             ch8b;
+    uint64_t hash = 0;
 
     const uint64_t *cdat = data;
     const uint8_t  *adat;
@@ -363,31 +514,13 @@ uint64_t ms_hash_64_xxhash( const void *data, size_t length )
             val4 += *cdat++ * MSN_H64XX_2, val4 = MSX_ROTL64(val4, 31), val4 *= MSN_H64XX_1;
         while( --iter );
 
-        hash  = MSX_ROTL64( val1, 1 ) + MSX_ROTL64( val2, 7 ) + MSX_ROTL64( val3, 12 ) + MSX_ROTL64( val4, 18 );
+        hash = MSX_ROTL64( val1, 1  ) + MSX_ROTL64( val2, 7  ) +
+               MSX_ROTL64( val3, 12 ) + MSX_ROTL64( val4, 18 );
 
-        val1 *= MSN_H64XX_2;
-        val1  = MSX_ROTL64(val1, 31);
-        val1 *= MSN_H64XX_1;
-        hash ^= val1;
-        hash  = hash * MSN_H64XX_1 + MSN_H64XX_4;
-
-        val2 *= MSN_H64XX_2;
-        val2  = MSX_ROTL64(val2, 31);
-        val2 *= MSN_H64XX_1;
-        hash ^= val2;
-        hash  = hash * MSN_H64XX_1 + MSN_H64XX_4;
-
-        val3 *= MSN_H64XX_2;
-        val3  = MSX_ROTL64(val3, 31);
-        val3 *= MSN_H64XX_1;
-        hash ^= val3;
-        hash  = hash * MSN_H64XX_1 + MSN_H64XX_4;
-
-        val4 *= MSN_H64XX_2;
-        val4  = MSX_ROTL64(val4, 31);
-        val4 *= MSN_H64XX_1;
-        hash ^= val4;
-        hash  = hash * MSN_H64XX_1 + MSN_H64XX_4;
+        hash = msf_hash_mix64_value( hash, val1 );
+        hash = msf_hash_mix64_value( hash, val2 );
+        hash = msf_hash_mix64_value( hash, val3 );
+        hash = msf_hash_mix64_value( hash, val4 );
     }
     else
         hash = MSD_HASH_SEED + MSN_H64XX_5;
@@ -397,25 +530,13 @@ uint64_t ms_hash_64_xxhash( const void *data, size_t length )
 
     /* przejmuj odpadki */
     if( length > 23 )
-        ch8b    = *cdat++ * MSN_H64XX_2,
-        ch8b    = MSX_ROTL64( ch8b, 31 ),
-        ch8b   *= MSN_H64XX_1,
-        hash   ^= ch8b,
-        hash    = MSX_ROTL64( hash, 27 ) * MSN_H64XX_1 + MSN_H64XX_4,
+        hash = msf_hash_mix64_char64( hash, *cdat++ ),
         length -= 8;
     if( length > 15 )
-        ch8b    = *cdat++ * MSN_H64XX_2,
-        ch8b    = MSX_ROTL64( ch8b, 31 ),
-        ch8b   *= MSN_H64XX_1,
-        hash   ^= ch8b,
-        hash    = MSX_ROTL64( hash, 27 ) * MSN_H64XX_1 + MSN_H64XX_4,
+        hash = msf_hash_mix64_char64( hash, *cdat++ ),
         length -= 8;
     if( length > 7 )
-        ch8b    = *cdat++ * MSN_H64XX_2,
-        ch8b    = MSX_ROTL64( ch8b, 31 ),
-        ch8b   *= MSN_H64XX_1,
-        hash   ^= ch8b,
-        hash    = MSX_ROTL64( hash, 27 ) * MSN_H64XX_1 + MSN_H64XX_4,
+        hash = msf_hash_mix64_char64( hash, *cdat++ ),
         length -= 8;
 
     vdat = (const uint32_t*)cdat;
@@ -424,20 +545,242 @@ uint64_t ms_hash_64_xxhash( const void *data, size_t length )
         hash    = MSX_ROTL64( hash, 23 ) * MSN_H64XX_2 + MSN_H64XX_3,
         length -= 4;
 
-    // length &= 0x7;
     adat = (const uint8_t*)vdat;
-
     switch( length )
     {
-        case 3:
-            hash ^= *adat++ * MSN_H64XX_5;
-            hash  = MSX_ROTL64( hash, 11 ) * MSN_H64XX_1;
-        case 2:
-            hash ^= *adat++ * MSN_H64XX_5;
-            hash  = MSX_ROTL64( hash, 11 ) * MSN_H64XX_1;
-        case 1:
-            hash ^= *adat++ * MSN_H64XX_5;
-            hash  = MSX_ROTL64( hash, 11 ) * MSN_H64XX_1;
+        case 3: (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+        case 2: (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+        case 1: (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+    }
+
+    hash ^= hash >> 33;
+    hash *= MSN_H64XX_2;
+    hash ^= hash >> 29;
+    hash *= MSN_H64XX_3;
+    hash ^= hash >> 32;
+
+    return hash;
+}
+
+/* ================================================================================================================== */
+
+uint64_t ms_hash_mbs_64_xxhash( const char *data )
+{
+    uint64_t hash = 0;
+    size_t   slen = 0,
+             nbit;
+
+    const uint64_t *cdat = (const uint64_t*)data;
+    const uint8_t  *adat;
+    const uint32_t *vdat;
+
+    uint64_t val1 = MSD_HASH_SEED + MSN_H64XX_1 + MSN_H64XX_2,
+             val2 = MSD_HASH_SEED + MSN_H64XX_2,
+             val3 = MSD_HASH_SEED,
+             val4 = MSD_HASH_SEED - MSN_H64XX_1;
+
+    assert( data );
+
+    // szukaj zera jeszcze przed rozpoczęciem pętli
+    nbit = msf_hash_mbs_64s8b0_check( cdat );
+
+    /* jeżeli wartość jest większa niż 31 */
+    if( !nbit )
+    {
+        // przetwarzaj, dopóki kod poniżej nie znajdzie 0 w ciągu
+        while( !nbit )
+            // po każdej pętli dodawaj do wartości 32 - ilość sprawdzonych znaków w których nie ma zera
+            slen += 32,
+
+            // przetwarzaj elementy bez zera
+            (val1 += *cdat++ * MSN_H64XX_2), (val1 = MSX_ROTL64(val1, 31)), (val1 *= MSN_H64XX_1),
+            (val2 += *cdat++ * MSN_H64XX_2), (val2 = MSX_ROTL64(val2, 31)), (val2 *= MSN_H64XX_1),
+            (val3 += *cdat++ * MSN_H64XX_2), (val3 = MSX_ROTL64(val3, 31)), (val3 *= MSN_H64XX_1),
+            (val4 += *cdat++ * MSN_H64XX_2), (val4 = MSX_ROTL64(val4, 31)), (val4 *= MSN_H64XX_1),
+
+            // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
+            // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
+            nbit = msf_hash_mbs_64s8b0_check( cdat );
+        
+        hash = MSX_ROTL64( val1, 1  ) + MSX_ROTL64( val2, 7  ) +
+               MSX_ROTL64( val3, 12 ) + MSX_ROTL64( val4, 18 );
+
+        hash = msf_hash_mix64_value( hash, val1 );
+        hash = msf_hash_mix64_value( hash, val2 );
+        hash = msf_hash_mix64_value( hash, val3 );
+        hash = msf_hash_mix64_value( hash, val4 );
+    }
+    else
+        hash = MSD_HASH_SEED + MSN_H64XX_5;
+
+    // długość już jest znana
+    slen += nbit - 1;
+    hash += slen;
+
+    if( nbit > 24 )
+        hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+        nbit -= 8;
+    else if( nbit > 16 )
+        hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+        nbit -= 8;
+    else if( nbit > 8 )
+        hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+        nbit -= 8;
+
+    vdat = (const uint32_t*)cdat;
+    if( nbit > 4 )
+        hash ^= *vdat++ * MSN_H64XX_1,
+        hash  = MSX_ROTL64( hash, 23 ) * MSN_H64XX_2 + MSN_H64XX_3,
+        nbit -= 4;
+
+    adat = (const uint8_t*)vdat;
+    switch( nbit )
+    {
+        case 4: (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+        case 3: (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+        case 2: (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+    }
+
+    hash ^= hash >> 33;
+    hash *= MSN_H64XX_2;
+    hash ^= hash >> 29;
+    hash *= MSN_H64XX_3;
+    hash ^= hash >> 32;
+
+    return hash;
+}
+
+/* ================================================================================================================== */
+
+uint64_t ms_hash_wcs_64_xxhash( const wchar_t *data )
+{
+    uint64_t hash = 0;
+    size_t   slen = 0,
+             nbit;
+
+    const uint64_t *cdat = (const uint64_t*)data;
+    const uint32_t *vdat;
+
+    uint64_t val1 = MSD_HASH_SEED + MSN_H64XX_1 + MSN_H64XX_2,
+             val2 = MSD_HASH_SEED + MSN_H64XX_2,
+             val3 = MSD_HASH_SEED,
+             val4 = MSD_HASH_SEED - MSN_H64XX_1;
+
+    assert( data );
+
+    if( sizeof(wchar_t) == 2 )
+    {
+        const uint8_t  *adat;
+
+        // szukaj zera jeszcze przed rozpoczęciem pętli
+        nbit = msf_hash_mbs_64s16b0_check( cdat );
+
+        /* jeżeli wartość jest większa niż 31 */
+        if( !nbit )
+        {
+            // przetwarzaj, dopóki kod poniżej nie znajdzie 0 w ciągu
+            while( !nbit )
+                // po każdej pętli dodawaj do wartości 32 - ilość sprawdzonych znaków w których nie ma zera
+                slen += 32,
+
+                // przetwarzaj elementy bez zera
+                (val1 += *cdat++ * MSN_H64XX_2), (val1 = MSX_ROTL64(val1, 31)), (val1 *= MSN_H64XX_1),
+                (val2 += *cdat++ * MSN_H64XX_2), (val2 = MSX_ROTL64(val2, 31)), (val2 *= MSN_H64XX_1),
+                (val3 += *cdat++ * MSN_H64XX_2), (val3 = MSX_ROTL64(val3, 31)), (val3 *= MSN_H64XX_1),
+                (val4 += *cdat++ * MSN_H64XX_2), (val4 = MSX_ROTL64(val4, 31)), (val4 *= MSN_H64XX_1),
+
+                // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
+                // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
+                nbit = msf_hash_mbs_64s16b0_check( cdat );
+            
+            hash = MSX_ROTL64( val1, 1  ) + MSX_ROTL64( val2, 7  ) +
+                   MSX_ROTL64( val3, 12 ) + MSX_ROTL64( val4, 18 );
+
+            hash = msf_hash_mix64_value( hash, val1 );
+            hash = msf_hash_mix64_value( hash, val2 );
+            hash = msf_hash_mix64_value( hash, val3 );
+            hash = msf_hash_mix64_value( hash, val4 );
+        }
+        else
+            hash = MSD_HASH_SEED + MSN_H64XX_5;
+
+        // długość już jest znana
+        slen += (nbit - 1) << 1;
+        hash += slen;
+
+        if( nbit > 12 )
+            hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+            nbit -= 4;
+        if( nbit > 8 )
+            hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+            nbit -= 4;
+            if( nbit > 4 )
+            hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+            nbit -= 4;
+
+        vdat = (const uint32_t*)cdat;
+        if( nbit > 2 )
+            hash ^= *vdat++ * MSN_H64XX_1,
+            hash  = MSX_ROTL64( hash, 23 ) * MSN_H64XX_2 + MSN_H64XX_3,
+            nbit -= 2;
+
+        adat = (const uint8_t*)vdat;
+        if( nbit == 2 )
+            (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1),
+            (hash ^= *adat++ * MSN_H64XX_5), (hash = MSX_ROTL64(hash, 11) * MSN_H64XX_1);
+    }
+    else if( sizeof(wchar_t) == 4 )
+    {
+        // szukaj zera jeszcze przed rozpoczęciem pętli
+        nbit = msf_hash_mbs_64s32b0_check( cdat );
+
+        /* jeżeli wartość jest większa niż 31 */
+        if( !nbit )
+        {
+            // przetwarzaj, dopóki kod poniżej nie znajdzie 0 w ciągu
+            while( !nbit )
+                // po każdej pętli dodawaj do wartości 32 - ilość sprawdzonych znaków w których nie ma zera
+                slen += 32,
+
+                // przetwarzaj elementy bez zera
+                (val1 += *cdat++ * MSN_H64XX_2), (val1 = MSX_ROTL64(val1, 31)), (val1 *= MSN_H64XX_1),
+                (val2 += *cdat++ * MSN_H64XX_2), (val2 = MSX_ROTL64(val2, 31)), (val2 *= MSN_H64XX_1),
+                (val3 += *cdat++ * MSN_H64XX_2), (val3 = MSX_ROTL64(val3, 31)), (val3 *= MSN_H64XX_1),
+                (val4 += *cdat++ * MSN_H64XX_2), (val4 = MSX_ROTL64(val4, 31)), (val4 *= MSN_H64XX_1),
+
+                // jako że są róznice pomiędzy przetwarzaniem wszystkich a częściowych,
+                // trzeba najpierw szukać zera we wszystkich pobieranych elementach...            
+                nbit = msf_hash_mbs_64s32b0_check( cdat );
+            
+            hash = MSX_ROTL64( val1, 1  ) + MSX_ROTL64( val2, 7  ) +
+                   MSX_ROTL64( val3, 12 ) + MSX_ROTL64( val4, 18 );
+
+            hash = msf_hash_mix64_value( hash, val1 );
+            hash = msf_hash_mix64_value( hash, val2 );
+            hash = msf_hash_mix64_value( hash, val3 );
+            hash = msf_hash_mix64_value( hash, val4 );
+        }
+        else
+            hash = MSD_HASH_SEED + MSN_H64XX_5;
+
+        // długość już jest znana
+        slen += (nbit - 1) << 2;
+        hash += slen;
+
+        if( nbit > 6 )
+            hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+            nbit -= 2;
+        if( nbit > 4 )
+            hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+            nbit -= 2;
+        if( nbit > 2 )
+            hash  = msf_hash_mix64_char64( hash, *cdat++ ),
+            nbit -= 2;
+
+        vdat = (const uint32_t*)cdat;
+        if( nbit == 2 )
+            hash ^= *vdat++ * MSN_H64XX_1,
+            hash  = MSX_ROTL64( hash, 23 ) * MSN_H64XX_2 + MSN_H64XX_3;
     }
 
     hash ^= hash >> 33;

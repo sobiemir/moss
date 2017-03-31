@@ -184,6 +184,7 @@ uint32_t ms_hash_32_murmur( const void *data, size_t length );
 uint32_t ms_hash_32_xxhash( const void *data, size_t length );
 
 uint32_t ms_hash_mbs_32_xxhash( const char *data );
+uint32_t ms_hash_wcs_32_xxhash( const wchar_t *data );
 
 /*
 ======================================================================================================================
@@ -254,5 +255,8 @@ uint64_t ms_hash_64_murmur2( const void *data, size_t length );
  * @return        Skrót w postaci 32 bitowej liczby.
  */
 uint64_t ms_hash_64_xxhash( const void *data, size_t length );
+
+uint64_t ms_hash_mbs_64_xxhash( const char *data );
+uint64_t ms_hash_wcs_64_xxhash( const wchar_t *data );
 
 #endif
