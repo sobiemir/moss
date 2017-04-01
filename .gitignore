@@ -4,6 +4,7 @@
 *.seed
 *.pid.lock
 *.out
+.fuse*
 
 moss/doc/build/
 moss/tst/gen/
