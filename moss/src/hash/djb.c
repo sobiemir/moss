@@ -1,19 +1,15 @@
 /*
- * Moss Library >> http://moss.aculo.pl
+ *  Moss Library >>> http://moss.aculo.pl
  *
- *    /'\_/`\                           
- *   /\      \    ___     ____    ____  
- *   \ \ \__\ \  / __`\  /',__\  /',__\ 
- *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
- *     \ \_\\ \_\ \____/\/\____/\/\____/
- *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, DJB family...
- * License: MIT, see LICENSE file for details
- *
- * Algorithms:
- * - DJB2  [Public Domain]
- * - DJB2A [Public Domain]
+ *  Source file for "Hash" module, DJB algorithms [Public Domain].
+ *  See LICENSE file for copyright information.
  */
 
 #include "../../inc/hash.h"

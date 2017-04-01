@@ -1,20 +1,15 @@
 /*
- * Moss Library >> http://moss.aculo.pl
+ *  Moss Library >>> http://moss.aculo.pl
  *
- *    /'\_/`\                           
- *   /\      \    ___     ____    ____  
- *   \ \ \__\ \  / __`\  /',__\  /',__\ 
- *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
- *     \ \_\\ \_\ \____/\/\____/\/\____/
- *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, Murmur family...
- * License: MIT, see LICENSE file for details
- *
- * Algorithms:
- * - Murmur  [Public Domain]
- * - Murmur2 [Public Domain]
- * - Murmur3 [Public Domain]
+ *  Source file for "Hash" module, Murmur algorithms [Public Domain].
+ *  See LICENSE file for copyright information.
  */
 
 #include "../../inc/hash.h"
@@ -26,12 +21,21 @@
 #define MSN_H64M2   0xC6A4A7935BD1E995ull
 #define MSN_H32M1   0xC6A4A793
 
+/**
+ * Miesza 32 bitowy skrót danych z podaną wartością.
+ * 
+ * @param  hash  Aktualny skrót danych.
+ * @param  value Wartość do mieszania.
+ * @return       Nowy skrót danych.
+ */
+inline static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value );
+
 /* ================================================================================================================== */
 
 uint32_t ms_hash_32_murmur3( const void *data, size_t length )
 {
     uint32_t hash = MSD_HASH_SEED,
-             ch4b;
+             ch4b = 0;
     size_t   iter;
 
     const uint32_t *cdat = data;
@@ -39,20 +43,12 @@ uint32_t ms_hash_32_murmur3( const void *data, size_t length )
 
     assert( data );
 
-    // murmur3 pobiera porcjami 4 bajtowymi
+    /* murmur3 pobiera 4 bajtowe porcje */
     for( iter = length >> 2; iter--; )
-        ch4b  = *cdat++,
-        ch4b *= MSN_H32M3_1,
-        ch4b  = MSX_ROTL32(ch4b, 15),
-        ch4b *= MSN_H32M3_2,
-        hash ^= ch4b,
-        hash  = MSX_ROTL32(hash, 13),
-        hash += (hash << 2) + MSN_H32M3_3;
+        hash = msf_hash_mix32_value( hash, *cdat++ );
 
+    /* dolicz odpadki */
     adat = (const uint8_t*)cdat;
-    ch4b = 0;
-
-    // konsumpcja pozostałych wartości
     switch( length & 3 )
     {
         case 3: ch4b |= adat[2] << 16;
@@ -64,7 +60,6 @@ uint32_t ms_hash_32_murmur3( const void *data, size_t length )
                 hash ^= ch4b;
     }
 
-    // trochę magii
     hash ^= length;
     hash ^= hash >> 16;
     hash *= 0x85EBCA6B;
@@ -72,7 +67,6 @@ uint32_t ms_hash_32_murmur3( const void *data, size_t length )
     hash *= 0xC2B2AE35;
     hash ^= hash >> 16;
 
-    // i wynik gotowy
     return hash;
 }
 
@@ -80,6 +74,7 @@ uint32_t ms_hash_32_murmur3( const void *data, size_t length )
 
 uint32_t ms_hash_32_murmur2( const void *data, size_t length )
 {
+    /* ta linijka uniemożliwia stworzenie rozwiązania dedykowanego dla mbs i wcs */
     uint32_t hash = MSD_HASH_SEED ^ length,
              ch4b;
 
@@ -96,6 +91,7 @@ uint32_t ms_hash_32_murmur2( const void *data, size_t length )
         hash *= MSN_H32M2,
         hash ^= ch4b;
     
+    /* murmur2 również posiada odpadki */
     adat = (const uint8_t*)cdat;
     switch( length )
     {
@@ -116,8 +112,8 @@ uint32_t ms_hash_32_murmur2( const void *data, size_t length )
 
 uint32_t ms_hash_32_murmur( const void *data, size_t length )
 {
-    uint32_t hash = MSD_HASH_SEED ^ (length * MSN_H32M1),
-             ch4b;
+    /* ta linijka uniemożliwia stworzenie rozwiązania dedykowanego dla mbs i wcs */
+    uint32_t hash = MSD_HASH_SEED ^ (length * MSN_H32M1);
     
     const uint32_t *cdat = data;
     const uint8_t  *adat;
@@ -125,10 +121,9 @@ uint32_t ms_hash_32_murmur( const void *data, size_t length )
     assert( data );
 
     for( ; length > 3; length -= 4 )
-        hash += *cdat++,
-        hash *= MSN_H32M1,
-        hash ^= hash >> 16;
+        (hash += *cdat++), (hash *= MSN_H32M1), (hash ^= hash >> 16);
 
+    /* dolicz odpadki */
     adat = (const uint8_t*)cdat;
     switch( length )
     {
@@ -151,6 +146,7 @@ uint32_t ms_hash_32_murmur( const void *data, size_t length )
 
 uint64_t ms_hash_64_murmur2( const void *data, size_t length )
 {
+    /* ta linijka uniemożliwia stworzenie rozwiązania dedykowanego dla mbs i wcs */
     uint64_t hash = MSD_HASH_SEED ^ (length * MSN_H64M2),
              ch4b;
     
@@ -167,6 +163,7 @@ uint64_t ms_hash_64_murmur2( const void *data, size_t length )
         hash ^= ch4b,
         hash *= MSN_H64M2;
 
+    /* dolicz odpadki, jest ich 8 w 64 bitowej porcji */
     adat = (const uint8_t*)cdat;
     switch( length )
     {
@@ -202,16 +199,12 @@ uint32_t ms_hash_mbs_32_murmur3( const char *data )
 
     assert( data );
 
+    /* mieszaj i licz długość ciągu znaków */
     while( ch4b = *cdat++, !(nbit = MSX_FIND8B0IN32B(ch4b)) )
-        ch4b *= MSN_H32M3_1,
-        ch4b  = MSX_ROTL32( ch4b, 15 ),
-        ch4b *= MSN_H32M3_2,
-        hash ^= ch4b,
-        hash  = MSX_ROTL32( hash, 13 ),
-        hash += (hash << 2) + MSN_H32M3_3,
+        msf_hash_mix32_value( hash, ch4b ),
         slen += 4;
 
-    // jako że ostatnie 4 bajty zostały już pobrane, nałóż na nie odpowiednią maskę
+    /* dolicz odpadki */
     if( nbit > 1 )
         ch4b &= 0xFFFFFFFF >> ((5 - nbit) << 3),
         ch4b *= MSN_H32M3_1,
@@ -220,7 +213,6 @@ uint32_t ms_hash_mbs_32_murmur3( const char *data )
         hash ^= ch4b,
         slen += nbit - 1;
 
-    // trochę magii
     hash ^= slen;
     hash ^= hash >> 16;
     hash *= 0x85EBCA6B;
@@ -228,7 +220,6 @@ uint32_t ms_hash_mbs_32_murmur3( const char *data )
     hash *= 0xC2B2AE35;
     hash ^= hash >> 16;
 
-    // i wynik gotowy
     return hash;
 }
 
@@ -247,16 +238,16 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
 
     assert( data );
 
+    /* 2 bajtowy wchar_t */
     if( sizeof(wchar_t) == 2 )
         while( (ch4b = *cdat++) )
         {
-            // sprawdź czy jeden z indeksów będzie równy 0
+            /* sprawdź czy pierwszy znak w porcji będzie równy 0 */
             if( !(ch4b & 0x0000FFFF) )
                 break;
-            // jeżeli to będzie ten drugi, nałóż maskę i licz...
+            /* jeżeli drugi znak jest równy 0, to ten pierwszy nadal pozostaje do obliczenia */
             if( !(ch4b & 0xFFFF0000) )
             {
-                ch4b &= 0xFFFF0000 >> 16;
                 ch4b *= MSN_H32M3_1;
                 ch4b  = MSX_ROTL32( ch4b, 15 );
                 ch4b *= MSN_H32M3_2;
@@ -264,27 +255,16 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
                 slen += 2;
                 break;
             }
-            // rób swoje
-            ch4b *= MSN_H32M3_1;
-            ch4b  = MSX_ROTL32( ch4b, 15 );
-            ch4b *= MSN_H32M3_2;
-            hash ^= ch4b;
-            hash  = MSX_ROTL32( hash, 13 );
-            hash += (hash << 2) + MSN_H32M3_3;
+            /* w przeciwnym wypadku licz całość */
+            msf_hash_mix32_value( hash, ch4b );
             slen += 4;
         }
-    // wchar_t jest 4 bajtowy, zajmuje całą porcję
+    /* 4 bajtowy wchar_t - brak odpadków... */
     else if( sizeof(wchar_t) == 4 )
         while( (ch4b = *cdat++) )
-            ch4b *= MSN_H32M3_1,
-            ch4b  = MSX_ROTL32( ch4b, 15 ),
-            ch4b *= MSN_H32M3_2,
-            hash ^= ch4b,
-            hash  = MSX_ROTL32( hash, 13 ),
-            hash += (hash << 2) + MSN_H32M3_3,
+            msf_hash_mix32_value( hash, ch4b ),
             slen += 4;
 
-    // trochę magii
     hash ^= slen;
     hash ^= hash >> 16;
     hash *= 0x85EBCA6B;
@@ -292,8 +272,20 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
     hash *= 0xC2B2AE35;
     hash ^= hash >> 16;
 
-    // i wynik gotowy
     return hash;
 }
 
 #endif
+
+/* ================================================================================================================== */
+
+inline static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value )
+{
+    value *= MSN_H32M3_1;
+    value  = MSX_ROTL32( value, 15 );
+    value *= MSN_H32M3_2;
+    hash  ^= value;
+    hash   = MSX_ROTL32( hash, 13 );
+
+    return hash + ((hash << 2) + MSN_H32M3_3);
+}

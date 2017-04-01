@@ -8,7 +8,7 @@
  *      \ \_\\ \_\ \____/\/\____/\/\____/
  *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- *  Source file for "Hash" module, xxHash algorithm on BSD license.
+ *  Source file for "Hash" module, xxHash algorithm [BSD 2-Clause License].
  *  See LICENSE file for copyright information.
  */
 

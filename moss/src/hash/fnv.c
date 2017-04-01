@@ -1,19 +1,15 @@
 /*
- * Moss Library >> http://moss.aculo.pl
+ *  Moss Library >>> http://moss.aculo.pl
  *
- *    /'\_/`\                           
- *   /\      \    ___     ____    ____  
- *   \ \ \__\ \  / __`\  /',__\  /',__\ 
- *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
- *     \ \_\\ \_\ \____/\/\____/\/\____/
- *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, FNV family...
- * License: MIT, see LICENSE file for details
- *
- * Algorithms:
- * - FNV-1  [Public Domain]
- * - FNV-1A [Public Domain]
+ *  Source file for "Hash" module, FNV algorithms [Public Domain].
+ *  See LICENSE file for copyright information.
  */
 
 #include "../../inc/hash.h"
@@ -92,7 +88,7 @@ uint64_t ms_hash_64_fnv1a( const void *data, size_t length )
 
 uint32_t ms_hash_mbs_32_fnv1( const char *data )
 {
-	uint32_t hash = 2166136261u;
+        uint32_t hash = 2166136261u;
     int      c;
 
     assert( data );
@@ -109,7 +105,7 @@ uint32_t ms_hash_mbs_32_fnv1( const char *data )
 
 uint32_t ms_hash_mbs_32_fnv1a( const char *data )
 {
-	uint32_t hash = 2166136261u;
+        uint32_t hash = 2166136261u;
     int      c;
 
     assert( data );

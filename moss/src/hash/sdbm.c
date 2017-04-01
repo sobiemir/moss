@@ -1,18 +1,15 @@
 /*
- * Moss Library >> http://moss.aculo.pl
+ *  Moss Library >>> http://moss.aculo.pl
  *
- *    /'\_/`\                           
- *   /\      \    ___     ____    ____  
- *   \ \ \__\ \  / __`\  /',__\  /',__\ 
- *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
- *     \ \_\\ \_\ \____/\/\____/\/\____/
- *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Hash" module, SDBM family...
- * License: MIT, see LICENSE file for details
- *
- * Algorithms:
- * - SDBM [Public Domain]
+ *  Source file for "Hash" module, SDBM algorithm [Public Domain].
+ *  See LICENSE file for copyright information.
  */
 
 #include "../../inc/hash.h"
@@ -21,7 +18,7 @@
 
 uint32_t ms_hash_32_sdbm( const void *data, size_t length )
 {
-	uint32_t       hash = 0;
+    uint32_t       hash = 0;
     const uint8_t *cdat = data;
 
     assert( data );
@@ -29,7 +26,7 @@ uint32_t ms_hash_32_sdbm( const void *data, size_t length )
     for( ; length; --length )
         hash = *cdat++ + (hash << 6) + (hash << 16) - hash;
 
-	return hash;
+    return hash;
 }
 
 #ifdef MSD_HASH_MBS_FUNCTIONS
