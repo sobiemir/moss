@@ -1,18 +1,20 @@
 #ifndef __MSH_CONFIGURATION__
 #define __MSH_CONFIGURATION__
 
+#define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków */
+#define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla rozszerzonego ciągu znaków */
+
+#define MSD_HASH_MURMUR         /* funkcje skrótu używające algorytmów z rodziny Murmur */
+#define MSD_HASH_JOAAT          /* funkcje skrótu używające algorytmu JOAAT */
+#define MSD_HASH_FNV1           /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
+#define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
+#define MSD_HASH_DJB2           /* funkcje skrótu używające algorytmów z rodziny DJB2 */
+#define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
+
+
 #define MSD_DEBUG
 #define MSD_ERRORINERRNO
 #define MSD_HASSTDBOOL
-
-#define MSD_HASH_MBS_FUNCTIONS
-#define MSD_HASH_WCS_FUNCTIONS
-
-#define MSD_HASH_MURMUR
-#define MSD_HASH_JOAAT
-#define MSD_HASH_FNV1
-#define MSD_HASH_SDBM
-#define MSD_HASH_DJB2
 
 #define IGRET
 #define IGVAR
