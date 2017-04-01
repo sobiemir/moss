@@ -1,23 +1,25 @@
 #ifndef __MSH_CONFIGURATION__
 #define __MSH_CONFIGURATION__
 
-#define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków */
-#define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla rozszerzonego ciągu znaków */
+/* CCMACRO pozwala na definiowanie makr bezpośrednio przez kompilator */
+#ifndef CCMACRO
+#   define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (char*) */
+#   define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (wchar_t*) */
 
-#define MSD_HASH_MURMUR         /* funkcje skrótu używające algorytmów z rodziny Murmur */
-#define MSD_HASH_JOAAT          /* funkcje skrótu używające algorytmu JOAAT */
-#define MSD_HASH_FNV1           /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
-#define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
-#define MSD_HASH_DJB2           /* funkcje skrótu używające algorytmów z rodziny DJB2 */
-#define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
+#   define MSD_HASH_MURMUR         /* funkcje skrótu używające algorytmów z rodziny Murmur */
+#   define MSD_HASH_JOAAT          /* funkcje skrótu używające algorytmu JOAAT */
+#   define MSD_HASH_FNV1           /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
+#   define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
+#   define MSD_HASH_DJB2           /* funkcje skrótu używające algorytmów z rodziny DJB2 */
+#   define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
+#endif
 
+#define IGRET   /* ignorowanie zwracanej wartości przez funkcję */
+#define IGVAR   /* ignorowanie zmiennej w przypadku gdy nie jest używana */
 
 #define MSD_DEBUG
 #define MSD_ERRORINERRNO
 #define MSD_HASSTDBOOL
-
-#define IGRET
-#define IGVAR
 
 #ifdef _WIN32
 #	define MSD_SYSTEM_WINDOWS
