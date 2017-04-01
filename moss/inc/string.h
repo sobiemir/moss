@@ -1,23 +1,22 @@
 /*
- * Moss Library >> http://moss.aculo.pl
+ *  Moss Library >>> http://moss.aculo.pl
  *
- *    /'\_/`\                           
- *   /\      \    ___     ____    ____  
- *   \ \ \__\ \  / __`\  /',__\  /',__\ 
- *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
- *     \ \_\\ \_\ \____/\/\____/\/\____/
- *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Header file for "String" module...
+ *  Header file for "String" module.
+ *  See LICENSE file for copyright information.
  */
 
 #ifndef __MSH_STRING__
 #define __MSH_STRING__
 
 #include <stdlib.h>
-
 #include "configuration.h"
-// #include "../tpl/string_tpl.h"
 
  typedef struct MSS_STRING
 {

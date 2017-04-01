@@ -1,3 +1,17 @@
+/*
+ *  Moss Library >>> http://moss.aculo.pl
+ *
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
+ *
+ *  Header file for "Buffer" module.
+ *  See LICENSE file for copyright information.
+ */
+
 #ifndef _MSH_BUFFER_
 #define _MSH_BUFFER_
 

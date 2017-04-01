@@ -88,7 +88,7 @@ uint64_t ms_hash_64_fnv1a( const void *data, size_t length )
 
 uint32_t ms_hash_mbs_32_fnv1( const char *data )
 {
-        uint32_t hash = 2166136261u;
+    uint32_t hash = 2166136261u;
     int      c;
 
     assert( data );
@@ -105,7 +105,7 @@ uint32_t ms_hash_mbs_32_fnv1( const char *data )
 
 uint32_t ms_hash_mbs_32_fnv1a( const char *data )
 {
-        uint32_t hash = 2166136261u;
+    uint32_t hash = 2166136261u;
     int      c;
 
     assert( data );

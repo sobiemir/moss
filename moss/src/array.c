@@ -1,19 +1,23 @@
 /*
- * Moss Library >> http://moss.aculo.pl
+ *  Moss Library >>> http://moss.aculo.pl
  *
- *    /'\_/`\                           
- *   /\      \    ___     ____    ____  
- *   \ \ \__\ \  / __`\  /',__\  /',__\ 
- *    \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
- *     \ \_\\ \_\ \____/\/\____/\/\____/
- *      \/_/ \/_/\/___/  \/___/  \/___/ 
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- * Source file for "Dynamic Array" module...
- *
- * TODO:
- * - możliwość łączenia tej samej tablicy => ms_array_join(array, array)
- * - własny destruktor elementów uruchamiany przy usuwaniu ich z tablicy
- * - po podaniu rozmiaru 0 w funkcjach inicjalizujących i tworzących, wartość Items powinna być NULL
+ *  Source file for "Dynamic Array" module.
+ *  See LICENSE file for copyright information.
+ */
+
+/*
+ *  TODO:
+ *  [ ] możliwość łączenia tej samej tablicy => ms_array_join(array, array)
+ *  [ ] własny destruktor elementów uruchamiany przy usuwaniu ich z tablicy
+ *  [ ] po podaniu rozmiaru 0 w funkcjach inicjalizujących i tworzących, wartość Items powinna być NULL
+ *      czy to ma w ogóle sens? w jakim celu? przenalizować...
  */
 
 #include "../inc/array.h"

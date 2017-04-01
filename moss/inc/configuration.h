@@ -1,3 +1,17 @@
+/*
+ *  Moss Library >>> http://moss.aculo.pl
+ *
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
+ *
+ *  Moss Library configuration header.
+ *  See LICENSE file for copyright information.
+ */
+
 #ifndef __MSH_CONFIGURATION__
 #define __MSH_CONFIGURATION__
 
