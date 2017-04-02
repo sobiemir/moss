@@ -201,7 +201,7 @@ uint32_t ms_hash_mbs_32_murmur3( const char *data )
 
     /* mieszaj i licz długość ciągu znaków */
     while( ch4b = *cdat++, !(nbit = MSX_FIND8B0IN32B(ch4b)) )
-        msf_hash_mix32_value( hash, ch4b ),
+        hash  = msf_hash_mix32_value( hash, ch4b ),
         slen += 4;
 
     /* dolicz odpadki */
@@ -256,13 +256,13 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
                 break;
             }
             /* w przeciwnym wypadku licz całość */
-            msf_hash_mix32_value( hash, ch4b );
+            hash  = msf_hash_mix32_value( hash, ch4b );
             slen += 4;
         }
     /* 4 bajtowy wchar_t - brak odpadków... */
     else if( sizeof(wchar_t) == 4 )
         while( (ch4b = *cdat++) )
-            msf_hash_mix32_value( hash, ch4b ),
+            hash  = msf_hash_mix32_value( hash, ch4b ),
             slen += 4;
 
     hash ^= slen;

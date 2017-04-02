@@ -16,5 +16,5 @@ if gcc -Wall ../array_test.c ../../src/array.c -lm -lcriterion -o array -fprofil
 	gcov array.c array_test.c
 else
     echo "Failed to compile Dynamic Array module"
-	exit
+    exit
 fi

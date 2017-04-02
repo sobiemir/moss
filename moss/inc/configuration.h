@@ -28,6 +28,11 @@
 #   define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
 #endif
 
+/* to makro musi być, sprawdza czy kompilator je zdefiniował */
+#ifndef MSD_HASH_SEED
+#   define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
+#endif
+
 #define IGRET   /* ignorowanie zwracanej wartości przez funkcję */
 #define IGVAR   /* ignorowanie zmiennej w przypadku gdy nie jest używana */
 
@@ -275,7 +280,6 @@ typedef long double        ldouble;		// 64/80/128 bitów
 #endif
 
 #define MSD_HASH_LOOP_UNROLL 4
-#define MSD_HASH_SEED 1234
 
 #define MSX_LOOP_UNROLL_ONELINE_MACRONUM(macro, count) MSX_LOOP_UNROLL_ONELINE(macro, count)
 #define MSX_LOOP_UNROLL_ONELINE(macro, count) __MSX_LOOP_UNROLL_ONELINE_ ## count ( macro )

@@ -19,7 +19,7 @@
 #include <math.h>
 
 #include "configuration.h"
-#include "../tpl/array_tpl.h"
+#include "../tpl/array_template.h"
 
 /*
 ======================================================================================================================

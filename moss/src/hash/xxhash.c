@@ -339,7 +339,7 @@ uint32_t ms_hash_mbs_32_xxhash( const char *data )
     else if( nbit > 8 )
         (hash += *cdat++ * MSN_H32XX_3), (hash = MSX_ROTL32(hash, 17) * MSN_H32XX_4),
         (hash += *cdat++ * MSN_H32XX_3), (hash = MSX_ROTL32(hash, 17) * MSN_H32XX_4), (nbit -= 8);
-    else if( nbit > 3 )
+    else if( nbit > 4 )
         (hash += *cdat++ * MSN_H32XX_3), (hash = MSX_ROTL32(hash, 17) * MSN_H32XX_4), (nbit -= 4);
 
     adat = (const uint8_t*)cdat;
