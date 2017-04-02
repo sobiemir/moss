@@ -1,20 +1,17 @@
-DIR1="gen"
-DIR2="run"
-
 # funkcja wyszukująca błędy na wyjściu
 function check_retval {
     local retval=$?
     if [ $retval -ne 0 ]; then
         exit 1
     fi
-    cd ../$DIR2
+    cd "$@"
 }
 
 # wywołuj po koleji wszystkie testy
-source array.sh
-check_retval
-source hash.sh
-check_retval
+source array.sh "../gen" ".."
+check_retval "../run"
+source hash.sh "../gen" ".."
+check_retval "../run"
 
 echo ""
 echo ""
@@ -24,8 +21,8 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 echo ""
 echo ""
 
-# w tym momencie program jest w folderze ../run
-cd ../$DIR1
+# w tym momencie program jest w złym folderze, przejdź do poprawnego
+cd "../gen"
 
 # sprawdź pokrycie kodu całości
 gcov \

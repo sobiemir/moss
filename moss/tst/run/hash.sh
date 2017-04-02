@@ -1,23 +1,41 @@
-DIR="gen"
+DIR1="../gen"
+DIR2=".."
 
-cd ../
+# nazwa folderu możliwa do przekazania poprzez argument
+if [ $# -gt 0 ]; then
+    DIR1=$1
+fi
+# relatywna ścieżka do folderu w którym znajdują się pliki testowe
+if [ $# -gt 1 ]; then
+    DIR2=$2
+fi
 
 # utwórz folder gdy nie istnieje i przejdź do niego
-if [ ! -d $DIR ]; then
-	mkdir $DIR
+if [ ! -d $DIR1 ]; then
+	mkdir $DIR1
 fi
-cd $DIR
+cd $DIR1
 
 # kompiluj moduł i przetestuj go
+# należy przetestować wszystkie dostępne funkcje skrótu
 if gcc \
     -Wall \
-    ../hash_test.c \
-    ../../src/hash/djb.c \
-    ../../src/hash/fnv.c \
-    ../../src/hash/joaat.c \
-    ../../src/hash/murmur.c \
-    ../../src/hash/sdbm.c \
-    ../../src/hash/xxhash.c \
+    $DIR2/hash_test.c \
+    $DIR2/../src/hash/djb.c \
+    $DIR2/../src/hash/fnv.c \
+    $DIR2/../src/hash/joaat.c \
+    $DIR2/../src/hash/murmur.c \
+    $DIR2/../src/hash/sdbm.c \
+    $DIR2/../src/hash/xxhash.c \
+    -D CCMACRO \
+    -D MSD_HASH_MBS_FUNCTIONS \
+    -D MSD_HASH_WCS_FUNCTIONS \
+    -D MSD_HASH_MURMUR \
+    -D MSD_HASH_JOAAT \
+    -D MSD_HASH_FNV \
+    -D MSD_HASH_SDBM \
+    -D MSD_HASH_DJB \
+    -D MSD_HASH_XXHASH \
     -D MSD_HASH_SEED=1234 \
     -lcriterion \
     -o hash \
@@ -25,10 +43,13 @@ if gcc \
     -ftest-coverage;
 then
 	echo "Hash module test compiled successfully!"
+    echo "Running test..."
 
 	if ! ./hash; then
         exit 2
     fi
+
+    echo "Checking code coverage..."
 	gcov djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c hash_test.c
 else
     echo "Failed to compile Hash module"

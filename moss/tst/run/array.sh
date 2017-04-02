@@ -1,20 +1,40 @@
-DIR="gen"
+DIR1="../gen"
+DIR2=".."
 
-cd ../
+# nazwa folderu możliwa do przekazania poprzez argument
+if [ $# -gt 0 ]; then
+    DIR1=$1
+fi
+# relatywna ścieżka do folderu w którym znajdują się pliki testowe
+if [ $# -gt 1 ]; then
+    DIR2=$2
+fi
 
 # utwórz folder gdy nie istnieje i przejdź do niego
-if [ ! -d $DIR ]; then
-	mkdir $DIR
+if [ ! -d $DIR1 ]; then
+	mkdir $DIR1
 fi
-cd $DIR
+cd $DIR1
 
 # kompiluj moduł i przetestuj go
-if gcc -Wall ../array_test.c ../../src/array.c -lm -lcriterion -o array -fprofile-arcs -ftest-coverage; then
+if gcc \
+	-Wall \
+	$DIR2/array_test.c \
+	$DIR2/../src/array.c \
+	-lm \
+	-lcriterion \
+	-o array \
+	-fprofile-arcs \
+	-ftest-coverage;
+then
 	echo "Dynamic Array module test compiled successfully!"
+    echo "Running test..."
 
 	if ! ./array; then
 		exit 2
 	fi
+
+    echo "Checking code coverage..."
 	gcov array.c array_test.c
 else
     echo "Failed to compile Dynamic Array module"
