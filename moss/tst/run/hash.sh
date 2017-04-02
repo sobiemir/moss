@@ -12,7 +12,7 @@ fi
 
 # utwórz folder gdy nie istnieje i przejdź do niego
 if [ ! -d $DIR1 ]; then
-	mkdir $DIR1
+    mkdir $DIR1
 fi
 cd $DIR1
 
@@ -42,15 +42,15 @@ if gcc \
     -fprofile-arcs \
     -ftest-coverage;
 then
-	echo "Hash module test compiled successfully!"
+    echo "Hash module test compiled successfully!"
     echo "Running test..."
 
-	if ! ./hash; then
+    if ! ./hash; then
         exit 2
     fi
 
     echo "Checking code coverage..."
-	gcov djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c hash_test.c
+    gcov djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c hash_test.c
 else
     echo "Failed to compile Hash module"
     exit 1

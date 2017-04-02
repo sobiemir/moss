@@ -27,4 +27,4 @@ cd "../gen"
 # sprawdź pokrycie kodu całości
 gcov \
     array.c \
-	djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c
+    djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c

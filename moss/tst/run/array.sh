@@ -12,30 +12,30 @@ fi
 
 # utwórz folder gdy nie istnieje i przejdź do niego
 if [ ! -d $DIR1 ]; then
-	mkdir $DIR1
+    mkdir $DIR1
 fi
 cd $DIR1
 
 # kompiluj moduł i przetestuj go
 if gcc \
-	-Wall \
-	$DIR2/array_test.c \
-	$DIR2/../src/array.c \
-	-lm \
-	-lcriterion \
-	-o array \
-	-fprofile-arcs \
-	-ftest-coverage;
+    -Wall \
+    $DIR2/array_test.c \
+    $DIR2/../src/array.c \
+    -lm \
+    -lcriterion \
+    -o array \
+    -fprofile-arcs \
+    -ftest-coverage;
 then
-	echo "Dynamic Array module test compiled successfully!"
+    echo "Dynamic Array module test compiled successfully!"
     echo "Running test..."
 
-	if ! ./array; then
-		exit 2
-	fi
+    if ! ./array; then
+        exit 2
+    fi
 
     echo "Checking code coverage..."
-	gcov array.c array_test.c
+    gcov array.c array_test.c
 else
     echo "Failed to compile Dynamic Array module"
     exit 1

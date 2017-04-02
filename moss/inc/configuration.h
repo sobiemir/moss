@@ -41,27 +41,27 @@
 #define MSD_HASSTDBOOL
 
 #ifdef _WIN32
-#	define MSD_SYSTEM_WINDOWS
+#   define MSD_SYSTEM_WINDOWS
 #elif defined __linux__
-#	define MSD_SYSTEM_LINUX
+#   define MSD_SYSTEM_LINUX
 #endif
 
 #ifdef _MSC_VER
-#	define MSD_COMPILER_MSC
+#   define MSD_COMPILER_MSC
 #elif defined __GNUC__
-#	define MSD_COMPILER_GNUC
+#   define MSD_COMPILER_GNUC
 #endif
 
 #ifdef MSD_COMPILER_MSC
-#	define _CRT_SECURE_NO_WARNINGS
+#   define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #ifndef __FUNCTION__
-#	ifdef __func__
-#		define __FUNCTION__ __func__
-#	else
-#		define __FUNCTION__ "(null)"
-#	endif
+#   ifdef __func__
+#       define __FUNCTION__ __func__
+#   else
+#       define __FUNCTION__ "(null)"
+#   endif
 #endif
 
 #include <assert.h>
@@ -219,64 +219,64 @@ enum MSE_ERROR_CODE
 // #define MSD_UNICODE_STRINGS
 
 #define MSD_PRINTF_BUFFER   1024        // rozmiar bufora funkcji ms_printf i pokrewnych
-#define MSD_REPORT_BUFFER   512			// rozmiar bufora raportów
+#define MSD_REPORT_BUFFER   512         // rozmiar bufora raportów
 #define MSD_WCSMBS_BUFFER   256         // rozmiar bufora funkcji ms_wcsntombs i ms_mbsntowcs
-#define MSD_FLT_MAX_10_EXP  2			// ilość cyfr w FLT_MAX_10_EXP
-#define MSD_DBL_MAX_10_EXP  3			// ilość cyfr w DBL_MAX_10_EXP
-#define MSD_LDBL_MAX_10_EXP 4			// ilość cyfr w LDBL_MAX_10_EXP
+#define MSD_FLT_MAX_10_EXP  2           // ilość cyfr w FLT_MAX_10_EXP
+#define MSD_DBL_MAX_10_EXP  3           // ilość cyfr w DBL_MAX_10_EXP
+#define MSD_LDBL_MAX_10_EXP 4           // ilość cyfr w LDBL_MAX_10_EXP
 
 // skrócone typy danych int i domyślnie przyjmowane wartości
-typedef unsigned char      uchar;		// 8 bitów
-typedef unsigned short     ushort;		// 16 bit
-typedef unsigned int       uint;		// 16/32 bity
-typedef unsigned long      ulong;		// 32/64 bity
-typedef unsigned long long ullong;		// 64 bity
-typedef long long          llong;		// 64 bity
-typedef long double        ldouble;		// 64/80/128 bitów
+typedef unsigned char      uchar;       // 8 bitów
+typedef unsigned short     ushort;      // 16 bit
+typedef unsigned int       uint;        // 16/32 bity
+typedef unsigned long      ulong;       // 32/64 bity
+typedef unsigned long long ullong;      // 64 bity
+typedef long long          llong;       // 64 bity
+typedef long double        ldouble;     // 64/80/128 bitów
 
 // unicode
 #ifdef MSD_UNICODE_STRINGS
-#	include <wchar.h>
-	typedef wchar_t tchar;
+#   include <wchar.h>
+    typedef wchar_t tchar;
 
 #   define MSD_EOF WEOF
     
-#	define MSF_TEXT(text) _MSF_TEXT(text)
-#	define _MSF_TEXT(text) L##text
-#	define MSF_STRLEN(text) wcslen(text)
-#	define MSF_STRCPY(dst,src) wcscpy(dst,src)
-#	define MSF_STRNCPY(dst,src,max) wcsncpy(dst,src,max)
-#	define MSF_FPUTC(chr,file) fputwc(chr,file)
-#	define MSF_FPUTS(str,file) fputws(str,file)
-#	define MSF_STRCHR(str,chr) wcschr(str,chr)
+#   define MSF_TEXT(text) _MSF_TEXT(text)
+#   define _MSF_TEXT(text) L##text
+#   define MSF_STRLEN(text) wcslen(text)
+#   define MSF_STRCPY(dst,src) wcscpy(dst,src)
+#   define MSF_STRNCPY(dst,src,max) wcsncpy(dst,src,max)
+#   define MSF_FPUTC(chr,file) fputwc(chr,file)
+#   define MSF_FPUTS(str,file) fputws(str,file)
+#   define MSF_STRCHR(str,chr) wcschr(str,chr)
 
-#	define msd_text(a)          L##a
-#	define msd_strlen(a)        wcslen(a)
-#	define msd_strcpy(a,b)      wcscpy(a,b)
-#	define msd_fputs(a,b)       fputws(a,b)
-#	define msd_printf(a,...)    wprintf(a, ##__VA_ARGS__)
-#	define msd_vsprintf(a,b,c)  vswprintf(a,1024,b,c)
-#	define msd_sprintf(a,b,...) swprintf(a,1024,b,##__VA_ARGS__)
+#   define msd_text(a)          L##a
+#   define msd_strlen(a)        wcslen(a)
+#   define msd_strcpy(a,b)      wcscpy(a,b)
+#   define msd_fputs(a,b)       fputws(a,b)
+#   define msd_printf(a,...)    wprintf(a, ##__VA_ARGS__)
+#   define msd_vsprintf(a,b,c)  vswprintf(a,1024,b,c)
+#   define msd_sprintf(a,b,...) swprintf(a,1024,b,##__VA_ARGS__)
 #else
-#	include <string.h>
-	typedef char tchar;
+#   include <string.h>
+    typedef char tchar;
 
 #   define MSD_EOF EOF
     
-#	define MSF_TEXT(text)      text
-#	define MSF_STRLEN(text)    strlen(text)
-#	define MSF_STRCPY(dst,src) strcpy(dst,src)
-#	define MSF_STRNCPY(dst,src,max) strncpy(dst,src,max)
-#	define MSF_FPUTC(chr,file) fputc(chr,file)
-#	define MSF_FPUTS(str,file) fputs(str,file)
-#	define MSF_STRCHR(str,chr) strchr(str,chr)
+#   define MSF_TEXT(text)      text
+#   define MSF_STRLEN(text)    strlen(text)
+#   define MSF_STRCPY(dst,src) strcpy(dst,src)
+#   define MSF_STRNCPY(dst,src,max) strncpy(dst,src,max)
+#   define MSF_FPUTC(chr,file) fputc(chr,file)
+#   define MSF_FPUTS(str,file) fputs(str,file)
+#   define MSF_STRCHR(str,chr) strchr(str,chr)
 
-#	define msd_text(a)          a
-#	define msd_strlen(a)        strlen(a)
-#	define msd_strcpy(a,b)      strcpy(a,b)
-#	define msd_fputs(a,b)       fputs(a,b)
-#	define msd_vsprintf(a,b,c)  vsprintf(a,b,c)
-#	define msd_sprintf(a,b,...) sprintf(a,b,##__VA_ARGS__)
+#   define msd_text(a)          a
+#   define msd_strlen(a)        strlen(a)
+#   define msd_strcpy(a,b)      strcpy(a,b)
+#   define msd_fputs(a,b)       fputs(a,b)
+#   define msd_vsprintf(a,b,c)  vsprintf(a,b,c)
+#   define msd_sprintf(a,b,...) sprintf(a,b,##__VA_ARGS__)
 #endif
 
 #define MSD_HASH_LOOP_UNROLL 4
