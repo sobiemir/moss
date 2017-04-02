@@ -22,9 +22,9 @@
 
 #   define MSD_HASH_MURMUR         /* funkcje skrótu używające algorytmów z rodziny Murmur */
 #   define MSD_HASH_JOAAT          /* funkcje skrótu używające algorytmu JOAAT */
-#   define MSD_HASH_FNV1           /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
+#   define MSD_HASH_FNV            /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
 #   define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
-#   define MSD_HASH_DJB2           /* funkcje skrótu używające algorytmów z rodziny DJB2 */
+#   define MSD_HASH_DJB            /* funkcje skrótu używające algorytmów z rodziny DJB2 */
 #   define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
 #endif
 

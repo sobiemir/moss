@@ -6,7 +6,7 @@ cd ../
 if [ ! -d $DIR ]; then
 	mkdir $DIR
 fi
-cd gen
+cd $DIR
 
 # kompiluj moduł i przetestuj go
 if gcc \
@@ -25,9 +25,12 @@ if gcc \
     -ftest-coverage;
 then
 	echo "Hash module test compiled successfully!"
-	./hash
+
+	if ! ./hash; then
+        exit 2
+    fi
 	gcov djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c hash_test.c
 else
     echo "Failed to compile Hash module"
-    exit
+    exit 1
 fi
