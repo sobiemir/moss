@@ -348,7 +348,7 @@ Test( moss_test, fnv1a,
  * Sprawdza warianty: standardowy.
  * Ze względu na algorytm nie zostały utworzone warianty mbs i wcs.
  */
-Test( moss_test, murmur,
+Test( moss_test, murmur1,
     .description = "Tests value returned by murmur function." )
 {
     const char *atest[] = {
