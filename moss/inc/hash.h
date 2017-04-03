@@ -405,7 +405,7 @@
      * @param  length Długość danych.
      * @return        Skrót w postaci 32 bitowej liczby.
      */
-    uint32_t ms_hash_32_murmur( const void *data, size_t length );
+    uint32_t ms_hash_32_murmur1( const void *data, size_t length );
 
 #   ifdef MSD_HASH_MBS_FUNCTIONS
 

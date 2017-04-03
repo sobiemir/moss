@@ -244,7 +244,7 @@ Algorytmy z rodziny Murmur
     :param length: Długość danych wyrażona w bajtach.
     :return: Obliczony przez algorytm skrót danych.
 
-.. c:function:: uint32_t ms_hash_32_murmur( const void* data, size_t length )
+.. c:function:: uint32_t ms_hash_32_murmur1( const void* data, size_t length )
 
     Oblicza skrót danych podanych w parametrze, na podstawie algorytmu *MurmurHash1*.
     Z powodu budowy algorytmu, nie jest możliwe utworzenie rozwiązania dedykowanego dla danych, zakończonych

@@ -110,7 +110,7 @@ uint32_t ms_hash_32_murmur2( const void *data, size_t length )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_murmur( const void *data, size_t length )
+uint32_t ms_hash_32_murmur1( const void *data, size_t length )
 {
     /* ta linijka uniemożliwia stworzenie rozwiązania dedykowanego dla mbs i wcs */
     uint32_t hash = MSD_HASH_SEED ^ (length * MSN_H32M1);

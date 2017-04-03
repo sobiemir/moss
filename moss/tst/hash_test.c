@@ -360,13 +360,13 @@ Test( moss_test, murmur,
     uint32_t result;
 
     /* testy dla zwykłej tablicy z elementami o typie char, wersja 32 bitowa */
-    result = ms_hash_32_murmur( atest[0], strlen(atest[0]) );
+    result = ms_hash_32_murmur1( atest[0], strlen(atest[0]) );
     cr_assert_eq( result, 0xAF772697 );
-    result = ms_hash_32_murmur( atest[1], strlen(atest[1]) );
+    result = ms_hash_32_murmur1( atest[1], strlen(atest[1]) );
     cr_assert_eq( result, 0xEF00677C );
-    result = ms_hash_32_murmur( atest[2], strlen(atest[2]) );
+    result = ms_hash_32_murmur1( atest[2], strlen(atest[2]) );
     cr_assert_eq( result, 0x66F61852 );
-    result = ms_hash_32_murmur( atest[3], strlen(atest[3]) );
+    result = ms_hash_32_murmur1( atest[3], strlen(atest[3]) );
     cr_assert_eq( result, 0xC0AE799F );
 }
 
