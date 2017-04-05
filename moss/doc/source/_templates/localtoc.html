@@ -1,15 +1,39 @@
+{#
+ *  Moss Library >>> http://moss.aculo.pl
+ *
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
+ *
+ *  See LICENSE file for copyright information.
+ #}
+
 <h3><a href="{{ pathto(master_doc) }}">{{ _('Table Of Contents') }}</a></h3>
 {%- if display_toc %}
-  {{ toc }}
-  <div class="custom-index container">
-    <script type="text/javascript" src={{ pathto(master_doc)[:-10] + '_static/apitoc.js' }}></script>
-  </div>
+    {{ toc }}
 {%- endif %}
-<!--
-<h3><a href="{{ pathto(master_doc) }}">{{ _('Table Of Contents') }}</a></h3>
-{%- if display_toc %}
-  {{ toc }}
-{%- endif %}
-<div class="custom-index container">
-  <script type="text/javascript" src={{ pathto(master_doc)[:-10] + '_static/pymunk.js' }}></script>
-</div>-->
+
+<div class="api-members" role="note" aria-label="source link">
+    <div class="hidden div-func"><h4>{{ _('Funkcje') }}</h4>
+        <ul>
+        </ul>
+    </div>
+    <div class="hidden div-type"><h4>{{ _('Typy') }}</h4>
+        <ul>
+        </ul>
+    </div>
+    <div class="hidden div-var"><h4>{{ _('Zmienne') }}</h4>
+        <ul>
+        </ul>
+    </div>
+    <div class="hidden div-macro"><h4>{{ _('Makra') }}</h4>
+        <ul>
+        </ul>
+    </div>
+    <div class="custom-index container">
+        <script type="text/javascript" src={{ pathto(master_doc)[:-10] + '_static/printapi.js' }}></script>
+    </div>
+</div>

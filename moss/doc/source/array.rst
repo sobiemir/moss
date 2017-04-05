@@ -1538,3 +1538,8 @@ Baza funkcji pochodnych
         * :c:member:`MSE_ERROR_CODES.MSEC_MEMORY_ALLOCATION`
         * :c:member:`MSE_ERROR_CODES.MSEC_OUT_OF_RANGE`
         * :c:member:`MSE_ERROR_CODES.MSEC_INVALID_ARGUMENT`
+
+.. container:: gitlinks
+
+    * `Pokaż nagłówek modułu <https://raw.githubusercontent.com/sobiemir/moss/master/moss/inc/array.h>`_
+    * `Pokaż źródło modułu <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/array.c>`_

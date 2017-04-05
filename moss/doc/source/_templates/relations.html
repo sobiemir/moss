@@ -1,0 +1,27 @@
+{#
+ *  Moss Library >>> http://moss.aculo.pl
+ *
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
+ *
+ *  See LICENSE file for copyright information.
+ #}
+
+{%- if prev or next %}
+    <h3>{{ _('Nawigacja') }}</h3>
+    <p>
+    {%- if prev %}
+        <a href="{{ prev.link|e }}" title="{{ prev.title }}">{{ _('Previous topic') }}</a><br />
+    {%- endif %}
+    {%- if next %}
+        <a href="{{ next.link|e }}" title="{{ next.title }}">{{ _('Next topic') }}<br /></a>
+    {%- endif %}
+    {%- if hasdoc('genindex') %}
+        <a title="{{ _('Index') }}" href="{{ pathto('genindex') }}">{{ _('Index') }}</a>
+    {%- endif %}
+    </p>
+{%- endif %}

@@ -714,3 +714,13 @@ Algorytm xxHash
 
     :param data: Dane na podstawie których ma być tworzony skrót.
     :return: Obliczony przez algorytm skrót danych.
+
+.. container:: gitlinks
+
+    * `Pokaż nagłówek modułu <https://raw.githubusercontent.com/sobiemir/moss/master/moss/inc/hash.h>`_
+    * `Pokaż źródło rodziny DJB <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/hash/djb.c>`_
+    * `Pokaż źródło rodziny SDBM <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/hash/sdbm.c>`_
+    * `Pokaż źródło rodziny JOAAT <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/hash/joaat.c>`_
+    * `Pokaż źródło rodziny FNV <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/hash/fnv.c>`_
+    * `Pokaż źródło rodziny Murmur <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/hash/murmur.c>`_
+    * `Pokaż źródło rodziny xxHash <https://raw.githubusercontent.com/sobiemir/moss/master/moss/src/hash/xxhash.c>`_

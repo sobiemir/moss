@@ -1,3 +1,16 @@
+/*
+ *  Moss Library >>> http://moss.aculo.pl
+ *
+ *     /'\_/`\                           
+ *    /\      \    ___     ____    ____  
+ *    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ *     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ *      \ \_\\ \_\ \____/\/\____/\/\____/
+ *       \/_/ \/_/\/___/  \/___/  \/___/ 
+ *
+ *  See LICENSE file for copyright information.
+ */
+
 div.displaynone h3 {
 	display: none;
 }
@@ -13,7 +26,6 @@ div.bodywrapper {
 .section dl dd > p, .section > p {
 	text-align: justify;
 }
-
 .section dl.type > dt,
 .section dl.function > dt,
 .section dl.member > dt,
@@ -28,12 +40,10 @@ div.bodywrapper {
 	background: #eee;
 	margin-top: 10px;
 }
-
 .headerlink {
 	margin-left: 5px;
 	font-size: 1.1em !important;
 }
-
 .section dl.type > dt em,
 .section dl.function > dt em,
 .section dl.member > dt em,
@@ -41,15 +51,12 @@ div.bodywrapper {
 .section dl.macro > dt em {
 	color: #222;
 }
-
 code.descname {
 	font-size: 1.1em;
 }
-
 .sphinxsidebarwrapper ul li ul {
 	margin-right: 0;
 }
-
 dt span.sig-paren:first-of-type {
 	padding-right: 6px;
 }
@@ -72,4 +79,39 @@ table.parameters td.field-body {
 }
 dd table {
 	margin-bottom: 20px;
+}
+div.gitlinks {
+	display: none;
+}
+div.sphinxsidebar ul ul ul {
+	list-style: circle;
+}
+div.api-members ul li {
+	color: #333;
+}
+div.api-members ul li ul {
+	list-style: none;
+	margin-left: 10px;
+}
+li.api-member {
+	font-family: monospace;
+	font-size: 1.1em;
+}
+li.api-member a {
+	color: #333;
+	font-weight: bold;
+}
+div.api-members ul li > p {
+	padding: 3px 0;
+	margin: 10px 0;
+	color: #333;
+}
+div.sphinxsidebar a {
+	color: #333;
+}
+.hidden {
+	display: none;
+}
+div.sphinxsidebar p {
+	padding: 0 20px;
 }
