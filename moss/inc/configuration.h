@@ -15,7 +15,7 @@
 #ifndef __MSH_CONFIGURATION__
 #define __MSH_CONFIGURATION__
 
-/* CCMACRO pozwala na definiowanie makr bezpośrednio przez kompilator */
+/* MSD_CCMACRO pozwala na definiowanie makr bezpośrednio przez kompilator */
 #ifndef CCMACRO
 #   define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (char*) */
 #   define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (wchar_t*) */
@@ -26,6 +26,20 @@
 #   define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
 #   define MSD_HASH_DJB            /* funkcje skrótu używające algorytmów z rodziny DJB2 */
 #   define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
+
+    /* sdbm         [SDBM]
+     * djb2         [DJB]
+     * djb2a        [DJB]
+     * joaat        [JOAAT]
+     * fnv1         [FNV]
+     * fnv1a        [FNV]
+     * murmur1      [MURMUR]
+     * murmur2      [MURMUR]
+     * murmur3      [MURMUR]
+     * xxhash       [XXHASH]
+     */
+#   define MSD_STRING_HASH sdbm     /* funkcja skrótu używana domyślnie dla ciągu znaków */
+#   define MSD_STRING_HASH_64       /* preferuj 64 bitową wersję skrótu gdy jest dostępna */
 #endif
 
 /* to makro musi być, sprawdza czy kompilator je zdefiniował */
@@ -35,6 +49,63 @@
 
 #define IGRET   /* ignorowanie zwracanej wartości przez funkcję */
 #define IGVAR   /* ignorowanie zmiennej w przypadku gdy nie jest używana */
+
+/* sprawdź czy skrót dla ciągu znaków został włączony, jeżeli tak, wymuś dołączanie danego algorytmu */
+#ifdef MSD_STRING_HASH
+    /* sdbm, tylko wersja 32 bitowa */
+#   if MSD_STRING_HASH == sdbm
+#       ifndef MSD_HASH_SDBM
+#           define MSD_HASH_SDBM
+#       endif
+#       undef MSD_STRING_HASH_64
+#       define MSD_STRING_HASH_DEDICATED
+
+    /* djb2 / djb2a, tylko wersja 32 bitowa */
+#   elif MSD_STRING_HASH == djb2 || MSD_STRING_HASH == djb2a
+#       ifndef MSD_HASH_DJB
+#           define MSD_HASH_DJB
+#       endif
+#       undef MSD_STRING_HASH_64
+#       define MSD_STRING_HASH_DEDICATED
+
+    /* joaat, tylko wersja 32 bitowa */
+#   elif MSD_STRING_HASH == joaat
+#       ifndef MSD_HASH_JOAAT
+#           define MSD_HASH_JOAAT
+#       endif
+#       undef MSD_STRING_HASH_64
+#       define MSD_STRING_HASH_DEDICATED
+
+    /* fnv1 / fnv1a, bez problemów */
+#   elif MSD_STRING_HASH == fnv1 || MSD_STRING_HASH == fnv1a
+#       ifndef MSD_HASH_FNV
+#           define MSD_HASH_FNV
+#       endif
+#       define MSD_STRING_HASH_DEDICATED
+
+    /* murmur - tylko 2 ma wersje 64 bitową oraz tylko 3 algorytmy dedykowane dla ciągu znaków */
+#   elif MSD_STRING_HASH == murmur1 || MSD_STRING_HASH == murmur2 || MSD_STRING_HASH == murmur3
+#       ifndef MSD_HASH_MURMUR
+#           define MSD_HASH_MURMUR
+#       endif
+#       if MSD_STRING_HASH != murmur2
+#           undef MSD_STRING_HASH_64
+#       endif
+#       if MSD_STRING_HASH == murmur3
+#           define MSD_STRING_HASH_DEDICATED
+#       endif
+
+    /* xxhash, bez problemów */
+#   elif MSD_STRING_HASH == xxhash
+#       ifndef MSD_HASH_XXHASH
+#           define MSD_HASH_XXHASH
+#       endif
+#       define MSD_STRING_HASH_DEDICATED
+#   endif
+#endif
+
+
+
 
 #define MSD_DEBUG
 #define MSD_ERRORINERRNO
@@ -68,6 +139,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <errno.h>
+#include <math.h>
 
 #ifdef MSD_HASSTDBOOL
 #   include <stdbool.h>
@@ -204,8 +276,6 @@ enum MSE_ERROR_CODE
     MSEC_FILE_OPEN,
     MSEC_CHAIN_ALLOCATION
 };
-
-
 
 /* Domyślny rozmiar tablicy używany w przypadku podania 0 podczas inicjalizacji. */
 #define MSD_ARRAY_INITIAL_SIZE 32

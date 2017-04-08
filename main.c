@@ -12,9 +12,12 @@
  */
 
 #include <stdio.h>
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
-#include <allegro5/allegro_primitives.h>
+#include <locale.h>
+// #include <fcntl.h>
+
+// #include <allegro5/allegro.h>
+// #include <allegro5/allegro_image.h>
+// #include <allegro5/allegro_primitives.h>
 
 #include "moss/moss.h"
 
@@ -39,5 +42,39 @@ const int LIST[] =
 
 int main( int argc, char **argv )
 {
+    int retval;
+    char chr[MB_LEN_MAX + 1];
+    size_t shift = 0;
+
+    MS_STRING str1;
+    MS_STRING str2;
+    MS_STRING str3;
+
+    setlocale( LC_ALL, "pl_PL.utf8" );
+
+    if( ms_string_init_cs(&str1, "TestCSTRc", 0) )
+        printf( "Błąd podczas tworzenia CSTR\n" );
+    if( (retval = ms_string_init_mbs(&str2, "Zażółć gęślą jaźń", 0)) )
+        printf( "Błąd podczas tworzenia MBSTR %X\n", retval );
+    if( ms_string_init_wcs(&str3, L"Źdźbło łączy trawy", 0) )
+        printf( "Błąd podczas tworzenia WSTR\n" );
+
+    // _setmode( _fileno(stdout), 0x00020000 );
+
+    printf( "%s\n", str2.CData );
+
+    for( retval = 0; retval < str2.MBInfo->Length; ++retval )
+    {
+        size_t size = ms_array_get( str2.MBInfo, size_t, retval );
+        memcpy( chr, &str2.CData[shift], size );
+        chr[size] = '\0';
+        printf( "Size: %zu > Char: %s > Shift: 0x%02lX\n", size, chr, shift );
+        shift += size;
+    }
+
+    ms_string_free( &str1 );
+    ms_string_free( &str2 );
+    ms_string_free( &str3 );
+
     return 0;
 }
