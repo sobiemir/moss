@@ -61,12 +61,12 @@
 #   endif
 #endif
 
-enum MSE_STRING_TYPE
+typedef struct MSS_MBINFO
 {
-    MSST_CHAR,
-    MSST_MULTIBYTE,
-    MSST_WIDECHAR
-};
+    size_t        Offset;
+    unsigned char Bytes;
+}
+MS_MBINFO;
 
 typedef struct MSS_STRING
 {

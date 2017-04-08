@@ -79,7 +79,7 @@ int ms_string_init_cs( MS_STRING *str, const char *cstr, size_t capacity )
 
     len = strlen( cstr );
 
-    /* w pojemności uwzględnij znak NULL na końcu tekstu */
+    // w pojemności uwzględnij znak NULL na końcu tekstu
     if( len >= capacity )
         capacity = len + 1;
 
@@ -98,7 +98,7 @@ int ms_string_init_cs( MS_STRING *str, const char *cstr, size_t capacity )
             ms_string_free( str ),
             MSEC_MEMORY_ALLOCATION;
 
-    /* kopiuj tekst wraz ze znakiem NULL */
+    // kopiuj tekst wraz ze znakiem NULL
     IGRET memcpy( str->CData, cstr, len + 1 );
 
     str->FuncIncrease = MSC_ArrayFunctions.IncMultiply;
@@ -117,8 +117,8 @@ int ms_string_init_mbs( MS_STRING *str, const char *mbstr, size_t capacity )
 
     len = strlen( mbstr );
 
-    /* w tym przypadku zmienna len nie przechowuje ilości znaków, które zawiera ciąg
-       ale ilość bajtów na których jest on zbudowany */
+    // w tym przypadku zmienna len nie przechowuje ilości znaków, które zawiera ciąg
+    // ale ilość bajtów na których jest on zbudowany
     if( len >= capacity )
         capacity = len + 1;
 
@@ -139,15 +139,15 @@ int ms_string_init_mbs( MS_STRING *str, const char *mbstr, size_t capacity )
 
     IGRET memcpy( str->CData, mbstr, len + 1 );
 
-    /* w odróżnieniu od zwykłego ciągu znaków, ten zawiera informacje o nich,
-       gdyż jeden znak może rozciągać się na kilka bajtów */
-    str->MBInfo = ms_array_alloc( sizeof(size_t), capacity );
+    // w odróżnieniu od zwykłego ciągu znaków, ten zawiera informacje o nich
+    // gdyż jeden znak może rozciągać się na kilka bajtów
+    str->MBInfo = ms_array_alloc( sizeof(MS_MBINFO), capacity );
     if( !str->MBInfo )
         return
             ms_string_free( str ),
             MSEC_MEMORY_ALLOCATION;
 
-    /* pobierz informacje o wielobajtowym ciągu znaków */
+    // pobierz informacje o wielobajtowym ciągu znaków
     if( (retval = ms_string_mbs_info(str->MBInfo, mbstr, len)) )
         return
             ms_string_free( str ),
@@ -180,14 +180,14 @@ int ms_string_init_wcs( MS_STRING *str, const wchar_t *wstr, size_t capacity )
     str->Hashed   = FALSE;
     str->MBInfo   = NULL;
 
-    /* ilość bajtów jest równa rozmiarowi wchar_t pomnożonemu przez capacity */
+    // ilość bajtów jest równa rozmiarowi wchar_t pomnożonemu przez capacity
     str->WData = malloc( sizeof( *str->WData) * capacity );
     if( !str->WData )
         return
             ms_string_free( str ),
             MSEC_MEMORY_ALLOCATION;
 
-    /* kopiowanie ciągu wchar_t */
+    // kopiowanie ciągu wchar_t
     IGRET memcpy( str->CData, wstr, (len + 1) * sizeof *str->WData );
 
     str->FuncIncrease = MSC_ArrayFunctions.IncMultiply;
@@ -233,7 +233,7 @@ int ms_string_realloc( MS_STRING *str, size_t capacity )
     assert( str );
     assert( str->CData );
 
-    // // powiększ ilość pamięci - w przypadku dokładnego zwiększania, wartość musi być podana w capacity
+    // powiększ ilość pamięci - w przypadku dokładnego zwiększania, wartość musi być podana w capacity
     if( !capacity )
     {
         if( !str->FuncIncrease )
@@ -248,7 +248,7 @@ int ms_string_realloc( MS_STRING *str, size_t capacity )
     else if( str->Length > capacity )
         SETERRNOANDRETURN( MSEC_DATA_OVERFLOW );
 
-    // przydziel nową ilość pamięci
+    // przydziel nową ilość pamięci */
     if( !(tmp = realloc(str->CData, capacity * (str->Wide ? sizeof(wchar_t) : 1))) )
         return MSEC_MEMORY_ALLOCATION;
 
@@ -288,7 +288,130 @@ int ms_string_realloc_min( MS_STRING *str, size_t min )
     return MSEC_OK;
 }
 
-// ========================================================================================================================================
+/* ================================================================================================================== */
+
+int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t count )
+{
+    char *ptr;
+
+    assert( str );
+    assert( str->CData );
+    assert( cstr );
+
+    /* gdy nie została podana ilość znaków, oblicz ją */
+    if( count == 0 )
+        count = strlen( cstr );
+    
+    /* standardowy ciąg znaków */
+    if( !str->MBInfo && !str->Wide )
+    {
+        if( index > str->Length )
+            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+        
+        if( str->Length + count > str->Capacity )
+        {
+            int ercode;
+            if( (ercode = ms_string_realloc_min(str, str->Length + count)) )
+                return ercode;
+        }
+        else if( !count )
+            SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+
+        ptr = str->CData + index;
+
+        if( index != str->Length )
+            IGRET memmove( ptr + count, ptr, str->Length - index );
+
+        IGRET memcpy( ptr, cstr, count );
+        str->Length += count;
+    }
+    /* ciąg znaków zawierający znaki, które mogą być większe niż jeden bajt */
+    else if( str->MBInfo )
+    {
+        MS_MBINFO *mbinfo;
+        size_t offset;
+        size_t iter;
+
+        if( index > str->MBInfo->Length )
+            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+        
+        if( str->Length + count + 1 > str->Capacity )
+        {
+            int ercode;
+            if( (ercode = ms_string_realloc_min(str, str->Length + count)) )
+                return ercode;
+        }
+        else if( !count )
+            SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+
+        if( str->MBInfo->Length + count > str->MBInfo->Capacity )
+        {
+            int ercode;
+            if( (ercode = ms_array_realloc_min(str->MBInfo, str->MBInfo->Length + count)) )
+                return ercode;
+        }
+
+        if( index != str->MBInfo->Length )
+        {
+            offset = ms_array_get(str->MBInfo, MS_MBINFO, index).Offset;
+
+            ptr = (char*)&ms_array_get(str->MBInfo, MS_MBINFO, index);
+            IGRET memmove( ptr + count * sizeof(MS_MBINFO), ptr, (str->MBInfo->Length - index) * sizeof(MS_MBINFO) );
+
+            ptr = str->CData + offset;
+            IGRET memmove( ptr + count, ptr, str->Length - offset );
+        }
+        else
+            ptr    = str->CData + str->Length,
+            offset = str->Length;
+
+        str->MBInfo->Length += count;
+
+        IGRET memcpy( ptr, cstr, count );
+        str->Length += count;
+        str->CData[str->Length] = '\0';
+
+        iter = count;
+        while( iter-- )
+        {
+            mbinfo = &ms_array_get( str->MBInfo, MS_MBINFO, index );
+            mbinfo->Bytes  = 1;
+            mbinfo->Offset = offset;
+            index++;
+            offset += 1;
+        }
+        while( index != str->MBInfo->Length )
+            ms_array_get( str->MBInfo, MS_MBINFO, index ).Offset += count,
+            index++;
+    }
+    /* rozszerzony ciąg znaków wchar_t - szybkie dodawanie */
+    else
+    {
+        if( index > str->Length )
+            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+        
+        if( str->Length + count > str->Capacity )
+        {
+            int ercode;
+            if( (ercode = ms_string_realloc_min(str, str->Length + count)) )
+                return ercode;
+        }
+        else if( !count )
+            SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+
+        ptr = str->CData + index * sizeof *str->WData;
+
+        if( index != str->Length )
+            IGRET memmove( ptr + count * sizeof *str->WData, ptr, (str->Length - index) * sizeof *str->WData );
+
+        IGRET memcpy( ptr, cstr, count * sizeof *str->WData );
+        str->Length += count;
+    }
+
+    return MSEC_OK;
+}
+
+/* ================================================================================================================== */
 
 size_t ms_string_hash( MS_STRING *str )
 {
@@ -298,7 +421,7 @@ size_t ms_string_hash( MS_STRING *str )
     if( str->Hashed )
         return str->Hash;
 
-    /* długość jest obliczona, więc funkcji dedykowanych nie potrzeba */
+    // długość jest obliczona, więc funkcji dedykowanych nie potrzeba
     if( str->Wide )
         return ms_string_hash_byte( str->WData, str->Length * sizeof(wchar_t) );
 
@@ -322,7 +445,7 @@ void ms_string_clear( MS_STRING *str )
     else
         str->CData[0] = '\0';
     
-    /* wyczyść informacje o znakach, gdy oczywiśćie istnieją */
+    // wyczyść informacje o znakach, gdy oczywiśćie istnieją
     if( str->MBInfo )
         ms_array_clear( str->MBInfo );
 }
@@ -343,7 +466,7 @@ void ms_string_clean( MS_STRING *str )
     str->Wide     = FALSE;
     str->Hashed   = FALSE;
 
-    /* usuń informacje o szczegółach dotyczących znaków */
+    // usuń informacje o szczegółach dotyczących znaków
     if( str->MBInfo )
         ms_array_free( str->MBInfo ),
         str->MBInfo = NULL;
@@ -369,19 +492,20 @@ void ms_string_free( MS_STRING *str )
 int ms_string_mbs_info( MS_ARRAY *info, const char *mbs, size_t bytes )
 {
     int len,
-        retval;
+        ercode;
+    MS_MBINFO mbinfo = { 0, 0 };
 
     assert( info );
     assert( info->Items );
 
-    /* oblicz długość ciągu znaków gdy nie została ona podana */
+    // oblicz długość ciągu znaków gdy nie została ona podana
     if( bytes == 0 )
         bytes = strlen( mbs );
 
-    /* resetuj stan przesunięcia "shift state" */
+    // resetuj stan przesunięcia "shift state"
     mblen( NULL, 0 );
 
-    /* oblicz rozmiar pojedynczych znaków */
+    // oblicz rozmiar pojedynczych znaków
     while( bytes > 0 )
     {
         len = mblen( mbs, bytes );
@@ -390,9 +514,14 @@ int ms_string_mbs_info( MS_ARRAY *info, const char *mbs, size_t bytes )
             return MSEC_INVALID_VALUE;
         else if( len == 0 )
             break;
-        if( (retval = ms_array_push_value(info, &len)) )
-            return retval;
+
+        mbinfo.Bytes = len;
+
+        if( (ercode = ms_array_push_value(info, &mbinfo)) )
+            return ercode;
         
+        mbinfo.Offset += len;
+
         bytes -= len;
         mbs   += len;
     }

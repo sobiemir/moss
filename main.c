@@ -44,7 +44,6 @@ int main( int argc, char **argv )
 {
     int retval;
     char chr[MB_LEN_MAX + 1];
-    size_t shift = 0;
 
     MS_STRING str1;
     MS_STRING str2;
@@ -63,13 +62,22 @@ int main( int argc, char **argv )
 
     printf( "%s\n", str2.CData );
 
+    if( (retval = ms_string_insert_cs(&str2, 7, "- porzeczka - ", 0)) )
+        printf( "Błąd podczas wstawiania CSTR\n" );
+
+    printf( "%s\n", str2.CData );
+
+    if( (retval = ms_string_insert_cs(&str2, str2.MBInfo->Length, " STOP COMP.", 0)) )
+        printf( "Błąd podczas wstawiania CSTR\n" );
+
+    printf( "%s\n", str2.CData );
+
     for( retval = 0; retval < str2.MBInfo->Length; ++retval )
     {
-        size_t size = ms_array_get( str2.MBInfo, size_t, retval );
-        memcpy( chr, &str2.CData[shift], size );
-        chr[size] = '\0';
-        printf( "Size: %zu > Char: %s > Shift: 0x%02lX\n", size, chr, shift );
-        shift += size;
+        MS_MBINFO info = ms_array_get( str2.MBInfo, MS_MBINFO, retval );
+        memcpy( chr, &str2.CData[info.Offset], info.Bytes );
+        chr[info.Bytes] = '\0';
+        printf( "Size: %d > Char: %s > Shift: 0x%02lX\n", info.Bytes, chr, info.Offset );
     }
 
     ms_string_free( &str1 );
