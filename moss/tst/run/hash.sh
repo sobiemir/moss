@@ -40,7 +40,7 @@ if gcc \
     $DIR2/../src/hash/murmur.c \
     $DIR2/../src/hash/sdbm.c \
     $DIR2/../src/hash/xxhash.c \
-    -D CCMACRO \
+    -D MSD_CCMACRO \
     -D MSD_HASH_MBS_FUNCTIONS \
     -D MSD_HASH_WCS_FUNCTIONS \
     -D MSD_HASH_MURMUR \

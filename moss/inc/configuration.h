@@ -16,7 +16,7 @@
 #define __MSH_CONFIGURATION__
 
 /* MSD_CCMACRO pozwala na definiowanie makr bezpośrednio przez kompilator */
-#ifndef CCMACRO
+#ifndef MSD_CCMACRO
 #   define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (char*) */
 #   define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (wchar_t*) */
 
