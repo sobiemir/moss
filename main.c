@@ -88,6 +88,11 @@ int main( int argc, char **argv )
 
     printf( "%s\n", str2.CData );
 
+    if( (retval = ms_string_insert_wcs(&str2, 7, L"Łącki", 0)) )
+        printf( "Błąd podczas wstawiania CSTR\n" );
+
+    printf( "%s\n", str2.CData );
+
     for( retval = 0; retval < str2.MBInfo->Length; ++retval )
     {
         MS_MBINFO info = ms_array_get( str2.MBInfo, MS_MBINFO, retval );

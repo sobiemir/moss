@@ -16,6 +16,7 @@
 #define __MSH_STRING__
 
 #include <stdlib.h>
+#include <limits.h>
 #include <wchar.h>
 
 #include "configuration.h"
@@ -115,10 +116,13 @@ int ms_string_insert_wc( MS_STRING *str, size_t index, wchar_t wchr );
 
 size_t ms_string_hash( MS_STRING *str );
 
+size_t ms_string_mbslen_wcs( const wchar_t *wstr, size_t count );
+size_t ms_string_mbslen( const char *mbstr, size_t bytes );
+int ms_string_mbsinfo( const char *mbs, MS_ARRAY *info, size_t bytes );
+int ms_string_wcstombs_info( const wchar_t *wstr, MS_ARRAY *info, size_t count );
+
 void ms_string_clear( MS_STRING *str );
 void ms_string_clean( MS_STRING *str );
 void ms_string_free( MS_STRING *str );
-
-int ms_string_mbs_info( MS_ARRAY *info, const char *mbs, size_t bytes );
 
 #endif

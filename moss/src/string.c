@@ -148,7 +148,7 @@ int ms_string_init_mbs( MS_STRING *str, const char *mbstr, size_t capacity )
             MSEC_MEMORY_ALLOCATION;
 
     // pobierz informacje o wielobajtowym ciągu znaków
-    if( (retval = ms_string_mbs_info(str->MBInfo, mbstr, len)) )
+    if( (retval = ms_string_mbsinfo(mbstr, str->MBInfo, len)) )
         return
             ms_string_free( str ),
             retval;
@@ -431,7 +431,7 @@ int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_
         return ercode;
     
     // pobierz informacje o znakach
-    if( (ercode = ms_string_mbs_info(&mbinfo, mbstr, count)) )
+    if( (ercode = ms_string_mbsinfo(mbstr, &mbinfo, count)) )
         return
             ms_array_free( &mbinfo ),
             ercode;
@@ -531,6 +531,135 @@ int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_
 
 /* ================================================================================================================== */
 
+int ms_string_insert_wcs( MS_STRING *str, size_t index, const wchar_t *wstr, size_t count )
+{
+    size_t         length;
+    unsigned char *ptr;
+
+    assert( str );
+    assert( str->CData );
+    assert( wstr );
+
+    // gdy ilość znaków nie została podana, oblicz ją
+    if( !count )
+        count = wcslen( wstr );
+
+    // ciąg znaków o zmiennej wielkości
+    if( str->MBInfo )
+    {
+        MS_ARRAY mbinfo;
+        int      ercode;
+        size_t   offset,
+                 bytes;
+
+        length = str->MBInfo->Length;
+        if( index > length )
+            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+        
+        // przydziel pamięć dla tablicy z informacją o poszczególnych znakach
+        if( (ercode = ms_array_init(&mbinfo, sizeof(MS_MBINFO), count)) )
+            return ercode;
+        
+        // pobierz informacje o znakach
+        if( (ercode = ms_string_wcstombs_info(wstr, &mbinfo, count)) )
+            return
+                ms_array_free( &mbinfo ),
+                ercode;
+
+        // zwiększ pojemność
+        if( str->Length + mbinfo.Length + 1 > str->Capacity )
+            if( (ercode = ms_string_realloc_min(str, str->Length + mbinfo.Length + 1)) )
+                return
+                    ms_array_free( &mbinfo ),
+                    ercode;
+
+        if( str->Length + count + 1 > str->Capacity )
+            if( (ercode = ms_string_realloc_min(str, str->Length + count + 1)) )
+                return
+                    ms_array_free( &mbinfo ),
+                    ercode;
+
+        // wstaw do tablicy elementy
+        if( (ercode = ms_array_insert_values(str->MBInfo, index, mbinfo.Items, mbinfo.Length)) )
+            return
+                ms_array_free( &mbinfo ),
+                ercode;
+        
+        // ilość bajtów
+        bytes = ((MS_MBINFO*)mbinfo.Items)[mbinfo.Length - 1].Offset +
+                ((MS_MBINFO*)mbinfo.Items)[mbinfo.Length - 1].Bytes;
+
+        if( index != length )
+            offset = ms_array_get( str->MBInfo, MS_MBINFO, index + mbinfo.Length ).Offset,
+            ptr    = (unsigned char*)(str->CData + offset),
+            IGRET memmove( ptr + bytes, ptr, str->Length - offset );
+        else
+            ptr    = (unsigned char*)(str->CData + str->Length),
+            offset = str->Length;
+
+        IGRET wctomb( NULL, 0 );
+        str->Length += bytes;
+        length = count;
+
+        while( count-- )
+            ptr += wctomb( (char*)ptr, *wstr++ );
+
+        str->CData[str->Length] = '\0';
+
+        // aktualizuj przesunięcie nowych znaków
+        while( length-- )
+            ms_array_get( str->MBInfo, MS_MBINFO, index++ ).Offset += offset;
+
+        // aktualizuj przesunięcie starych znaków
+        while( index < str->MBInfo->Length )
+            ms_array_get( str->MBInfo, MS_MBINFO, index++ ).Offset += bytes;
+
+        ms_array_free( &mbinfo );
+        return MSEC_OK;
+    }
+
+    length = str->Length;
+    if( index > length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+
+    if( str->Length + count + 1 > str->Capacity )
+    {
+        int ercode = ms_string_realloc_min( str, str->Length + count + 1 );
+        if( ercode )
+            return ercode;
+    }
+
+    // ciąg znaków wchar_t
+    if( str->Wide )
+    {
+        ptr = (unsigned char*)(str->WData + index);
+
+        if( index != length )
+            IGRET memmove( ptr + count * sizeof(wchar_t), ptr, (length - index) * sizeof(wchar_t) );
+        IGRET memcpy( ptr, wstr, count * sizeof(wchar_t) );
+
+        str->Length            += count;
+        str->WData[str->Length] = L'\0';
+
+        return MSEC_OK;
+    }
+
+    // ciąg znaków jednobajtowych
+    ptr = (unsigned char*)(str->CData + index);
+
+    if( index != length )
+        IGRET memmove( ptr + count, ptr, length - index );
+    
+    str->Length += count;
+    while( count-- )
+        *ptr++ = (char)*wstr++;
+    str->CData[str->Length] = '\0';
+
+    return MSEC_OK;
+}
+
+/* ================================================================================================================== */
+
 size_t ms_string_hash( MS_STRING *str )
 {
     assert( str );
@@ -548,41 +677,142 @@ size_t ms_string_hash( MS_STRING *str )
 
 /* ================================================================================================================== */
 
-int ms_string_mbs_info( MS_ARRAY *info, const char *mbs, size_t bytes )
+size_t ms_string_mbslen_wcs( const wchar_t *wstr, size_t count )
 {
-    int len,
-        ercode;
+    char   data[MB_LEN_MAX];
+    size_t length = 0;
+    int    len;
+
+    assert( wstr );
+
+    // gdy długość ciągu nie została podana, oblicz go
+    if( !count )
+        count = wcslen( wstr );
+
+    IGRET wctomb( NULL, 0 );
+
+    // zamieniaj pojedyncze znaki i licz długość ciągu wyjściowego w bajtach
+    // w przypadku błędu zwróć wartość 0
+    while( count-- )
+    {
+        len = wctomb( data, *wstr++ );
+        if( len < 0 )
+            SETERRNOANDRETURNC( MSEC_INVALID_VALUE, 0 );
+        else if( !len )
+            break;
+        length += len;
+    }
+
+    return length;
+}
+
+/* ================================================================================================================== */
+
+size_t ms_string_mbslen( const char *mbstr, size_t bytes )
+{
+    size_t length = 0;
+    int    len;
+
+    assert( mbstr );
+
+    if( !bytes )
+        bytes = strlen( mbstr );
+
+    IGRET mblen( NULL, 0 );
+
+    // licz długość ciągu poprzez zliczanie pojedynczych znaków
+    while( bytes )
+    {
+        len = mblen( mbstr, bytes );
+
+        if( len < 0 )
+            SETERRNOANDRETURNC( MSEC_INVALID_VALUE, 0 );
+        else if( !len )
+            break;
+
+        length += len;
+        bytes  -= bytes < len ? bytes : len;
+        mbstr  += len;
+    }
+
+    return length;
+}
+
+/* ================================================================================================================== */
+
+int ms_string_mbsinfo( const char *mbstr, MS_ARRAY *info, size_t bytes )
+{
     MS_MBINFO mbinfo = { 0, 0 };
+    int       len,
+              ercode;
 
     assert( info );
     assert( info->Items );
+    assert( mbstr );
 
     // oblicz długość ciągu znaków gdy nie została ona podana
-    if( bytes == 0 )
-        bytes = strlen( mbs );
+    if( !bytes )
+        bytes = strlen( mbstr );
 
     // resetuj stan przesunięcia "shift state"
-    mblen( NULL, 0 );
+    IGRET mblen( NULL, 0 );
 
     // oblicz rozmiar pojedynczych znaków
-    while( bytes > 0 )
+    while( bytes )
     {
-        len = mblen( mbs, bytes );
+        len = mblen( mbstr, bytes );
 
         if( len < 0 )
-            return MSEC_INVALID_VALUE;
-        else if( len == 0 )
+            SETERRNOANDRETURN( MSEC_INVALID_VALUE );
+        else if( !len )
             break;
 
         mbinfo.Bytes = len;
-
         if( (ercode = ms_array_push_value(info, &mbinfo)) )
             return ercode;
-        
         mbinfo.Offset += len;
 
-        bytes -= len;
-        mbs   += len;
+        bytes -= bytes < len ? bytes : len;
+        mbstr += len;
+    }
+
+    return MSEC_OK;
+}
+
+/* ================================================================================================================== */
+
+int ms_string_wcstombs_info( const wchar_t *wstr, MS_ARRAY *info, size_t count )
+{
+    MS_MBINFO mbinfo = { 0, 0 };
+    char      data[MB_LEN_MAX];
+    int       len,
+              ercode;
+
+    assert( info );
+    assert( info->Items );
+    assert( wstr );
+
+    // gdy długość ciągu nie została podana, oblicz go
+    if( !count )
+        count = wcslen( wstr );
+
+    IGRET wctomb( NULL, 0 );
+
+    // zamieniaj pojedyncze znaki i licz długość ciągu wyjściowego w bajtach
+    // w przypadku błędu zwróć wartość 0
+    while( count-- )
+    {
+        len = wctomb( data, *wstr++ );
+
+        if( len < 0 )
+            SETERRNOANDRETURN( MSEC_INVALID_VALUE );
+        else if( !len )
+            break;
+            
+        mbinfo.Bytes = len;
+        if( (ercode = ms_array_push_value(info, &mbinfo)) )
+            return ercode;
+        mbinfo.Offset += len;
     }
 
     return MSEC_OK;
