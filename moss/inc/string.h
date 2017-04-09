@@ -107,6 +107,7 @@ int ms_string_realloc( MS_STRING *str, size_t capacity );
 int ms_string_realloc_min( MS_STRING *str, size_t min );
 
 int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t count );
+int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_t count );
 int ms_string_insert_wcs( MS_STRING *str, size_t index, const wchar_t *wcstr, size_t count );
 
 int ms_string_insert_c( MS_STRING *str, size_t index, char chr );

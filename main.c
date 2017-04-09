@@ -55,7 +55,8 @@ int main( int argc, char **argv )
         printf( "Błąd podczas tworzenia CSTR\n" );
     if( (retval = ms_string_init_mbs(&str2, "Zażółć gęślą jaźń", 0)) )
         printf( "Błąd podczas tworzenia MBSTR %X\n", retval );
-    if( ms_string_init_wcs(&str3, L"Źdźbło łączy trawy", 0) )
+    // if( ms_string_init_wcs(&str3, L"Źdźbło łączy trawy", 0) )
+    if( ms_string_init_wcs(&str3, L"Poczekaj tu!", 0) )
         printf( "Błąd podczas tworzenia WSTR\n" );
 
     // _setmode( _fileno(stdout), 0x00020000 );
@@ -65,7 +66,22 @@ int main( int argc, char **argv )
     if( (retval = ms_string_insert_cs(&str2, 7, "- porzeczka - ", 0)) )
         printf( "Błąd podczas wstawiania CSTR\n" );
 
+    printf( "%S\n", str3.WData );
+
+    if( (retval = ms_string_insert_cs(&str3, 9, "no zaraz ", 0)) )
+        printf( "Błąd podczas wstawiania CSTR\n" );
+
+    printf( "%S\n", str3.WData );
+
+    if( (retval = ms_string_insert_cs(&str3, str3.Length, " Jak cudne manowce.", 0)) )
+        printf( "Błąd podczas wstawiania CSTR\n" );
+
+    printf( "%S\n", str3.WData );
+
     printf( "%s\n", str2.CData );
+
+    if( (retval = ms_string_insert_mbs(&str2, 7, "- przełęcz ", 0)) )
+        printf( "Błąd podczas wstawiania CSTR\n" );
 
     if( (retval = ms_string_insert_cs(&str2, str2.MBInfo->Length, " STOP COMP.", 0)) )
         printf( "Błąd podczas wstawiania CSTR\n" );

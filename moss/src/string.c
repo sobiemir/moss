@@ -176,7 +176,7 @@ int ms_string_init_wcs( MS_STRING *str, const wchar_t *wstr, size_t capacity )
     str->Hash     = 0;
     str->Modifier = 2.f;
     str->Destroy  = FALSE;
-    str->Wide     = FALSE;
+    str->Wide     = TRUE;
     str->Hashed   = FALSE;
     str->MBInfo   = NULL;
 
@@ -292,17 +292,18 @@ int ms_string_realloc_min( MS_STRING *str, size_t min )
 
 int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t count )
 {
-    unsigned char *ptr;
     size_t length;
 
     assert( str );
     assert( str->CData );
     assert( cstr );
 
-    /* gdy nie została podana ilość znaków, oblicz ją */
-    if( count == 0 )
+    // gdy ilość znaków nie została podana, oblicz ją
+    if( !count )
         count = strlen( cstr );
     
+    // ilość znaków jest zależna od typu tekstu
+    // w przypadku typu wielobajtowego znaki mogą się składać z kilku bajtów...
     length = str->MBInfo
         ? str->MBInfo->Length
         : str->Length;
@@ -310,91 +311,221 @@ int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t 
     if( index > length )
         SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
     
-    /* zwiększ rozmiar gdy zajdzie taka potrzeba */
+    // zwiększ rozmiar ciągu znaków
     if( str->Length + count + 1 > str->Capacity )
     {
-        int ercode;
-        if( (ercode = ms_string_realloc_min(str, str->Length + count + 1)) )
+        int ercode = ms_string_realloc_min( str, str->Length + count + 1 );
+        if( ercode )
             return ercode;
     }
     else if( !count )
         SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
 
-    /* standardowy ciąg znaków */
+    // kopiuj w przypadku gdy jest to standardowy ciąg znaków
     if( !str->MBInfo && !str->Wide )
     {
-        ptr = (unsigned char*)(str->CData + index);
+        unsigned char *ptr = (unsigned char*)(str->CData + index);
 
         if( index != length )
             IGRET memmove( ptr + count, ptr, length - index );
 
         IGRET memcpy( ptr, cstr, count );
 
-        str->Length += count;
+        str->Length            += count;
         str->CData[str->Length] = '\0';
     }
-    /* ciąg znaków zawierający znaki, które mogą być większe niż jeden bajt */
+    // ciąg znaków zawierający znaki, które mogą być większe niż jeden bajt
     else if( str->MBInfo )
     {
-        MS_MBINFO *mbinfo;
-        size_t     offset,
-                   iter;
+        unsigned char *ptr;
+        size_t         offset;
 
-        /* zwiększ rozmiar informacji o znakach gdy zajdzie taka potrzeba */
+        // zwiększ rozmiar informacji o znakach gdy zajdzie taka potrzeba
         if( length + count > str->MBInfo->Capacity )
         {
-            int ercode;
-            if( (ercode = ms_array_realloc_min(str->MBInfo, length + count)) )
+            int ercode = ms_array_realloc_min( str->MBInfo, length + count );
+            if( ercode )
                 return ercode;
         }
 
-        /* wprowadzanie tekstu w inne miejsce niż na koniec */
+        // wprowadzanie tekstu w inne miejsce niż na koniec
         if( index != length )
-            offset = ms_array_get(str->MBInfo, MS_MBINFO, index).Offset,
+            ptr    = (unsigned char*)&ms_array_get(str->MBInfo, MS_MBINFO, index),
+            offset = ((MS_MBINFO*)ptr)->Offset,
 
-            /* przesuwanie informacji o znaku */
-            ptr = (unsigned char*)&ms_array_get(str->MBInfo, MS_MBINFO, index),
+            // przesuwanie informacji o znakach oraz ciągu znaków
             IGRET memmove( ptr + count * sizeof(MS_MBINFO), ptr, (length - index) * sizeof(MS_MBINFO) ),
-
-            /* przesuwanie ciągu znaków */
             ptr = (unsigned char*)(str->CData + offset),
             IGRET memmove( ptr + count, ptr, str->Length - offset );
+
+        // gdy tekst wprowadzany jest na koniec, nic nie przesuwaj
         else
-            offset = str->Length,
-            ptr = (unsigned char*)(str->CData + str->Length);
+            ptr    = (unsigned char*)(str->CData + str->Length),
+            offset = str->Length;
 
         IGRET memcpy( ptr, cstr, count );
 
-        str->MBInfo->Length += count;
-        str->Length += count;
+        str->MBInfo->Length    += count;
+        str->Length            += count;
         str->CData[str->Length] = '\0';
 
-        /* uzupełnij informacje dla nowych znaków */
-        for( iter = count; iter--; index++, offset += 1 )
-            mbinfo = &ms_array_get( str->MBInfo, MS_MBINFO, index ),
-            mbinfo->Bytes  = 1,
-            mbinfo->Offset = offset;
+        // uzupełnij informacje dla nowych znaków
+        length = count;
+        while( length-- )
+            ms_array_get( str->MBInfo, MS_MBINFO, index++ ) = (MS_MBINFO){
+                .Offset = offset++,
+                .Bytes  = 1u
+            };
 
-        /* aktualizuj przesunięcie starych znaków */
+        // aktualizuj przesunięcie starych znaków
         while( index < str->MBInfo->Length )
-            ms_array_get( str->MBInfo, MS_MBINFO, index ).Offset += count,
-            index++;
+            ms_array_get( str->MBInfo, MS_MBINFO, index++ ).Offset += count;
     }
-    /* rozszerzony ciąg znaków wchar_t - szybkie dodawanie */
+    // rozszerzony ciąg znaków wchar_t
     else
     {
-        ptr = (unsigned char*)(str->CData + index * sizeof *str->WData);
+        wchar_t *ptr = str->WData + index;
 
         if( index != length )
-            IGRET memmove( ptr + count * sizeof *str->WData, ptr, (length - index) * sizeof *str->WData );
+            IGRET memmove( ptr + count, ptr, (length - index) * sizeof *str->WData );
 
+        str->Length += count;
+
+        // po prostu dodawaj, zamieniając char na wchar_t
         while( count-- )
             *ptr++ = (wchar_t)*cstr++;
 
-        str->Length += count;
         str->WData[str->Length] = L'\0';
     }
 
+    return MSEC_OK;
+}
+
+/* ================================================================================================================== */
+
+int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_t count )
+{
+    size_t   length,
+             offset;
+    MS_ARRAY mbinfo;
+    int      ercode;
+
+    assert( str );
+    assert( str->CData );
+    assert( mbstr );
+
+    // gdy ilość znaków nie została podana, oblicz ją
+    if( !count )
+        count = strlen( mbstr );
+    
+    // ilość znaków jest zależna od typu tekstu
+    length = str->MBInfo
+        ? str->MBInfo->Length
+        : str->Length;
+
+    if( index > length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+
+    // przydziel pamięć dla tablicy z informacją o poszczególnych znakach
+    if( (ercode = ms_array_init(&mbinfo, sizeof(MS_MBINFO), count)) )
+        return ercode;
+    
+    // pobierz informacje o znakach
+    if( (ercode = ms_string_mbs_info(&mbinfo, mbstr, count)) )
+        return
+            ms_array_free( &mbinfo ),
+            ercode;
+    
+    // dobierz odpowiednią długość dodawanego tekstu
+    offset = str->MBInfo
+        ? count
+        : mbinfo.Length;
+
+    // zwiększ rozmiar ciągu znaków
+    if( str->Length + offset + 1 > str->Capacity )
+        if( (ercode = ms_string_realloc_min(str, str->Length + offset + 1)) )
+            return
+                ms_array_free( &mbinfo ),
+                ercode;
+        else;
+    else if( !count )
+    {
+        ms_array_free( &mbinfo );
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+    }
+
+    // gdy jest to zwykły ciąg znaków, skracaj wielobajtowe ciągi do jednobajtowego
+    if( !str->MBInfo && !str->Wide )
+    {
+        unsigned char *ptr = (unsigned char*)(str->CData + index);
+
+        if( index != length )
+            IGRET memmove( ptr + offset, ptr, length - index );
+        
+        // zapisuj tylko pierwszy bit, pomijaj pozostałe...
+        length = 0;
+        while( length < offset )
+            *ptr++ = *mbstr,
+            mbstr += ms_array_getl( mbinfo, MS_MBINFO, length++ ).Bytes;
+
+        str->Length            += mbinfo.Length;
+        str->CData[str->Length] = '\0';
+    }
+    // ciąg znaków zawierający znaki, które mogą być większe niż jeden bajt
+    else if( str->MBInfo )
+    {
+        unsigned char *ptr;
+
+        // wstaw do tablicy elementy
+        if( (ercode = ms_array_insert_values(str->MBInfo, index, mbinfo.Items, mbinfo.Length)) )
+            return
+                ms_array_free( &mbinfo ),
+                ercode;
+        
+        if( index != length )
+            offset = ms_array_get( str->MBInfo, MS_MBINFO, index + mbinfo.Length ).Offset,
+            ptr    = (unsigned char*)(str->CData + offset),
+            IGRET memmove( ptr + count, ptr, str->Length - offset );
+        else
+            ptr    = (unsigned char*)(str->CData + str->Length),
+            offset = str->Length;
+
+        IGRET memcpy( ptr, mbstr, count );
+
+        str->Length += count;
+        str->CData[str->Length] = '\0';
+
+        // aktualizuj przesunięcie nowych znaków
+        length = count;
+        while( length-- )
+            ms_array_get( str->MBInfo, MS_MBINFO, index++ ).Offset += offset;
+
+        // aktualizuj przesunięcie starych znaków
+        while( index < str->MBInfo->Length )
+            ms_array_get( str->MBInfo, MS_MBINFO, index++ ).Offset += count;
+    }
+    // rozszerzony ciąg znaków wchar_t
+    else
+    {
+        wchar_t *ptr = str->WData + index;
+
+        if( index != length )
+            IGRET memmove( ptr + offset, ptr, (length - index) * sizeof *str->WData );
+
+        str->Length += offset;
+        IGRET mbtowc( NULL, NULL, 0 );
+
+        // po prostu dodawaj, zamieniając char na wchar_t
+        // tutaj raczej funkcja musi zwrócić poprawny znak, gdyż było to sprawdzane wcześniej...
+        while( offset-- )
+            length = mbtowc( ptr++, mbstr, count ),
+            count -= length,
+            mbstr += length;
+
+        str->WData[str->Length] = L'\0';
+    }
+
+    ms_array_free( &mbinfo );
     return MSEC_OK;
 }
 
@@ -413,6 +544,48 @@ size_t ms_string_hash( MS_STRING *str )
         return ms_string_hash_byte( str->WData, str->Length * sizeof(wchar_t) );
 
     return ms_string_hash_byte( str->CData, str->Length );
+}
+
+/* ================================================================================================================== */
+
+int ms_string_mbs_info( MS_ARRAY *info, const char *mbs, size_t bytes )
+{
+    int len,
+        ercode;
+    MS_MBINFO mbinfo = { 0, 0 };
+
+    assert( info );
+    assert( info->Items );
+
+    // oblicz długość ciągu znaków gdy nie została ona podana
+    if( bytes == 0 )
+        bytes = strlen( mbs );
+
+    // resetuj stan przesunięcia "shift state"
+    mblen( NULL, 0 );
+
+    // oblicz rozmiar pojedynczych znaków
+    while( bytes > 0 )
+    {
+        len = mblen( mbs, bytes );
+
+        if( len < 0 )
+            return MSEC_INVALID_VALUE;
+        else if( len == 0 )
+            break;
+
+        mbinfo.Bytes = len;
+
+        if( (ercode = ms_array_push_value(info, &mbinfo)) )
+            return ercode;
+        
+        mbinfo.Offset += len;
+
+        bytes -= len;
+        mbs   += len;
+    }
+
+    return MSEC_OK;
 }
 
 /* ================================================================================================================== */
@@ -472,46 +645,4 @@ void ms_string_free( MS_STRING *str )
 
     if( str->Destroy )
         free( str );
-}
-
-/* ================================================================================================================== */
-
-int ms_string_mbs_info( MS_ARRAY *info, const char *mbs, size_t bytes )
-{
-    int len,
-        ercode;
-    MS_MBINFO mbinfo = { 0, 0 };
-
-    assert( info );
-    assert( info->Items );
-
-    // oblicz długość ciągu znaków gdy nie została ona podana
-    if( bytes == 0 )
-        bytes = strlen( mbs );
-
-    // resetuj stan przesunięcia "shift state"
-    mblen( NULL, 0 );
-
-    // oblicz rozmiar pojedynczych znaków
-    while( bytes > 0 )
-    {
-        len = mblen( mbs, bytes );
-
-        if( len < 0 )
-            return MSEC_INVALID_VALUE;
-        else if( len == 0 )
-            break;
-
-        mbinfo.Bytes = len;
-
-        if( (ercode = ms_array_push_value(info, &mbinfo)) )
-            return ercode;
-        
-        mbinfo.Offset += len;
-
-        bytes -= len;
-        mbs   += len;
-    }
-
-    return MSEC_OK;
 }
