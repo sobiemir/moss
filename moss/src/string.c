@@ -292,7 +292,8 @@ int ms_string_realloc_min( MS_STRING *str, size_t min )
 
 int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t count )
 {
-    char *ptr;
+    unsigned char *ptr;
+    size_t length;
 
     assert( str );
     assert( str->CData );
@@ -302,110 +303,96 @@ int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t 
     if( count == 0 )
         count = strlen( cstr );
     
+    length = str->MBInfo
+        ? str->MBInfo->Length
+        : str->Length;
+
+    if( index > length )
+        SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
+    
+    /* zwiększ rozmiar gdy zajdzie taka potrzeba */
+    if( str->Length + count + 1 > str->Capacity )
+    {
+        int ercode;
+        if( (ercode = ms_string_realloc_min(str, str->Length + count + 1)) )
+            return ercode;
+    }
+    else if( !count )
+        SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+
     /* standardowy ciąg znaków */
     if( !str->MBInfo && !str->Wide )
     {
-        if( index > str->Length )
-            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
-        
-        if( str->Length + count > str->Capacity )
-        {
-            int ercode;
-            if( (ercode = ms_string_realloc_min(str, str->Length + count)) )
-                return ercode;
-        }
-        else if( !count )
-            SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+        ptr = (unsigned char*)(str->CData + index);
 
-        ptr = str->CData + index;
-
-        if( index != str->Length )
-            IGRET memmove( ptr + count, ptr, str->Length - index );
+        if( index != length )
+            IGRET memmove( ptr + count, ptr, length - index );
 
         IGRET memcpy( ptr, cstr, count );
+
         str->Length += count;
+        str->CData[str->Length] = '\0';
     }
     /* ciąg znaków zawierający znaki, które mogą być większe niż jeden bajt */
     else if( str->MBInfo )
     {
         MS_MBINFO *mbinfo;
-        size_t offset;
-        size_t iter;
+        size_t     offset,
+                   iter;
 
-        if( index > str->MBInfo->Length )
-            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
-        
-        if( str->Length + count + 1 > str->Capacity )
+        /* zwiększ rozmiar informacji o znakach gdy zajdzie taka potrzeba */
+        if( length + count > str->MBInfo->Capacity )
         {
             int ercode;
-            if( (ercode = ms_string_realloc_min(str, str->Length + count)) )
-                return ercode;
-        }
-        else if( !count )
-            SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
-
-        if( str->MBInfo->Length + count > str->MBInfo->Capacity )
-        {
-            int ercode;
-            if( (ercode = ms_array_realloc_min(str->MBInfo, str->MBInfo->Length + count)) )
+            if( (ercode = ms_array_realloc_min(str->MBInfo, length + count)) )
                 return ercode;
         }
 
-        if( index != str->MBInfo->Length )
-        {
-            offset = ms_array_get(str->MBInfo, MS_MBINFO, index).Offset;
+        /* wprowadzanie tekstu w inne miejsce niż na koniec */
+        if( index != length )
+            offset = ms_array_get(str->MBInfo, MS_MBINFO, index).Offset,
 
-            ptr = (char*)&ms_array_get(str->MBInfo, MS_MBINFO, index);
-            IGRET memmove( ptr + count * sizeof(MS_MBINFO), ptr, (str->MBInfo->Length - index) * sizeof(MS_MBINFO) );
+            /* przesuwanie informacji o znaku */
+            ptr = (unsigned char*)&ms_array_get(str->MBInfo, MS_MBINFO, index),
+            IGRET memmove( ptr + count * sizeof(MS_MBINFO), ptr, (length - index) * sizeof(MS_MBINFO) ),
 
-            ptr = str->CData + offset;
+            /* przesuwanie ciągu znaków */
+            ptr = (unsigned char*)(str->CData + offset),
             IGRET memmove( ptr + count, ptr, str->Length - offset );
-        }
         else
-            ptr    = str->CData + str->Length,
-            offset = str->Length;
-
-        str->MBInfo->Length += count;
+            offset = str->Length,
+            ptr = (unsigned char*)(str->CData + str->Length);
 
         IGRET memcpy( ptr, cstr, count );
+
+        str->MBInfo->Length += count;
         str->Length += count;
         str->CData[str->Length] = '\0';
 
-        iter = count;
-        while( iter-- )
-        {
-            mbinfo = &ms_array_get( str->MBInfo, MS_MBINFO, index );
-            mbinfo->Bytes  = 1;
+        /* uzupełnij informacje dla nowych znaków */
+        for( iter = count; iter--; index++, offset += 1 )
+            mbinfo = &ms_array_get( str->MBInfo, MS_MBINFO, index ),
+            mbinfo->Bytes  = 1,
             mbinfo->Offset = offset;
-            index++;
-            offset += 1;
-        }
-        while( index != str->MBInfo->Length )
+
+        /* aktualizuj przesunięcie starych znaków */
+        while( index < str->MBInfo->Length )
             ms_array_get( str->MBInfo, MS_MBINFO, index ).Offset += count,
             index++;
     }
     /* rozszerzony ciąg znaków wchar_t - szybkie dodawanie */
     else
     {
-        if( index > str->Length )
-            SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
-        
-        if( str->Length + count > str->Capacity )
-        {
-            int ercode;
-            if( (ercode = ms_string_realloc_min(str, str->Length + count)) )
-                return ercode;
-        }
-        else if( !count )
-            SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+        ptr = (unsigned char*)(str->CData + index * sizeof *str->WData);
 
-        ptr = str->CData + index * sizeof *str->WData;
+        if( index != length )
+            IGRET memmove( ptr + count * sizeof *str->WData, ptr, (length - index) * sizeof *str->WData );
 
-        if( index != str->Length )
-            IGRET memmove( ptr + count * sizeof *str->WData, ptr, (str->Length - index) * sizeof *str->WData );
+        while( count-- )
+            *ptr++ = (wchar_t)*cstr++;
 
-        IGRET memcpy( ptr, cstr, count * sizeof *str->WData );
         str->Length += count;
+        str->WData[str->Length] = L'\0';
     }
 
     return MSEC_OK;
