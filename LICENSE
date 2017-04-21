@@ -10,8 +10,19 @@
                   \/_/ \/_/\/___/  \/___/  \/___/ 
 
     Copyright (C) 2016-2017 Kamil Biały <sobiemir@aculo.pl>
-                            Sobiemir
+                            sobiemir
                             http://aculo.pl
+
+    Unless otherwise is stated in certain file,
+    all files with .c, .h, .asm, .cpp, .hpp extension in this project,
+    are covered by GPLv3 license.
+
+    All other files, it means files with .js, .html, .rst, .sh, .css
+    extensions, that was created by me, are covered by zlib/libpng
+    license. All this files have proper notice in header, which
+    refers directly to this file.
+
+    zlib/libpng license was placed at the end of this file.
 
 ===========================================================================
 
@@ -689,3 +700,30 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+
+===========================================================================
+
+    This license (zlib/libpng) doesn't cover .c and .h files.
+    Files with .c and .h extensions are covered by GPLv3 license.
+
+===========================================================================
+
+The zlib/libpng License
+
+Copyright (c) 2017 Kamil Biały <sobiemir@aculo.pl>
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
