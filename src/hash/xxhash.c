@@ -66,7 +66,7 @@
  *  - xxHash source repository : https://github.com/Cyan4973/xxHash
  */
 
-#include "../../inc/hash.h"
+#include <moss/hash.h>
 
 /* wartości dla 32 bitowych funkcji */
 #define MSN_H32XX_1 2654435761u
@@ -89,7 +89,7 @@
  * @param  value Wartość do mieszania.
  * @return       Nowy skrót danych.
  */
-inline static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value );
+INLINE static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value );
 
 /**
  * Miesza 64 bitowy skrót danych z kolejną wartością pobraną z danych.
@@ -98,7 +98,7 @@ inline static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value );
  * @param  value Wartość do mieszania.
  * @return       Nowy skrót danych.
  */
-inline static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 );
+INLINE static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 );
 
 /**
  * Szuka 8 bitowego zera w 4 porcjach 32 bitowych wartości.
@@ -107,7 +107,7 @@ inline static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 );
  * @param  data Dane do przeszukania.
  * @return      Indeks rozpoczynający się od 1 lub wartość 0.
  */
-inline static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data );
+INLINE static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data );
 
 /**
  * Szuka 8 bitowego zera w 4 porcjach 64 bitowych wartości.
@@ -116,7 +116,7 @@ inline static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data );
  * @param  data Dane do przeszukania.
  * @return      Indeks rozpoczynający się od 1 lub wartość 0.
  */
-inline static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data );
+INLINE static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data );
 
 /**
  * Szuka 16 bitowego zera w 4 porcjach 32 bitowych wartości.
@@ -125,7 +125,7 @@ inline static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data );
  * @param  data Dane do przeszukania.
  * @return      Indeks rozpoczynający się od 1 lub wartość 0.
  */
-inline static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data );
+INLINE static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data );
 
 /**
  * Szuka 16 bitowego zera w 4 porcjach 64 bitowych wartości.
@@ -134,7 +134,7 @@ inline static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data );
  * @param  data Dane do przeszukania.
  * @return      Indeks rozpoczynający się od 1 lub wartość 0.
  */
-inline static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data );
+INLINE static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data );
 
 /**
  * Szuka 32 bitowego zera w 4 porcjach 32 bitowych wartości.
@@ -143,7 +143,7 @@ inline static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data );
  * @param  data Dane do przeszukania.
  * @return      Indeks rozpoczynający się od 1 lub wartość 0.
  */
-inline static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data );
+INLINE static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data );
 
 /**
  * Szuka 32 bitowego zera w 4 porcjach 64 bitowych wartości.
@@ -152,7 +152,7 @@ inline static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data );
  * @param  data Dane do przeszukania.
  * @return      Indeks rozpoczynający się od 1 lub wartość 0.
  */
-inline static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data );
+INLINE static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data );
 
 /* ================================================================================================================== */
 
@@ -706,7 +706,7 @@ uint64_t ms_hash_wcs_64_xxhash( const wchar_t *data )
 
 /* ================================================================================================================== */
 
-inline static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value )
+INLINE static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value )
 {
     value *= MSN_H64XX_2;
     value  = MSX_ROTL64( value, 31 );
@@ -718,7 +718,7 @@ inline static uint64_t msf_hash_mix64_value( uint64_t hash, uint64_t value )
 
 /* ================================================================================================================== */
 
-inline static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 )
+INLINE static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 )
 {
     c64  *= MSN_H64XX_2;
     c64   = MSX_ROTL64( c64, 31 );
@@ -730,7 +730,7 @@ inline static uint64_t msf_hash_mix64_char64( uint64_t hash, uint64_t c64 )
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data )
+INLINE static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data )
 {
     size_t nbit;
 
@@ -748,7 +748,7 @@ inline static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data )
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data )
+INLINE static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data )
 {
     size_t nbit;
 
@@ -766,7 +766,7 @@ inline static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data )
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data )
+INLINE static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data )
 {
     size_t nbit;
 
@@ -784,7 +784,7 @@ inline static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data )
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data )
+INLINE static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data )
 {
     size_t nbit;
 
@@ -802,7 +802,7 @@ inline static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data )
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data )
+INLINE static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data )
 {
     size_t nbit;
 
@@ -820,7 +820,7 @@ inline static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data )
 
 /* ================================================================================================================== */
 
-inline static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data )
+INLINE static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data )
 {
     if( !data[0] )
         return 1;

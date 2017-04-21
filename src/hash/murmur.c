@@ -28,7 +28,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../inc/hash.h"
+#include <moss/hash.h>
 
 #define MSN_H32M3_1 0xCC9E2D51
 #define MSN_H32M3_2 0x1B873593
@@ -44,7 +44,7 @@
  * @param  value Wartość do mieszania.
  * @return       Nowy skrót danych.
  */
-inline static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value );
+INLINE static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value );
 
 /* ================================================================================================================== */
 
@@ -295,7 +295,7 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
 
 /* ================================================================================================================== */
 
-inline static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value )
+INLINE static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value )
 {
     value *= MSN_H32M3_1;
     value  = MSX_ROTL32( value, 15 );

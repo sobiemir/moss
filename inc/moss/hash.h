@@ -30,8 +30,8 @@
 #ifndef __MSH_HASH__
 #define __MSH_HASH__
 
+#include <msconf.h>
 #include <wchar.h>
-#include "configuration.h"
 
 /*
 ======================================================================================================================

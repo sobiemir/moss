@@ -25,7 +25,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../inc/buffer.h"
+#include <moss/buffer.h>
 
 /**
  * Flagi specyfikatorów.

@@ -27,7 +27,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../inc/string.h"
+#include <moss/string.h>
 
 /* ================================================================================================================== */
 
@@ -354,6 +354,7 @@ int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t 
     {
         unsigned char *ptr;
         size_t         offset;
+		MS_MBINFO     *elem;
 
         // zwiększ rozmiar informacji o znakach gdy zajdzie taka potrzeba
         if( length + count > str->MBInfo->Capacity )
@@ -387,10 +388,9 @@ int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t 
         // uzupełnij informacje dla nowych znaków
         length = count;
         while( length-- )
-            ms_array_get( str->MBInfo, MS_MBINFO, index++ ) = (MS_MBINFO){
-                .Offset = offset++,
-                .Bytes  = 1u
-            };
+            elem = &ms_array_get( str->MBInfo, MS_MBINFO, index++ ),
+			elem->Offset = offset++,
+			elem->Bytes  = 1u;
 
         // aktualizuj przesunięcie starych znaków
         while( index < str->MBInfo->Length )

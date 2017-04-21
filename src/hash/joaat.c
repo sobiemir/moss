@@ -8,7 +8,7 @@
  *      \ \_\\ \_\ \____/\/\____/\/\____/
  *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- *  Source file for "Hash" module, SDBM algorithm [Public Domain].
+ *  Source file for "Hash" module, JoaaT algorithm [Public Domain].
  *  All modifications are based on GPLv3 license.
  *  
  *  This file is part of Moss Library
@@ -28,19 +28,25 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../inc/hash.h"
+#include <moss/hash.h>
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_32_sdbm( const void *data, size_t length )
+uint32_t ms_hash_32_joaat( const void *data, size_t length )
 {
-    uint32_t       hash = 0;
-    const uint8_t *cdat = data;
+    uint32_t    hash = 0;
+    const char *cdat = data;
 
     assert( data );
 
     for( ; length; --length )
-        hash = *cdat++ + (hash << 6) + (hash << 16) - hash;
+        hash += *cdat++,
+        hash += hash << 10,
+        hash ^= hash >> 6;
+
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
 
     return hash;
 }
@@ -49,7 +55,7 @@ uint32_t ms_hash_32_sdbm( const void *data, size_t length )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_mbs_32_sdbm( const char *data )
+uint32_t ms_hash_mbs_32_joaat( const char *data )
 {
     uint32_t hash = 0;
     int      c;
@@ -57,7 +63,11 @@ uint32_t ms_hash_mbs_32_sdbm( const char *data )
     assert( data );
 
     while( (c = (uint8_t)*data++) )
-        hash = c + (hash << 6) + (hash << 16) - hash;
+        (hash += c), (hash += hash << 10), (hash ^= hash >> 6);
+
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
 
     return hash;
 }
@@ -67,23 +77,30 @@ uint32_t ms_hash_mbs_32_sdbm( const char *data )
 
 /* ================================================================================================================== */
 
-uint32_t ms_hash_wcs_32_sdbm( const wchar_t *data )
+uint32_t ms_hash_wcs_32_joaat( const wchar_t *data )
 {
     uint32_t hash = 0;
     wint_t   c;
 
     assert( data );
 
+    /* 2 bajtowy wchar_t */
     if( sizeof(wchar_t) == 2 )
         while( (c = (uint16_t)*data++) )
-            hash = ((uint32_t)(c & 0x00FF)     ) + (hash << 6) + (hash << 16) - hash,
-            hash = ((uint32_t)(c & 0xFF00) >> 8) + (hash << 6) + (hash << 16) - hash;
+            hash += ((uint32_t)(c & 0x00FF)     ), (hash += hash << 10), (hash ^= hash >> 6),
+            hash += ((uint32_t)(c & 0xFF00) >> 8), (hash += hash << 10), (hash ^= hash >> 6);
+
+    /* 4 bajtowy wchar_t */
     else if( sizeof(wchar_t) == 4 )
-        while( (c = (uint32_t)*data++) )
-            hash = ((uint32_t)(c & 0x000000FF)      ) + (hash << 6) + (hash << 16) - hash,
-            hash = ((uint32_t)(c & 0x0000FF00) >> 8 ) + (hash << 6) + (hash << 16) - hash,
-            hash = ((uint32_t)(c & 0x00FF0000) >> 16) + (hash << 6) + (hash << 16) - hash,
-            hash = ((uint32_t)(c & 0xFF000000) >> 24) + (hash << 6) + (hash << 16) - hash;
+    while( (c = (uint32_t)*data++) )
+        hash += ((uint32_t)(c & 0x000000FF)      ), (hash += hash << 10), (hash ^= hash >> 6),
+        hash += ((uint32_t)(c & 0x0000FF00) >> 8 ), (hash += hash << 10), (hash ^= hash >> 6),
+        hash += ((uint32_t)(c & 0x00FF0000) >> 16), (hash += hash << 10), (hash ^= hash >> 6),
+        hash += ((uint32_t)(c & 0xFF000000) >> 24), (hash += hash << 10), (hash ^= hash >> 6);
+
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
 
     return hash;
 }

@@ -121,10 +121,9 @@
 
 
 
-
 #define MSD_DEBUG
 #define MSD_ERRORINERRNO
-#define MSD_HASSTDBOOL
+//#define MSD_HASSTDBOOL
 
 #ifdef _WIN32
 #   define MSD_SYSTEM_WINDOWS
@@ -141,6 +140,18 @@
 #ifdef MSD_COMPILER_MSC
 #   define _CRT_SECURE_NO_WARNINGS
 #endif
+
+
+#ifndef INLINE
+#	ifdef MSD_COMPILER_MSC
+#		define INLINE __inline
+#	else
+#		define INLINE inline
+#	endif
+#endif
+
+
+
 
 #ifndef __FUNCTION__
 #   ifdef __func__

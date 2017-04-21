@@ -25,15 +25,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <moss.h>
+
 #include <stdio.h>
 #include <locale.h>
-// #include <fcntl.h>
-
-// #include <allegro5/allegro.h>
-// #include <allegro5/allegro_image.h>
-// #include <allegro5/allegro_primitives.h>
-
-#include "moss/moss.h"
 
 #define FPS 60
 

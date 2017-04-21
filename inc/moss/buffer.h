@@ -31,7 +31,7 @@
 #define _MSH_BUFFER_
 
 // definicje i deklaracje głównych typów
-#include "configuration.h"
+#include <msconf.h>
 
 // biblioteki systemowe
 #include <stdlib.h>

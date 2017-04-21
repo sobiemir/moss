@@ -30,16 +30,17 @@
 #ifndef __MSH_STRING__
 #define __MSH_STRING__
 
+#include <msconf.h>
+#include <moss/array.h>
+
 #include <stdlib.h>
 #include <limits.h>
 #include <wchar.h>
 
-#include "configuration.h"
-#include "../inc/array.h"
 
 /* dołącza plik zawierający funkcje do tworzenia skrótów */
 #ifdef MSD_STRING_HASH
-#	include "../inc/hash.h"
+#	include <moss/hash.h>
 #endif
 
 #define MSD_CONNECT(x, y) x ## y

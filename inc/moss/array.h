@@ -30,11 +30,11 @@
 #ifndef __MSH_ARRAY__
 #define __MSH_ARRAY__
 
+#include <msconf.h>
+#include <mstpl/array_template.h>
+
 #include <stdlib.h>
 #include <math.h>
-
-#include "configuration.h"
-#include "../tpl/array_template.h"
 
 /*
 ======================================================================================================================

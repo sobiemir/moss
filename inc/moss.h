@@ -30,10 +30,10 @@
 #ifndef __MSH_MOSS__
 #define __MSH_MOSS__
 
-#include "inc/configuration.h"
-#include "inc/buffer.h"
-#include "inc/array.h"
-#include "inc/hash.h"
-#include "inc/string.h"
+#include <msconf.h>
+#include <moss/buffer.h>
+#include <moss/array.h>
+#include <moss/hash.h>
+#include <moss/string.h>
 
 #endif

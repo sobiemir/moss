@@ -28,7 +28,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../inc/hash.h"
+#include <moss/hash.h>
 
 /* ================================================================================================================== */
 
