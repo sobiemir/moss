@@ -14,8 +14,8 @@
                             http://aculo.pl
 
     Unless otherwise is stated in certain file,
-    all files with .c, .h, .asm, .cpp, .hpp extension in this project,
-    are covered by GPLv3 license.
+    all files with .c, .h, .asm, .cpp and .hpp extension in this
+    project, are covered by GPLv3 license.
 
     All other files, it means files with .js, .html, .rst, .sh, .css
     extensions, that was created by me, are covered by zlib/libpng
@@ -703,8 +703,8 @@ Public License instead of this License.  But first, please read
 
 ===========================================================================
 
-    This license (zlib/libpng) doesn't cover .c and .h files.
-    Files with .c and .h extensions are covered by GPLv3 license.
+    This license (zlib/libpng) doesn't cover files with .c, .h, .asm,
+    .cpp and .hpp extensions in this project,
 
 ===========================================================================
 
