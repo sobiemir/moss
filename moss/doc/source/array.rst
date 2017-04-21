@@ -9,6 +9,8 @@
  .       \/_/ \/_/\/___/  \/___/  \/___/ 
  .
  .  Documentation file for "Dynamic Array" module.
+ .
+ .  This file is part of Moss Library.
  .  See LICENSE file for copyright information.
  ..
 

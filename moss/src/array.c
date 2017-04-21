@@ -9,15 +9,22 @@
  *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
  *  Source file for "Dynamic Array" module.
- *  See LICENSE file for copyright information.
- */
-
-/*
- *  TODO:
- *  [ ] możliwość łączenia tej samej tablicy => ms_array_join(array, array)
- *  [ ] własny destruktor elementów uruchamiany przy usuwaniu ich z tablicy
- *  [ ] po podaniu rozmiaru 0 w funkcjach inicjalizujących i tworzących, wartość Items powinna być NULL
- *      czy to ma w ogóle sens? w jakim celu? przenalizować...
+ *
+ *  This file is part of Moss Library
+ *  Copyright (c) by sobiemir <sobiemir@aculo.pl>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "../inc/array.h"
@@ -76,7 +83,7 @@ const struct MSS_ARRAYFUNCTIONS MSC_ArrayFunctions =
 
 void *ms_array_alloc( size_t size, size_t capacity )
 {
-    MS_ARRAY *array = NULL;
+    MS_ARRAY *array;
 
     if( !(array = malloc(sizeof *array)) )
         return NULL;

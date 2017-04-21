@@ -1,7 +1,16 @@
-.. Moss documentation master file, created by
-   sphinx-quickstart on Sat Mar 18 00:17:25 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. 
+ .  Moss Library >>> http://moss.aculo.pl
+ .
+ .     /'\_/`\                           
+ .    /\      \    ___     ____    ____  
+ .    \ \ \__\ \  / __`\  /',__\  /',__\ 
+ .     \ \ \_/\ \/\ \L\ \/\__, `\/\__, `\
+ .      \ \_\\ \_\ \____/\/\____/\/\____/
+ .       \/_/ \/_/\/___/  \/___/  \/___/ 
+ .
+ .  This file is part of Moss Library.
+ .  See LICENSE file for copyright information.
+ ..
 
 Dokumentacja biblioteki Moss
 ================================

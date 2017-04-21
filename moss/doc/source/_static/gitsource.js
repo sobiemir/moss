@@ -8,6 +8,7 @@
  *      \ \_\\ \_\ \____/\/\____/\/\____/
  *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
+ *  This file is part of Moss Library.
  *  See LICENSE file for copyright information.
  */
 

@@ -9,6 +9,8 @@
  .       \/_/ \/_/\/___/  \/___/  \/___/ 
  .
  .  Documentation of Moss Library configuration file.
+ .
+ .  This file is part of Moss Library.
  .  See LICENSE file for copyright information.
  ..
 
