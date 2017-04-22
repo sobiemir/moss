@@ -70,7 +70,7 @@ dt > span.sig-paren {
 }
 table.parameters {
 	border-collapse: separate;
-    border-spacing: 0 4px;
+	border-spacing: 0 4px;
 }
 table.parameters th.field-name {
 	background: #f6ecc8;

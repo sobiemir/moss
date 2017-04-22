@@ -34,30 +34,30 @@
 
 uint32_t ms_hash_32_djb2( const void *data, size_t length )
 {
-    uint32_t       hash = 5381;
-    const uint8_t *cdat = data;
+	uint32_t       hash = 5381;
+	const uint8_t *cdat = data;
 
-    assert( data );
+	assert( data );
 
-    for( ; length; --length )
-        hash = ((hash << 5) + hash) + *cdat++;
+	for( ; length; --length )
+		hash = ((hash << 5) + hash) + *cdat++;
 
-    return hash;
+	return hash;
 }
 
 /* ================================================================================================================== */
 
 uint32_t ms_hash_32_djb2a( const void *data, size_t length )
 {
-    uint32_t       hash = 5381;
-    const uint8_t *cdat = data;
+	uint32_t       hash = 5381;
+	const uint8_t *cdat = data;
 
-    assert( data );
+	assert( data );
 
-    for( ; length; --length )
-        hash = ((hash << 5) + hash) ^ *cdat++;
+	for( ; length; --length )
+		hash = ((hash << 5) + hash) ^ *cdat++;
 
-    return hash;
+	return hash;
 }
 
 #ifdef MSD_HASH_MBS_FUNCTIONS
@@ -66,30 +66,30 @@ uint32_t ms_hash_32_djb2a( const void *data, size_t length )
 
 uint32_t ms_hash_mbs_32_djb2( const char *data )
 {
-    uint32_t hash = 5381;
-    int      c;
+	uint32_t hash = 5381;
+	int      c;
 
-    assert( data );
+	assert( data );
 
-    while( (c = (uint8_t)*data++) )
-        hash = ((hash << 5) + hash) + c;
+	while( (c = (uint8_t)*data++) )
+		hash = ((hash << 5) + hash) + c;
 
-    return hash;
+	return hash;
 }
 
 /* ================================================================================================================== */
 
 uint32_t ms_hash_mbs_32_djb2a( const char *data )
 {
-    uint32_t hash = 5381;
-    int      c;
+	uint32_t hash = 5381;
+	int      c;
 
-    assert( data );
+	assert( data );
 
-    while( (c = (uint8_t)*data++) )
-        hash = ((hash << 5) + hash) ^ c;
+	while( (c = (uint8_t)*data++) )
+		hash = ((hash << 5) + hash) ^ c;
 
-    return hash;
+	return hash;
 }
 
 #endif
@@ -99,46 +99,46 @@ uint32_t ms_hash_mbs_32_djb2a( const char *data )
 
 uint32_t ms_hash_wcs_32_djb2( const wchar_t *data )
 {
-    uint32_t hash = 5381;
-    wint_t   c;
+	uint32_t hash = 5381;
+	wint_t   c;
 
-    assert( data );
+	assert( data );
 
-    if( sizeof(wchar_t) == 2 )
-        while( (c = (uint16_t)*data++) )
-            hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x00FF)     ),
-            hash = ((hash << 5) + hash) + ((uint32_t)(c & 0xFF00) >> 8);
-    else if( sizeof(wchar_t) == 4 )
-        while( (c = (uint32_t)*data++) )
-            hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x000000FF)      ),
-            hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x0000FF00) >> 8 ),
-            hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x00FF0000) >> 16),
-            hash = ((hash << 5) + hash) + ((uint32_t)(c & 0xFF000000) >> 24);
+	if( sizeof(wchar_t) == 2 )
+		while( (c = (uint16_t)*data++) )
+			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x00FF)     ),
+			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0xFF00) >> 8);
+	else if( sizeof(wchar_t) == 4 )
+		while( (c = (uint32_t)*data++) )
+			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x000000FF)      ),
+			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x0000FF00) >> 8 ),
+			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x00FF0000) >> 16),
+			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0xFF000000) >> 24);
 
-    return hash;
+	return hash;
 }
 
 /* ================================================================================================================== */
 
 uint32_t ms_hash_wcs_32_djb2a( const wchar_t *data )
 {
-    uint32_t hash = 5381;
-    wint_t   c;
+	uint32_t hash = 5381;
+	wint_t   c;
 
-    assert( data );
+	assert( data );
 
-    if( sizeof(wchar_t) == 2 )
-        while( (c = (uint16_t)*data++) )
-            hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x00FF)     ),
-            hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0xFF00) >> 8);
-    else if( sizeof(wchar_t) == 4 )
-        while( (c = (uint32_t)*data++) )
-            hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x000000FF)      ),
-            hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x0000FF00) >> 8 ),
-            hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x00FF0000) >> 16),
-            hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0xFF000000) >> 24);
+	if( sizeof(wchar_t) == 2 )
+		while( (c = (uint16_t)*data++) )
+			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x00FF)     ),
+			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0xFF00) >> 8);
+	else if( sizeof(wchar_t) == 4 )
+		while( (c = (uint32_t)*data++) )
+			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x000000FF)      ),
+			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x0000FF00) >> 8 ),
+			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x00FF0000) >> 16),
+			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0xFF000000) >> 24);
 
-    return hash;
+	return hash;
 }
 
 #endif

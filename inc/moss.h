@@ -31,7 +31,6 @@
 #define __MSH_MOSS__
 
 #include <msconf.h>
-#include <moss/buffer.h>
 #include <moss/array.h>
 #include <moss/hash.h>
 #include <moss/string.h>

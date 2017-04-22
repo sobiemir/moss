@@ -13,10 +13,10 @@
  */
 
 $(function (){
-    let list = $('.sphinxsidebar .sphinxsidebarwrapper div ul.this-page-menu');
+	let list = $('.sphinxsidebar .sphinxsidebarwrapper div ul.this-page-menu');
 
-    // dodaj linki dla aktualnej strony
-    $('div.gitlinks').children().each(function(idx, elem) {
-        $(elem).children().appendTo( list );
-    });
+	// dodaj linki dla aktualnej strony
+	$('div.gitlinks').children().each(function(idx, elem) {
+		$(elem).children().appendTo( list );
+	});
 });

@@ -14,11 +14,11 @@
 
 # funkcja wyszukująca błędy na wyjściu
 function check_retval {
-    local retval=$?
-    if [ $retval -ne 0 ]; then
-        exit 1
-    fi
-    cd "$@"
+	local retval=$?
+	if [ $retval -ne 0 ]; then
+		exit 1
+	fi
+	cd "$@"
 }
 
 # wywołuj po koleji wszystkie testy
@@ -40,5 +40,5 @@ cd "../gen"
 
 # sprawdź pokrycie kodu całości
 gcov \
-    array.c \
-    djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c
+	array.c \
+	djb.c fnv.c joaat.c murmur.c sdbm.c xxhash.c

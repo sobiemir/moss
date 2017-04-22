@@ -48,63 +48,63 @@
 
 /* standardowe funkcje skrótu dla ciągu znaków, używające jednego algorytmu */
 #ifdef MSD_STRING_HASH
-    /* dedykowana dla mbs */
-#   if defined MSD_STRING_HASH_DEDICATED && defined MSD_HASH_MBS_FUNCTIONS
-#       ifdef MSD_STRING_HASH_64
-#           define ms_string_hash_mbs(mbs) \
-                MSD_CALLCONNECT(ms_hash_mbs_64_, MSD_STRING_HASH)( mbs )
-#       else
-#           define ms_string_hash_mbs(mbs) \
-                MSD_CALLCONNECT(ms_hash_mbs_32_, MSD_STRING_HASH)( mbs )
-#       endif
-#   endif
-    /* dedykowana dla wcs */
-#   if defined MSD_STRING_HASH_DEDICATED && defined MSD_HASH_WCS_FUNCTIONS
-#       ifdef MSD_STRING_HASH_64
-#           define ms_string_hash_wcs(wcs) \
-                MSD_CALLCONNECT(ms_hash_wcs_64_, MSD_STRING_HASH)( wcs )
-#       else
-#           define ms_string_hash_wcs(wcs) \
-                MSD_CALLCONNECT(ms_hash_wcs_32_, MSD_STRING_HASH)( wcs )
-#       endif
-#   endif
-    /* ogólna */
-#   ifdef MSD_STRING_HASH_64
-#       define ms_string_hash_byte(data, len) \
-            MSD_CALLCONNECT(ms_hash_64_, MSD_STRING_HASH)( data, len )
-#   else
-#   define ms_string_hash_byte(data, len) \
-        MSD_CALLCONNECT(ms_hash_32_, MSD_STRING_HASH)( data, len )
-#   endif
+	/* dedykowana dla mbs */
+#	if defined MSD_STRING_HASH_DEDICATED && defined MSD_HASH_MBS_FUNCTIONS
+#		ifdef MSD_STRING_HASH_64
+#			define ms_string_hash_mbs(mbs) \
+				MSD_CALLCONNECT(ms_hash_mbs_64_, MSD_STRING_HASH)( mbs )
+#		else
+#			define ms_string_hash_mbs(mbs) \
+				MSD_CALLCONNECT(ms_hash_mbs_32_, MSD_STRING_HASH)( mbs )
+#		endif
+#	endif
+	/* dedykowana dla wcs */
+#	if defined MSD_STRING_HASH_DEDICATED && defined MSD_HASH_WCS_FUNCTIONS
+#		ifdef MSD_STRING_HASH_64
+#			define ms_string_hash_wcs(wcs) \
+				MSD_CALLCONNECT(ms_hash_wcs_64_, MSD_STRING_HASH)( wcs )
+#		else
+#			define ms_string_hash_wcs(wcs) \
+				MSD_CALLCONNECT(ms_hash_wcs_32_, MSD_STRING_HASH)( wcs )
+#		endif
+#	endif
+	/* ogólna */
+#	ifdef MSD_STRING_HASH_64
+#		define ms_string_hash_byte(data, len) \
+			MSD_CALLCONNECT(ms_hash_64_, MSD_STRING_HASH)( data, len )
+#	else
+#	define ms_string_hash_byte(data, len) \
+		MSD_CALLCONNECT(ms_hash_32_, MSD_STRING_HASH)( data, len )
+#	endif
 #endif
 
 typedef struct MSS_MBINFO
 {
-    size_t        Offset;
-    unsigned char Bytes;
+	size_t        Offset;
+	unsigned char Bytes;
 }
 MS_MBINFO;
 
 typedef struct MSS_STRING
 {
-    union
-    {
-        char     *CData;
-        wchar_t  *WData;
-        tchar    *TData;
-    };
+	union
+	{
+		char     *CData;
+		wchar_t  *WData;
+		tchar    *TData;
+	};
 
-    size_t Length;
-    size_t Capacity;
-    size_t Hash;
-    float  Modifier;
-    bool   Wide;
-    bool   Destroy;
-    bool   Hashed;
+	size_t Length;
+	size_t Capacity;
+	size_t Hash;
+	float  Modifier;
+	bool   Wide;
+	bool   Destroy;
+	bool   Hashed;
 
-    MS_ARRAY *MBInfo;
+	MS_ARRAY *MBInfo;
 
-    size_t (*FuncIncrease)(size_t capacity, float modifier);
+	size_t (*FuncIncrease)(size_t capacity, float modifier);
 }
 MS_STRING;
 

@@ -12,13 +12,13 @@
  *  See LICENSE file for copyright information.
  #}
 
-{%- if show_source and has_source and sourcename %}
-    <div role="note" aria-label="source link">
-        <h3>{{ _('Odnośniki zewnętrzne') }}</h3>
-        <ul class="this-page-menu">
-            <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _('Show Source') }}</a></li>
-            <li><a href="https://raw.githubusercontent.com/sobiemir/moss/master/LICENSE" rel="nofollow">{{ _('Pokaż licencję') }}</a></li>
-        </ul>
-        <script type="text/javascript" src={{ pathto(master_doc)[:-10] + '_static/gitsource.js' }}></script>
-    </div>
-{%- endif %}
+<div role="note" aria-label="source link">
+	<h3>{{ _('Odnośniki zewnętrzne') }}</h3>
+	<ul class="this-page-menu">
+	{%- if show_source and has_source and sourcename %}
+		<li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _('Show Source') }}</a></li>
+	{%- endif %}
+		<li><a href="http://git.aculo.pl/moss/plain/LICENSE" rel="nofollow">{{ _('Pokaż licencję') }}</a></li>
+	</ul>
+	<script type="text/javascript" src={{ pathto(master_doc)[:-10] + '_static/gitsource.js' }}></script>
+</div>

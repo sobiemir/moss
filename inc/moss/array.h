@@ -39,7 +39,7 @@
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    STRUKTURY I STAŁE
+	STRUKTURY I STAŁE
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -50,43 +50,43 @@
  */
 typedef struct MSS_ARRAY
 {
-    /**
-     * Pojemność tablicy.
-     * Pole uzupełniane i kontrolowane przez funkcje.
-     */
-    size_t Capacity;
-    /**
-     * Rozmiar pojedynczego elementu.
-     * Pole uzupełniane i kontrolowane przez funkcje.
-     */
-    size_t ItemSize;
-    /**
-     * Ilość elementów w tablicy, inaczej długość tablicy.
-     */
-    size_t Length;
-    /**
-     * Modyfikator wartości zwracanej przez funkcję zwiększającą pojemność.
-     */
-    float Modifier;
-    /**
-     * Niszczenie całej tablicy.
-     * Pole uzupełniane i kontrolowane przez funkcje.
-     */
-    bool Destroy;
-    /**
-     * Zapisane elementy w postaci tablicy standardowej języka C.
-     * Jest to jedyne pole, którego typ zmieniany jest przez makra.
-     */
-    void **Items;
-    /**
-     * Wskaźnik na funkcję zwiększającą pojemność tablicy.
-     * Wartość zwracana przez funkcję jest traktowana jako nowa pojemność tablicy.
-     *
-     * @param  capacity Aktualna pojemność tablicy.
-     * @param  modifier Modyfikator wartości końcowej.
-     * @return          Nowa pojemność tablicy do przydzielenia.
-     */
-    size_t (*FuncIncrease)(size_t capacity, float modifier);
+	/**
+	 * Pojemność tablicy.
+	 * Pole uzupełniane i kontrolowane przez funkcje.
+	 */
+	size_t Capacity;
+	/**
+	 * Rozmiar pojedynczego elementu.
+	 * Pole uzupełniane i kontrolowane przez funkcje.
+	 */
+	size_t ItemSize;
+	/**
+	 * Ilość elementów w tablicy, inaczej długość tablicy.
+	 */
+	size_t Length;
+	/**
+	 * Modyfikator wartości zwracanej przez funkcję zwiększającą pojemność.
+	 */
+	float Modifier;
+	/**
+	 * Niszczenie całej tablicy.
+	 * Pole uzupełniane i kontrolowane przez funkcje.
+	 */
+	bool Destroy;
+	/**
+	 * Zapisane elementy w postaci tablicy standardowej języka C.
+	 * Jest to jedyne pole, którego typ zmieniany jest przez makra.
+	 */
+	void **Items;
+	/**
+	 * Wskaźnik na funkcję zwiększającą pojemność tablicy.
+	 * Wartość zwracana przez funkcję jest traktowana jako nowa pojemność tablicy.
+	 *
+	 * @param  capacity Aktualna pojemność tablicy.
+	 * @param  modifier Modyfikator wartości końcowej.
+	 * @return          Nowa pojemność tablicy do przydzielenia.
+	 */
+	size_t (*FuncIncrease)(size_t capacity, float modifier);
 }
 MS_ARRAY;
 
@@ -95,34 +95,34 @@ MS_ARRAY;
  */
 struct MSS_ARRAYFUNCTIONS
 {
-    /**
-     * Wskaźnik na funkcję zwiększającą pojemność tablicy.
-     * Mnoży wartość zmiennej capacity ze zmienną modifier.
-     *
-     * @param  capacity Aktualna pojemność tablicy.
-     * @param  modifier Modyfikator wartości końcowej.
-     * @return          Nowa pojemność tablicy przekazywana do przydzielenia pamięci.
-     */
-    size_t (*IncMultiply)(size_t capacity, float modifier);
-    
-    /**
-     * Wskaźnik na funkcję zwiększającą pojemność tablicy.
-     * Dodaje wartość zmiennej capacity do zmiennej modifier.
-     *
-     * @param  capacity Aktualna pojemność tablicy.
-     * @param  modifier Modyfikator wartości końcowej.
-     * @return          Nowa pojemność tablicy przekazywana do przydzielenia pamięci.
-     */
-    size_t (*IncAdd)(size_t capacity, float modifier);
-    /**
-     * Wskaźnik na funkcję zwiększającą pojemność tablicy.
-     * Podnosi wartość zmiennej capacity do potęgi o wartości zmiennej modifier.
-     *
-     * @param  capacity Aktualna pojemność tablicy.
-     * @param  modifier Modyfikator wartości końcowej.
-     * @return          Nowa pojemność tablicy przekazywana do przydzielenia pamięci.
-     */
-    size_t (*IncPower)(size_t capacity, float modifier);
+	/**
+	 * Wskaźnik na funkcję zwiększającą pojemność tablicy.
+	 * Mnoży wartość zmiennej capacity ze zmienną modifier.
+	 *
+	 * @param  capacity Aktualna pojemność tablicy.
+	 * @param  modifier Modyfikator wartości końcowej.
+	 * @return          Nowa pojemność tablicy przekazywana do przydzielenia pamięci.
+	 */
+	size_t (*IncMultiply)(size_t capacity, float modifier);
+	
+	/**
+	 * Wskaźnik na funkcję zwiększającą pojemność tablicy.
+	 * Dodaje wartość zmiennej capacity do zmiennej modifier.
+	 *
+	 * @param  capacity Aktualna pojemność tablicy.
+	 * @param  modifier Modyfikator wartości końcowej.
+	 * @return          Nowa pojemność tablicy przekazywana do przydzielenia pamięci.
+	 */
+	size_t (*IncAdd)(size_t capacity, float modifier);
+	/**
+	 * Wskaźnik na funkcję zwiększającą pojemność tablicy.
+	 * Podnosi wartość zmiennej capacity do potęgi o wartości zmiennej modifier.
+	 *
+	 * @param  capacity Aktualna pojemność tablicy.
+	 * @param  modifier Modyfikator wartości końcowej.
+	 * @return          Nowa pojemność tablicy przekazywana do przydzielenia pamięci.
+	 */
+	size_t (*IncPower)(size_t capacity, float modifier);
 };
 
 /**
@@ -134,7 +134,7 @@ extern const struct MSS_ARRAYFUNCTIONS MSC_ArrayFunctions;
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    TWORZENIE I INICJALIZACJA
+	TWORZENIE I INICJALIZACJA
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -172,7 +172,7 @@ MS_ARRAY ms_array_return_local( size_t size, size_t capacity );
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    ZMIANA POJEMNOŚCI
+	ZMIANA POJEMNOŚCI
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -203,7 +203,7 @@ int ms_array_realloc_min( void *aptr, size_t min );
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    KOPIOWANIE
+	KOPIOWANIE
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -229,7 +229,7 @@ void *ms_array_copy_alloc( const void *aptr );
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    DODAWANIE ELEMENTÓW
+	DODAWANIE ELEMENTÓW
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -282,7 +282,7 @@ int ms_array_join_slice_inverse( void *adst, const void *asrc, size_t offset, si
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    USUWANIE ELEMENTÓW
+	USUWANIE ELEMENTÓW
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -317,7 +317,7 @@ int ms_array_remove( void *aptr, size_t index );
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    CZYSZCZENIE DANYCH
+	CZYSZCZENIE DANYCH
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -348,7 +348,7 @@ void ms_array_free( void *aptr );
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    MAKRA
+	MAKRA
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -363,7 +363,7 @@ void ms_array_free( void *aptr );
  * @return       Element pobrany z tablicy o typie podanym w parametrze.
  */
 #define ms_array_get(array, type, index) \
-    ((type*)array->Items)[index]
+	((type*)array->Items)[index]
 
 /**
  * Pobiera element z tablicy o podanym typie i indeksie.
@@ -375,7 +375,7 @@ void ms_array_free( void *aptr );
  * @return       Element pobrany z tablicy o typie podanym w parametrze.
  */
 #define ms_array_getl(array, type, index) \
-    ((type*)array.Items)[index]
+	((type*)array.Items)[index]
 
 /**
  * Alias funkcji ms_array_remove_range.
@@ -385,7 +385,7 @@ void ms_array_free( void *aptr );
  * @param count  Ilość usuwanych elementów.
  */
 #define ms_array_slice_inverse(aptr, offset, count) \
-    ms_array_remove_range( aptr, offset, count )
+	ms_array_remove_range( aptr, offset, count )
 
 /**
  * Kopiuje wszystkie elementy z drugiej tablicy do pierwszej.
@@ -396,7 +396,7 @@ void ms_array_free( void *aptr );
  * @return      Kod błędu lub wartość MSEC_OK.
  */
 #define ms_array_join(adst, asrc) \
-    ms_array_join_slice(adst, asrc, 0, 0)
+	ms_array_join_slice(adst, asrc, 0, 0)
 
 /**
  * Kopiuje wszystkie podane elementy do tablicy.
@@ -408,7 +408,7 @@ void ms_array_free( void *aptr );
  * @return       Kod błędu lub wartość MSEC_OK.
  */
 #define ms_array_push_values(adst, tsrc, count) \
-    ms_array_insert_values( adst, (adst)->Length, tsrc, count )
+	ms_array_insert_values( adst, (adst)->Length, tsrc, count )
 
 /**
  * Dodaje element do tablicy w wyznaczonym miejscu.
@@ -419,7 +419,7 @@ void ms_array_free( void *aptr );
  * @return      Kod błedu lub wartość MSEC_OK.
  */
 #define ms_array_push_value(aptr, item) \
-    ms_array_insert_value( aptr, (aptr)->Length, item )
+	ms_array_insert_value( aptr, (aptr)->Length, item )
 
 /**
  * Usuwa ostatni element z tablicy.
@@ -428,12 +428,12 @@ void ms_array_free( void *aptr );
  * @param  aptr Wskaźnik do tablicy.
  */
 #define ms_array_remove_last(aptr) \
-    ms_array_remove( aptr, (aptr)->Length - 1 )
+	ms_array_remove( aptr, (aptr)->Length - 1 )
 
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-    BAZA FUNKCJI POCHODNYCH
+	BAZA FUNKCJI POCHODNYCH
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */

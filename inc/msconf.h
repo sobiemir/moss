@@ -32,34 +32,34 @@
 
 /* MSD_CCMACRO pozwala na definiowanie makr bezpośrednio przez kompilator */
 #ifndef MSD_CCMACRO
-#   define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (char*) */
-#   define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (wchar_t*) */
+#	define MSD_HASH_MBS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (char*) */
+#	define MSD_HASH_WCS_FUNCTIONS  /* funkcje skrótu zaprojektowane specjalnie dla ciągu znaków (wchar_t*) */
 
-#   define MSD_HASH_MURMUR         /* funkcje skrótu używające algorytmów z rodziny Murmur */
-#   define MSD_HASH_JOAAT          /* funkcje skrótu używające algorytmu JOAAT */
-#   define MSD_HASH_FNV            /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
-#   define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
-#   define MSD_HASH_DJB            /* funkcje skrótu używające algorytmów z rodziny DJB2 */
-#   define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
+#	define MSD_HASH_MURMUR         /* funkcje skrótu używające algorytmów z rodziny Murmur */
+#	define MSD_HASH_JOAAT          /* funkcje skrótu używające algorytmu JOAAT */
+#	define MSD_HASH_FNV            /* funkcje skrótu używające algorytmów z rodziny FNV-1 */
+#	define MSD_HASH_SDBM           /* funkcje skrótu używające algorytmu SDBM */
+#	define MSD_HASH_DJB            /* funkcje skrótu używające algorytmów z rodziny DJB2 */
+#	define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
 
-    /* sdbm         [SDBM]
-     * djb2         [DJB]
-     * djb2a        [DJB]
-     * joaat        [JOAAT]
-     * fnv1         [FNV]
-     * fnv1a        [FNV]
-     * murmur1      [MURMUR]
-     * murmur2      [MURMUR]
-     * murmur3      [MURMUR]
-     * xxhash       [XXHASH]
-     */
-#   define MSD_STRING_HASH sdbm     /* funkcja skrótu używana domyślnie dla ciągu znaków */
-#   define MSD_STRING_HASH_64       /* preferuj 64 bitową wersję skrótu gdy jest dostępna */
+	/* sdbm         [SDBM]
+	 * djb2         [DJB]
+	 * djb2a        [DJB]
+	 * joaat        [JOAAT]
+	 * fnv1         [FNV]
+	 * fnv1a        [FNV]
+	 * murmur1      [MURMUR]
+	 * murmur2      [MURMUR]
+	 * murmur3      [MURMUR]
+	 * xxhash       [XXHASH]
+	 */
+#	define MSD_STRING_HASH sdbm     /* funkcja skrótu używana domyślnie dla ciągu znaków */
+#	define MSD_STRING_HASH_64       /* preferuj 64 bitową wersję skrótu gdy jest dostępna */
 #endif
 
 /* to makro musi być, sprawdza czy kompilator je zdefiniował */
 #ifndef MSD_HASH_SEED
-#   define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
+#	define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
 #endif
 
 #define IGRET   /* ignorowanie zwracanej wartości przez funkcję */
@@ -67,58 +67,57 @@
 
 /* sprawdź czy skrót dla ciągu znaków został włączony, jeżeli tak, wymuś dołączanie danego algorytmu */
 #ifdef MSD_STRING_HASH
-    /* sdbm, tylko wersja 32 bitowa */
-#   if MSD_STRING_HASH == sdbm
-#       ifndef MSD_HASH_SDBM
-#           define MSD_HASH_SDBM
-#       endif
-#       undef MSD_STRING_HASH_64
-#       define MSD_STRING_HASH_DEDICATED
+	/* sdbm, tylko wersja 32 bitowa */
+#	if MSD_STRING_HASH == sdbm
+#		ifndef MSD_HASH_SDBM
+#			define MSD_HASH_SDBM
+#		endif
+#		undef MSD_STRING_HASH_64
+#		define MSD_STRING_HASH_DEDICATED
 
-    /* djb2 / djb2a, tylko wersja 32 bitowa */
-#   elif MSD_STRING_HASH == djb2 || MSD_STRING_HASH == djb2a
-#       ifndef MSD_HASH_DJB
-#           define MSD_HASH_DJB
-#       endif
-#       undef MSD_STRING_HASH_64
-#       define MSD_STRING_HASH_DEDICATED
+	/* djb2 / djb2a, tylko wersja 32 bitowa */
+#	elif MSD_STRING_HASH == djb2 || MSD_STRING_HASH == djb2a
+#		ifndef MSD_HASH_DJB
+#			define MSD_HASH_DJB
+#		endif
+#		undef MSD_STRING_HASH_64
+#		define MSD_STRING_HASH_DEDICATED
 
-    /* joaat, tylko wersja 32 bitowa */
-#   elif MSD_STRING_HASH == joaat
-#       ifndef MSD_HASH_JOAAT
-#           define MSD_HASH_JOAAT
-#       endif
-#       undef MSD_STRING_HASH_64
-#       define MSD_STRING_HASH_DEDICATED
+	/* joaat, tylko wersja 32 bitowa */
+#	elif MSD_STRING_HASH == joaat
+#		ifndef MSD_HASH_JOAAT
+#			define MSD_HASH_JOAAT
+#		endif
+#		undef MSD_STRING_HASH_64
+#		define MSD_STRING_HASH_DEDICATED
 
-    /* fnv1 / fnv1a, bez problemów */
-#   elif MSD_STRING_HASH == fnv1 || MSD_STRING_HASH == fnv1a
-#       ifndef MSD_HASH_FNV
-#           define MSD_HASH_FNV
-#       endif
-#       define MSD_STRING_HASH_DEDICATED
+	/* fnv1 / fnv1a, bez problemów */
+#	elif MSD_STRING_HASH == fnv1 || MSD_STRING_HASH == fnv1a
+#		ifndef MSD_HASH_FNV
+#			define MSD_HASH_FNV
+#		endif
+#		define MSD_STRING_HASH_DEDICATED
 
-    /* murmur - tylko 2 ma wersje 64 bitową oraz tylko 3 algorytmy dedykowane dla ciągu znaków */
-#   elif MSD_STRING_HASH == murmur1 || MSD_STRING_HASH == murmur2 || MSD_STRING_HASH == murmur3
-#       ifndef MSD_HASH_MURMUR
-#           define MSD_HASH_MURMUR
-#       endif
-#       if MSD_STRING_HASH != murmur2
-#           undef MSD_STRING_HASH_64
-#       endif
-#       if MSD_STRING_HASH == murmur3
-#           define MSD_STRING_HASH_DEDICATED
-#       endif
+	/* murmur - tylko 2 ma wersje 64 bitową oraz tylko 3 algorytmy dedykowane dla ciągu znaków */
+#	elif MSD_STRING_HASH == murmur1 || MSD_STRING_HASH == murmur2 || MSD_STRING_HASH == murmur3
+#		ifndef MSD_HASH_MURMUR
+#			define MSD_HASH_MURMUR
+#		endif
+#		if MSD_STRING_HASH != murmur2
+#			undef MSD_STRING_HASH_64
+#		endif
+#		if MSD_STRING_HASH == murmur3
+#			define MSD_STRING_HASH_DEDICATED
+#		endif
 
-    /* xxhash, bez problemów */
-#   elif MSD_STRING_HASH == xxhash
-#       ifndef MSD_HASH_XXHASH
-#           define MSD_HASH_XXHASH
-#       endif
-#       define MSD_STRING_HASH_DEDICATED
-#   endif
+	/* xxhash, bez problemów */
+#	elif MSD_STRING_HASH == xxhash
+#		ifndef MSD_HASH_XXHASH
+#			define MSD_HASH_XXHASH
+#		endif
+#		define MSD_STRING_HASH_DEDICATED
+#	endif
 #endif
-
 
 
 #define MSD_DEBUG
@@ -126,19 +125,19 @@
 //#define MSD_HASSTDBOOL
 
 #ifdef _WIN32
-#   define MSD_SYSTEM_WINDOWS
+#	define MSD_SYSTEM_WINDOWS
 #elif defined __linux__
-#   define MSD_SYSTEM_LINUX
+#	define MSD_SYSTEM_LINUX
 #endif
 
 #ifdef _MSC_VER
-#   define MSD_COMPILER_MSC
+#	define MSD_COMPILER_MSC
 #elif defined __GNUC__
-#   define MSD_COMPILER_GNUC
+#	define MSD_COMPILER_GNUC
 #endif
 
 #ifdef MSD_COMPILER_MSC
-#   define _CRT_SECURE_NO_WARNINGS
+#	define _CRT_SECURE_NO_WARNINGS
 #endif
 
 
@@ -154,11 +153,11 @@
 
 
 #ifndef __FUNCTION__
-#   ifdef __func__
-#       define __FUNCTION__ __func__
-#   else
-#       define __FUNCTION__ "(null)"
-#   endif
+#	ifdef __func__
+#		define __FUNCTION__ __func__
+#	else
+#		define __FUNCTION__ "(null)"
+#	endif
 #endif
 
 #include <assert.h>
@@ -168,33 +167,33 @@
 #include <math.h>
 
 #ifdef MSD_HASSTDBOOL
-#   include <stdbool.h>
+#	include <stdbool.h>
 #else
-#   ifndef bool
-#       define bool int
-#   endif
-#   ifndef true
-#       define true 1
-#   endif
-#   ifndef false
-#       define false 0
-#   endif
+#	ifndef bool
+#		define bool int
+#	endif
+#	ifndef true
+#		define true 1
+#	endif
+#	ifndef false
+#		define false 0
+#	endif
 #endif
 #ifndef TRUE
-#   define TRUE  1
-#   define FALSE 0
+#	define TRUE  1
+#	define FALSE 0
 #endif
 
 #ifdef MSD_ERRORINERRNO
-#   define SETERRNOANDRETURN(err) return (errno = err), err
-#   define SETERRNO(err) errno = err
-#   define SETERRNOANDRETURNV(err) errno = err; return
-#   define SETERRNOANDRETURNC(err, ret) return (errno = err), ret
+#	define SETERRNOANDRETURN(err) return (errno = err), err
+#	define SETERRNO(err) errno = err
+#	define SETERRNOANDRETURNV(err) errno = err; return
+#	define SETERRNOANDRETURNC(err, ret) return (errno = err), ret
 #else
-#   define SETERRNOANDRETURN(err) return err
-#   define SETERRNO(err)
-#   define SETERRNOANDRETURNV(err) return
-#   define SETERRNOANDRETURNC(err, ret) return ret
+#	define SETERRNOANDRETURN(err) return err
+#	define SETERRNO(err)
+#	define SETERRNOANDRETURNV(err) return
+#	define SETERRNOANDRETURNC(err, ret) return ret
 #endif
 
 #define TEMPSWAPVALUES(tmp, a, b) tmp = a, a = b, b = tmp
@@ -214,98 +213,85 @@
 #define MSX_ROTR64(x, r) ((x >> r) | (x << (64 - r)))
 
 #define MSX_FIND8B0IN32B(bits) \
-    (!(bits & 0x000000FF) \
-        ? 1 \
-        : !(bits & 0x0000FF00) \
-        ? 2 \
-        : !(bits & 0x00FF0000) \
-        ? 3 \
-        : !(bits & 0xFF000000) \
-        ? 4 \
-        : 0)
+	(!(bits & 0x000000FF) \
+		? 1 \
+		: !(bits & 0x0000FF00) \
+		? 2 \
+		: !(bits & 0x00FF0000) \
+		? 3 \
+		: !(bits & 0xFF000000) \
+		? 4 \
+		: 0)
 
 #define MSX_FIND8B0IN64B(bits) \
-    (!(bits & 0x00000000000000FFull) \
-        ? 1 \
-        : !(bits & 0x000000000000FF00ull) \
-        ? 2 \
-        : !(bits & 0x0000000000FF0000ull) \
-        ? 3 \
-        : !(bits & 0x00000000FF000000ull) \
-        ? 4 \
-        : !(bits & 0x000000FF00000000ull) \
-        ? 5 \
-        : !(bits & 0x0000FF0000000000ull) \
-        ? 6 \
-        : !(bits & 0x00FF000000000000ull) \
-        ? 7 \
-        : !(bits & 0xFF00000000000000ull) \
-        ? 8 \
-        : 0)
+	(!(bits & 0x00000000000000FFull) \
+		? 1 \
+		: !(bits & 0x000000000000FF00ull) \
+		? 2 \
+		: !(bits & 0x0000000000FF0000ull) \
+		? 3 \
+		: !(bits & 0x00000000FF000000ull) \
+		? 4 \
+		: !(bits & 0x000000FF00000000ull) \
+		? 5 \
+		: !(bits & 0x0000FF0000000000ull) \
+		? 6 \
+		: !(bits & 0x00FF000000000000ull) \
+		? 7 \
+		: !(bits & 0xFF00000000000000ull) \
+		? 8 \
+		: 0)
 
 #define MSX_FIND16B0IN32B(bits) \
-    (!(bits & 0x0000FFFF) \
-        ? 1 \
-        : !(bits & 0xFFFF0000) \
-        ? 2 \
-        : 0)
+	(!(bits & 0x0000FFFF) \
+		? 1 \
+		: !(bits & 0xFFFF0000) \
+		? 2 \
+		: 0)
 
 #define MSX_FIND16B0IN64B(bits) \
-    (!(bits & 0x000000000000FFFFull) \
-        ? 1 \
-        : !(bits & 0x00000000FFFF0000ull) \
-        ? 2 \
-        : !(bits & 0x0000FFFF00000000ull) \
-        ? 3 \
-        : !(bits & 0xFFFF000000000000ull) \
-        ? 4 \
-        : 0)
+	(!(bits & 0x000000000000FFFFull) \
+		? 1 \
+		: !(bits & 0x00000000FFFF0000ull) \
+		? 2 \
+		: !(bits & 0x0000FFFF00000000ull) \
+		? 3 \
+		: !(bits & 0xFFFF000000000000ull) \
+		? 4 \
+		: 0)
 
 #define MSX_FIND32B0IN64B(bits) \
-    (!(bits & 0x00000000FFFFFFFFull) \
-        ? 1 \
-        : !(bits & 0xFFFFFFFF00000000ull) \
-        ? 2 \
-        : 0)
+	(!(bits & 0x00000000FFFFFFFFull) \
+		? 1 \
+		: !(bits & 0xFFFFFFFF00000000ull) \
+		? 2 \
+		: 0)
 
 typedef void*       mst_voidptr_t;
 typedef long double mst_longdouble_t;
 typedef long long   mst_longlong_t;
 
-extern const bool msc_float_in_range;
-extern const bool msc_double_in_range;
-extern const bool msc_long_double_in_range;
-extern const bool msc_voidptr_in_range;
-
-#ifdef MSD_DEBUG
-
-#   include <stdio.h>
-
-    void ms_debug_display_types( void );
-
-#endif
 
 enum MSE_ERROR_CODE
 {
-    MSEC_OK = 0,
-    MSEC_MEMORY_ALLOCATION = 0x8000,
-    MSEC_OUT_OF_RANGE,
-    MSEC_INVALID_ARGUMENT,
-    MSEC_DATA_OVERFLOW,
-    MSEC_INVALID_VALUE,
-    
-    
+	MSEC_OK = 0,
+	MSEC_MEMORY_ALLOCATION = 0x8000,
+	MSEC_OUT_OF_RANGE,
+	MSEC_INVALID_ARGUMENT,
+	MSEC_DATA_OVERFLOW,
+	MSEC_INVALID_VALUE,
+	
+	
 
-    MSEC_NULL_POINTER,
-    MSEC_BAD_CONTENT,
-    MSEC_TOO_LONG_STRING,
-    MSEC_FILE_OPEN,
-    MSEC_CHAIN_ALLOCATION
+	MSEC_NULL_POINTER,
+	MSEC_BAD_CONTENT,
+	MSEC_TOO_LONG_STRING,
+	MSEC_FILE_OPEN,
+	MSEC_CHAIN_ALLOCATION
 };
 
 /* Domyślny rozmiar tablicy używany w przypadku podania 0 podczas inicjalizacji. */
 #define MSD_ARRAY_INITIAL_SIZE 32
-
 
 
 
@@ -332,47 +318,47 @@ typedef long double        ldouble;     // 64/80/128 bitów
 
 // unicode
 #ifdef MSD_UNICODE_STRINGS
-#   include <wchar.h>
-    typedef wchar_t tchar;
+#	include <wchar.h>
+	typedef wchar_t tchar;
 
-#   define MSD_EOF WEOF
-    
-#   define MSF_TEXT(text) _MSF_TEXT(text)
-#   define _MSF_TEXT(text) L##text
-#   define MSF_STRLEN(text) wcslen(text)
-#   define MSF_STRCPY(dst,src) wcscpy(dst,src)
-#   define MSF_STRNCPY(dst,src,max) wcsncpy(dst,src,max)
-#   define MSF_FPUTC(chr,file) fputwc(chr,file)
-#   define MSF_FPUTS(str,file) fputws(str,file)
-#   define MSF_STRCHR(str,chr) wcschr(str,chr)
+#	define MSD_EOF WEOF
+	
+#	define MSF_TEXT(text) _MSF_TEXT(text)
+#	define _MSF_TEXT(text) L##text
+#	define MSF_STRLEN(text) wcslen(text)
+#	define MSF_STRCPY(dst,src) wcscpy(dst,src)
+#	define MSF_STRNCPY(dst,src,max) wcsncpy(dst,src,max)
+#	define MSF_FPUTC(chr,file) fputwc(chr,file)
+#	define MSF_FPUTS(str,file) fputws(str,file)
+#	define MSF_STRCHR(str,chr) wcschr(str,chr)
 
-#   define msd_text(a)          L##a
-#   define msd_strlen(a)        wcslen(a)
-#   define msd_strcpy(a,b)      wcscpy(a,b)
-#   define msd_fputs(a,b)       fputws(a,b)
-#   define msd_printf(a,...)    wprintf(a, ##__VA_ARGS__)
-#   define msd_vsprintf(a,b,c)  vswprintf(a,1024,b,c)
-#   define msd_sprintf(a,b,...) swprintf(a,1024,b,##__VA_ARGS__)
+#	define msd_text(a)          L##a
+#	define msd_strlen(a)        wcslen(a)
+#	define msd_strcpy(a,b)      wcscpy(a,b)
+#	define msd_fputs(a,b)       fputws(a,b)
+#	define msd_printf(a,...)    wprintf(a, ##__VA_ARGS__)
+#	define msd_vsprintf(a,b,c)  vswprintf(a,1024,b,c)
+#	define msd_sprintf(a,b,...) swprintf(a,1024,b,##__VA_ARGS__)
 #else
-#   include <string.h>
-    typedef char tchar;
+#	include <string.h>
+	typedef char tchar;
 
-#   define MSD_EOF EOF
-    
-#   define MSF_TEXT(text)      text
-#   define MSF_STRLEN(text)    strlen(text)
-#   define MSF_STRCPY(dst,src) strcpy(dst,src)
-#   define MSF_STRNCPY(dst,src,max) strncpy(dst,src,max)
-#   define MSF_FPUTC(chr,file) fputc(chr,file)
-#   define MSF_FPUTS(str,file) fputs(str,file)
-#   define MSF_STRCHR(str,chr) strchr(str,chr)
+#	define MSD_EOF EOF
+	
+#	define MSF_TEXT(text)      text
+#	define MSF_STRLEN(text)    strlen(text)
+#	define MSF_STRCPY(dst,src) strcpy(dst,src)
+#	define MSF_STRNCPY(dst,src,max) strncpy(dst,src,max)
+#	define MSF_FPUTC(chr,file) fputc(chr,file)
+#	define MSF_FPUTS(str,file) fputs(str,file)
+#	define MSF_STRCHR(str,chr) strchr(str,chr)
 
-#   define msd_text(a)          a
-#   define msd_strlen(a)        strlen(a)
-#   define msd_strcpy(a,b)      strcpy(a,b)
-#   define msd_fputs(a,b)       fputs(a,b)
-#   define msd_vsprintf(a,b,c)  vsprintf(a,b,c)
-#   define msd_sprintf(a,b,...) sprintf(a,b,##__VA_ARGS__)
+#	define msd_text(a)          a
+#	define msd_strlen(a)        strlen(a)
+#	define msd_strcpy(a,b)      strcpy(a,b)
+#	define msd_fputs(a,b)       fputs(a,b)
+#	define msd_vsprintf(a,b,c)  vsprintf(a,b,c)
+#	define msd_sprintf(a,b,...) sprintf(a,b,##__VA_ARGS__)
 #endif
 
 #define MSD_HASH_LOOP_UNROLL 4
