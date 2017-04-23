@@ -98,9 +98,9 @@ typedef struct MSS_STRING
 	size_t Capacity;
 	size_t Hash;
 	float  Modifier;
-	bool   Wide;
-	bool   Destroy;
-	bool   Hashed;
+	bool_mst Wide;
+	bool_mst Destroy;
+	bool_mst Hashed;
 
 	MS_ARRAY *MBInfo;
 

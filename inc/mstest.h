@@ -135,7 +135,7 @@ typedef struct MSST_TESTSUITE
 	 * Przydaje się to w trakcie, gdy jedna funkcja zależy od drugiej.
 	 * Pole jest obowiązkowe.
 	 */
-	bool BreakOnError;
+	bool_mst BreakOnError;
 
 	/**
 	 * Funkcja wywoływana przed rozpoczęciem testów.

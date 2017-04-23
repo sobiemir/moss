@@ -32,12 +32,13 @@ cd $DIR1
 
 # kompiluj moduł i przetestuj go
 if gcc \
+	-g \
+	-O0 \
 	-Wall \
 	-I../../inc \
 	$DIR2/array_test.c \
 	$DIR2/../src/array.c \
 	-lm \
-	-lcriterion \
 	-o array \
 	-fprofile-arcs \
 	-ftest-coverage;

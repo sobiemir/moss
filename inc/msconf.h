@@ -119,28 +119,26 @@
 #	endif
 #endif
 
-
-#define MSD_DEBUG
-#define MSD_ERRORINERRNO
-//#define MSD_HASSTDBOOL
-
+/* próbuj wykryć system, pod którym działa preprocesor */
 #ifdef _WIN32
 #	define MSD_SYSTEM_WINDOWS
 #elif defined __linux__
 #	define MSD_SYSTEM_LINUX
 #endif
 
+/* próbuj wykryć kompilator */
 #ifdef _MSC_VER
 #	define MSD_COMPILER_MSC
 #elif defined __GNUC__
 #	define MSD_COMPILER_GNUC
 #endif
 
+/* wyłącz ostrzeżenia o niebezpiecznych funkcjach w MSC */
 #ifdef MSD_COMPILER_MSC
 #	define _CRT_SECURE_NO_WARNINGS
 #endif
 
-
+/* różny inline w zależności od kompilatora */
 #ifndef INLINE
 #	ifdef MSD_COMPILER_MSC
 #		define INLINE __inline
@@ -149,9 +147,7 @@
 #	endif
 #endif
 
-
-
-
+/* wykrywanie nazwy funkcji w której makro zostało uruchomione */
 #ifndef __FUNCTION__
 #	ifdef __func__
 #		define __FUNCTION__ __func__
@@ -162,27 +158,42 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <errno.h>
-#include <math.h>
 
-#ifdef MSD_HASSTDBOOL
+/* typ bool dostępny jest od C99 */
+#if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901L)
 #	include <stdbool.h>
+
+	typedef bool bool_mst;
+
+#	ifndef TRUE
+#		define TRUE true
+#	endif
+#	ifndef FALSE
+#		define FALSE false
+#	endif
 #else
-#	ifndef bool
-#		define bool int
+	typedef int bool_mst;
+
+#	ifndef TRUE
+#		define TRUE 1
 #	endif
-#	ifndef true
-#		define true 1
-#	endif
-#	ifndef false
-#		define false 0
+#	ifndef FALSE
+#		define FALSE 0
 #	endif
 #endif
-#ifndef TRUE
-#	define TRUE  1
-#	define FALSE 0
-#endif
+
+typedef void*              voidptr_mst;       /* wskaźnik na void */
+typedef long double        ldouble_mst;       /* typ long double, może go nie być w starszych wersjach */
+typedef long long          llong_mst;         /* typ long long, może go nie być w starszych wersjach */
+typedef unsigned long long ullong_mst;        /* typ long long, wersja bez znaku */
+
+
+
+#define MSD_DEBUG
+#define MSD_ERRORINERRNO
+
+
 
 #ifdef MSD_ERRORINERRNO
 #	define SETERRNOANDRETURN(err) return (errno = err), err
@@ -270,9 +281,6 @@
 		? 2 \
 		: 0)
 
-typedef void*       mst_voidptr_t;
-typedef long double mst_longdouble_t;
-typedef long long   mst_longlong_t;
 
 
 enum MSE_ERROR_CODE

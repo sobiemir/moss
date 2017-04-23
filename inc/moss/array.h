@@ -72,7 +72,7 @@ typedef struct MSS_ARRAY
 	 * Niszczenie całej tablicy.
 	 * Pole uzupełniane i kontrolowane przez funkcje.
 	 */
-	bool Destroy;
+	bool_mst Destroy;
 	/**
 	 * Zapisane elementy w postaci tablicy standardowej języka C.
 	 * Jest to jedyne pole, którego typ zmieniany jest przez makra.

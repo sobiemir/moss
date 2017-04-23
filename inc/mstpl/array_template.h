@@ -45,7 +45,7 @@
 		size_t ItemSize; \
 		size_t Length; \
 		float Modifier; \
-		bool Destroy; \
+		bool_mst Destroy; \
 		_Type *Items; \
 		size_t (*FuncIncrease)(size_t capacity, float modifier); \
 	} \
