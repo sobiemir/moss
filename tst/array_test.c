@@ -159,10 +159,7 @@ char *mst_array_create( MST_TESTFUNC *info )
 /**
  * Niszczenie danych tablicy na dwa sposoby.
  * Pierwszym jest zwalnianie wszystkich zasobów które przydzieliła funkcja (ms_array_free).
- * Tyczy się to głównie tablic, które dostały swój przydział w pamięci (utworzone funkcją alloc).
- * Drugi sposób to zwalnianie elementów, a więc czyszczenie struktury (ms_array_clean).
- * W przypadku tablic utworzonych funkcją alloc i tak aby zwolnić pamięć w całości, należy wywołać
- * dodatkowo funkcję ms_array_free.
+ * Drugi sposób to usuwanie elementów z tablicy bez ingerencji w zasoby przydzielone dla tablicy.
  */
 char *mst_array_destroy( MST_TESTFUNC *info )
 {
@@ -176,7 +173,11 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 	mst_assert( data->Local2.Items );
 	mst_assert( data->Local1.Items );
 
-	ms_array_clean( &data->Local1 );
+	/* tutaj widać różnicę pomiędzy clear a free */
+	ms_array_clear( &data->Local1 );
+	mst_assert( data->Local1.Items );
+	mst_assert( data->Local1.Length == 0 );
+	ms_array_free( &data->Local1 );
 	mst_assert( !data->Local1.Items );
 
 	/* zwolnij pamięć - funkcja zwalnia wszystko */
@@ -227,7 +228,7 @@ char *mst_array_copy( MST_TESTFUNC *info )
 	array2 = &data->Local1;
 
 	/* wyczyść tablice */
-	ms_array_clean( array2 );
+	ms_array_free( array2 );
 	mst_assert( !array2->Items );
 
 	/* kopiuj wartości */
@@ -834,12 +835,13 @@ char *mst_array_remove( MST_TESTFUNC *info )
 	mst_assert( data->Pointer1->Capacity == 256 );
 	array1 = data->Pointer1;
 
-	ms_array_clean( data->Pointer2 );
+	ms_array_free( data->Pointer2 );
 	mst_assert( !data->Pointer2->Items );
 
 	/* utwórz kopię tablicy aby można było porównać wyniki */
-	ercode = ms_array_copy( data->Pointer2, data->Pointer1 );
-	mst_assert( ercode == MSEC_OK );
+	data->Pointer2 = ms_array_copy_alloc( data->Pointer1 );
+	mst_assert( data->Pointer2 );
+	mst_assert( data->Pointer2->Items );
 	array2 = data->Pointer2;
 
 	/* sprawdź czy ten konkretny element jest taki sam - musi być, skoro tablica była kopiowana */
@@ -1000,7 +1002,7 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
 	array1 = &data->Local1;
 
 	/* wyczyść tablicę ze starych śmieci */
-	ms_array_clean( &data->Local2 );
+	ms_array_free( &data->Local2 );
 	mst_assert( !data->Local2.Items );
 
 	data->Local2 = ms_array_copy_return( array1 );
@@ -1027,7 +1029,7 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
 	data->Pointer1 = ms_array_copy_alloc( array1 );
 
 	/* wyczyść drugą tablicę */
-	ms_array_clean( array2 );
+	ms_array_free( array2 );
 	mst_assert( !array2->Items );
 	mst_assert( array2->Length == 0 );
 

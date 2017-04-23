@@ -517,26 +517,6 @@ void ms_array_clear( void *aptr )
 
 /* ================================================================================================================== */
 
-void ms_array_clean( void *aptr )
-{
-	MS_ARRAY *array = aptr;
-
-	assert( array );
-
-	free( array->Items );
-	array->Items = NULL;
-
-	/* resetuj wszystkie wartości oprócz "Destroy" */
-	array->Capacity = 0;
-	array->ItemSize = 0;
-	array->Length   = 0;
-	array->Modifier = 2.f;
-
-	array->FuncIncrease = MSC_ArrayFunctions.IncMultiply;
-}
-
-/* ================================================================================================================== */
-
 void ms_array_free( void *aptr )
 {
 	MS_ARRAY *array = aptr;
@@ -544,7 +524,17 @@ void ms_array_free( void *aptr )
 	if( !array )
 		return;
 
-	ms_array_clean( aptr );
+	/* usuń wszystkie elementy z tablicy */
+	if( array->Items )
+		ms_array_clear( array );
+
+	free( array->Items );
+	array->Items = NULL;
+
+	array->Capacity = 0;
+	array->ItemSize = 0;
+	array->Length   = 0;
+	array->Modifier = 2.f;
 
 	if( array->Destroy )
 		free( array );

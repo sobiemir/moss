@@ -720,14 +720,11 @@ Kopiowanie
 .. c:function:: int ms_array_copy( void* adst, const void* asrc )
 
     Kopiuje tablicę z parametru ``asrc`` do parametru ``adst``.
-    Tablica do której dane będą kopiowane musi istnieć, ale nie może być wcześniej zainicjalizowana.
-    W przeciwnym przypadku wszystkie dane zostaną nadpisane, co może skończyć się wyciekiem pamięci.
-    Utworzoną wcześniej tablicę można wyczyścić, wykorzystując funkcję :c:func:`ms_array_clean`.
-    Czyszczenie nie jest uruchamiane automatycznie, gdyż tablica niezainicjalizowana posiada w strukturze
-    śmieci, co może prowadzić do błędu podczas zwalniania zasobów, a mianowicie do naruszenia ochrony pamięci.
-    Zerowanie danych również nie pomoże w każdym przypadku, gdyż wartość *NULL* nie zawsze składa się ze
-    wszystkich bitów równych 0.
-    Kopiowane są tylko zapisane dane, tak więc w przypadku wskaźników, kopiowane są tylko wskaźniki.
+    Tablica do której dane będą kopiowane musi istnieć, ale nie może być wcześniej zainicjalizowana
+    w przeciwnym przypadku wszystkie dane zostaną nadpisane, co może skończyć się wyciekiem pamięci.
+    Funkcja nie może sama wyczyścić danych, gdyż tablica niezainicjalizowana posiada w polach struktury
+    śmieci, co może prowadzić do naruszenia ochrony pamięci w trakcie zwalniania zasobów.
+    Funkcja kopiowane tylko zapisane dane, tak więc w przypadku wskaźników, kopiowane są tylko wskaźniki.
     Przydzielone przez funkcję zasoby zawsze należy zwalniać, co umożliwia funkcja :c:func:`ms_array_free`.
 
     Przykład użycia funkcji::
@@ -740,8 +737,9 @@ Kopiowanie
         if( (ercode = ms_array_copy(&array3, &array2)) )
             printf( "Error! Array copy failed! Code: %d.\n", ercode );
 
-        /* wyczyść tablicę i kopiuj do niej inne dane */
-        ms_array_clean( &array2 );
+        /* wyczyść tablicę i kopiuj do niej inne dane
+         * z tablicami lokalnymi można w ten sposób postępować. */
+        ms_array_free( &array2 );
         if( (ercode = ms_array_copy(&array2, &array1)) )
             printf( "Error! Array copy failed! Code: %d.\n", ercode );
 
@@ -1234,7 +1232,8 @@ Czyszczenie danych
 .. c:function:: void ms_array_clear( void* aptr )
 
     Czyści tablicę usuwając jej wszystkie elementy.
-    Funkcja nie zwalnia pamięci po elementach i nie zmniejsza jej.
+    Funkcja nie zwalnia pamięci po elementach i nie zmniejsza pojemności tablicy.
+    Tablicę można zmniejszyć, wywołując ręcznie funkcję :c:func:`ms_array_realloc`.
 
     Przykład użycia funkcji::
 
@@ -1261,49 +1260,25 @@ Czyszczenie danych
 
     :param aptr: Wskaźnik na tablicę.
 
-.. c:function:: void ms_array_clean( void* aptr )
-
-    Czyści tablicę zwalniając zasoby przydzielone dla elementów.
-    Po takiej operacji tablica wymaga ponownej inicjalizacji.
-    W przypaku gdy struktura tablicy jest zmienną lokalną, wywołanie tej funkcji zwalnia z użycia
-    funkcji :c:func:`ms_array_free`.
-
-    Przykład użycia funkcji::
-
-        MS_ARRAY array1 = ms_array_return_local( sizeof(int), 20 ),
-                 array2 = ms_array_return_local( sizeof(int), 10 ),
-                *array3 = ms_array_alloc( sizeof(int), 30 );
-
-        ms_array_clean( &array2 );
-        ms_array_copy( &array2, &array1 );
-
-        ms_array_clean( &array1 );
-        ms_array_clean( array3 );
-
-        /* w tym monecie nie trzeba usuwać zasobów po array1, gdyż jest zmienną lokalną
-           lecz wywołanie tej funkcji nie zaszkodzi i nie spowoduje błędu */
-        ms_array_free( &array1 );
-    
-        /* lecz zmienną array3 należy zwolnić */
-        ms_array_free( array3 );
-
-        ms_array_free( &array2 );
-
-    .. rst-class:: parameters
-
-    :param aptr: Wskaźnik na tablicę.
-
 .. c:function:: void ms_array_free( void* aptr )
 
     Zwalnia zasoby przydzielone zarówno do tablicy jak i jej elementów.
     Każdy blok kodu składający się z utworzenia tablicy, należy zakończyć tą funkcją, aby zapobiec wyciekom pamięci.
-    Jedyny przypadek w którym funkcji nie trzeba wywoływać został opisany i pokazany w przykładzie użycia funkcji
-    :c:member:`ms_array_clean`.
+    Dla tablicy utworzonej przez :c:func:`ms_array_alloc` zwalniana dodatkowo pamięć przydzieloną na strukturę.
 
     Przykład zwalniania zasobów::
 
-        MS_ARRAY array = ms_array_return_local( sizeof(int), 10 );
-        ms_array_free( &array );
+        MS_ARRAY  array1 = ms_array_return_local( sizeof(int), 10 );
+        MS_ARRAY *array2 = ms_array_alloc( sizeof(int), 10 );
+
+        /* to zwolni tylko pamięć przydzieloną dla array.Items */
+        ms_array_free( &array1 );
+
+        /* to zwolni zarówno pamięć w array.Items jak i dla samej struktury */
+        ms_array_free( array );
+
+        /* dobrym zwyczajem jest przypisywać wartość NULL do zwolnionych danych */
+        array = NULL;
 
     .. rst-class:: parameters
 

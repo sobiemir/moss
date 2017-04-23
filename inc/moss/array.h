@@ -210,7 +210,7 @@ int ms_array_realloc_min( void *aptr, size_t min );
 
 /**
  * Kopiuje elementy z pierwszej tablicy do drugiej.
- * Jeżeli druga tablica została wcześniej zaincjalizowana, należy ją wyczyścić funkcją ms_array_clean.
+ * Tablica do której dane są kopiowane musi isntnieć, jednak nie może być zainicjalizowana.
  * 
  * @param  adst Wskaźnik na tablicę która będzie kopią drugiej.
  * @param  asrc Wskaźnik na tablicę przeznaczoną do skopiowania.
@@ -329,14 +329,6 @@ int ms_array_remove( void *aptr, size_t index );
  * @param aptr Wskaźnik do tablicy przeznaczonej do wyczyszczenia.
  */
 void ms_array_clear( void *aptr );
-
-/**
- * Czyści tablicę zwalniając zasoby przydzielone dla elementów.
- * Po takiej operacji tablica wymaga ponownej inicjalizacji.
- * 
- * @param aptr Wskaźnik do tablicy przeznaczonej do wyczyszczenia.
- */
-void ms_array_clean( void *aptr );
 
 /**
  * Zwalnia zasoby przydzielone zarówno do tablicy jak i jej elementów.
