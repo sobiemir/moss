@@ -27,8 +27,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __MSH_CONFIGURATION__
-#define __MSH_CONFIGURATION__
+#ifndef __MSH_MSCONF__
+#define __MSH_MSCONF__
 
 /* MSD_CCMACRO pozwala na definiowanie makr bezpośrednio przez kompilator */
 #ifndef MSD_CCMACRO
@@ -206,6 +206,9 @@
 #define TERMCOLORYELLOW(_T_)  "\033[0;33m"    _T_ "\033[0m"
 #define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
 #define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
+
+#define STRINGIFY(X) #X
+#define DBLSTRINGIFY(X) STRINGIFY(X)
 
 #define MSX_ROTL32(x, r) ((x << r) | (x >> (32 - r)))
 #define MSX_ROTR32(x, r) ((x >> r) | (x << (32 - r)))
