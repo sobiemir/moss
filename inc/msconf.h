@@ -55,9 +55,10 @@
 	 */
 #	define MSD_STRING_HASH sdbm     /* funkcja skrótu używana domyślnie dla ciągu znaków */
 #	define MSD_STRING_HASH_64       /* preferuj 64 bitową wersję skrótu gdy jest dostępna */
+#	define MSD_TERMCOLOR            /* domyślnie wyświetlaj kolory w terminalu */
 #endif
 
-/* to makro musi być, sprawdza czy kompilator je zdefiniował */
+/* te makra muszą być zdefiniowane */
 #ifndef MSD_HASH_SEED
 #	define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
 #endif
@@ -188,6 +189,23 @@ typedef long double        ldouble_mst;       /* typ long double, może go nie b
 typedef long long          llong_mst;         /* typ long long, może go nie być w starszych wersjach */
 typedef unsigned long long ullong_mst;        /* typ long long, wersja bez znaku */
 
+/* kolory w terminalu */
+#ifdef MSD_TERMCOLOR
+#	define TERMCOLORGREEN(_T_)   "\033[0;32;32m" _T_ "\033[0m"
+#	define TERMCOLORCYAN(_T_)    "\033[0;36m"    _T_ "\033[0m"
+#	define TERMCOLORRED(_T_)     "\033[0;32;31m" _T_ "\033[0m"
+#	define TERMCOLORYELLOW(_T_)  "\033[0;33m"    _T_ "\033[0m"
+#	define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
+#	define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
+#else
+#	define TERMCOLORGREEN(_T_)   _T_
+#	define TERMCOLORCYAN(_T_)    _T_
+#	define TERMCOLORRED(_T_)     _T_
+#	define TERMCOLORYELLOW(_T_)  _T_
+#	define TERMCOLORMAGNETA(_T_) _T_
+#	define TERMCOLORBLUE(_T_)    _T_
+#endif
+
 
 
 #define MSD_DEBUG
@@ -209,14 +227,6 @@ typedef unsigned long long ullong_mst;        /* typ long long, wersja bez znaku
 
 #define TEMPSWAPVALUES(tmp, a, b) tmp = a, a = b, b = tmp
 
-// kolory w konsoli...
-#define TERMCLEARLINE         "\033[2K\r"
-#define TERMCOLORGREEN(_T_)   "\033[0;32;32m" _T_ "\033[0m"
-#define TERMCOLORCYAN(_T_)    "\033[0;36m"    _T_ "\033[0m"
-#define TERMCOLORRED(_T_)     "\033[0;32;31m" _T_ "\033[0m"
-#define TERMCOLORYELLOW(_T_)  "\033[0;33m"    _T_ "\033[0m"
-#define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
-#define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
 
 #define STRINGIFY(X) #X
 #define DBLSTRINGIFY(X) STRINGIFY(X)

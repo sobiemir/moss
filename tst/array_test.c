@@ -182,12 +182,7 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 
 	/* zwolnij pamięć - funkcja zwalnia wszystko */
 	ms_array_free( data->Pointer1 );
-	mst_assert( !data->Pointer1->Items );
-
-	mst_assert( data->Pointer1->Capacity == 0 );
-	mst_assert( data->Pointer1->Items    == 0 );
-	mst_assert( data->Pointer1->ItemSize == 0 );
-	mst_assert( data->Pointer1->Destroy  == TRUE );
+	/* nie można sprawdzić danych po usunięciu struktury */
 
 	ms_array_free( &data->Local2 );
 	mst_assert( !data->Local2.Items );
@@ -247,7 +242,6 @@ char *mst_array_copy( MST_TESTFUNC *info )
 
 	/* tą tablicę należy usunąć gdyż jest to wskaźnik - inaczej mogą być wycieki pamięci */
 	ms_array_free( data->Pointer2 );
-	mst_assert( !data->Pointer2->Items );
 
 	/* a teraz kopiuj zwracając wskaźnik do nowej tablicy */
 	array3 = data->Pointer2 = ms_array_copy_alloc( array1 );
@@ -836,7 +830,6 @@ char *mst_array_remove( MST_TESTFUNC *info )
 	array1 = data->Pointer1;
 
 	ms_array_free( data->Pointer2 );
-	mst_assert( !data->Pointer2->Items );
 
 	/* utwórz kopię tablicy aby można było porównać wyniki */
 	data->Pointer2 = ms_array_copy_alloc( data->Pointer1 );
@@ -1023,7 +1016,6 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
 
 	mst_assert( data->Pointer1->Items );
 	ms_array_free( data->Pointer1 );
-	mst_assert( !data->Pointer1->Items );
 
 	/* no to teraz kopiuj tablicę starą metodą */
 	data->Pointer1 = ms_array_copy_alloc( array1 );
