@@ -83,9 +83,9 @@ const struct MSS_ARRAYFUNCTIONS MSC_ArrayFunctions =
 
 void *ms_array_alloc( size_t size, size_t capacity )
 {
-	MS_ARRAY *array;
+	MS_ARRAY *array = malloc( sizeof *array );
 
-	if( !(array = malloc(sizeof *array)) )
+	if( !array )
 		return NULL;
 
 	if( ms_array_init(array, size, capacity) )
@@ -165,7 +165,8 @@ int ms_array_realloc( void *aptr, size_t capacity )
 		SETERRNOANDRETURN( MSEC_DATA_OVERFLOW );
 
 	/* przydziel nową ilość pamięci */
-	if( !(tmp = realloc(array->Items, capacity * array->ItemSize)) )
+	tmp = realloc( array->Items, capacity * array->ItemSize );
+	if( !tmp )
 		return MSEC_MEMORY_ALLOCATION;
 
 	array->Items    = tmp;
@@ -225,7 +226,8 @@ int ms_array_copy( void *adst, const void *asrc )
 	assert( src->Items );
 	assert( dst );
 
-	if( (ercode = ms_array_init(dst, src->ItemSize, src->Capacity)) )
+	ercode = ms_array_init( dst, src->ItemSize, src->Capacity );
+	if( ercode )
 		return ercode;
 
 	IGRET memcpy( dst->Items, src->Items, src->Capacity * src->ItemSize );
@@ -244,7 +246,8 @@ void *ms_array_copy_alloc( const void *aptr )
 	assert( array );
 	assert( array->Items );
 
-	if( !(retval = ms_array_alloc(array->ItemSize, array->Capacity)) )
+	retval = ms_array_alloc( array->ItemSize, array->Capacity );
+	if( !retval )
 		return NULL;
 
 	IGRET memcpy( retval->Items, array->Items, array->Capacity * array->ItemSize );
@@ -276,10 +279,10 @@ int ms_array_insert_value( void *aptr, size_t index, const void *item )
 	/* sprawdź czy nowy element się zmieści */
 	if( array->Length >= array->Capacity )
 	{
-		int ercode = !array->FuncIncrease
+		int ercode = ms_array_realloc( array, !array->FuncIncrease
 			? array->Capacity + 1
-			: 0;
-		if( (ercode = ms_array_realloc(array, ercode)) )
+			: 0 );
+		if( ercode )
 			return ercode;
 	}
 	ptr = (unsigned char*)array->Items + array->ItemSize * index;
@@ -312,8 +315,8 @@ int ms_array_insert_values( void *adst, size_t index, const void *tsrc, size_t s
 	/* sprawdź czy nowy element się zmieści */
 	if( array->Length + size > array->Capacity )
 	{
-		int ercode;
-		if( (ercode = ms_array_realloc_min(array, array->Length + size)) )
+		int ercode = ms_array_realloc_min( array, array->Length + size );
+		if( ercode )
 			return ercode;
 	}
 	else if( !size )
@@ -382,21 +385,30 @@ int ms_array_join_slice_inverse( void *adst, const void *asrc, size_t offset, si
 		SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
 
 	if( dst->Length < src->Length - count )
-		if( (ercode = ms_array_realloc_min(dst, src->Length - count)) )
+	{
+		ercode = ms_array_realloc_min( dst, src->Length - count );
+		if( ercode )
 			return ercode;
+	}
 
 	/* dodaj pierwszą część */
 	if( offset > 0 )
-		if( (ercode = ms_array_push_values(dst, src->Items, offset)) )
+	{
+		ercode = ms_array_push_values( dst, src->Items, offset );
+		if( ercode )
 			return ercode;
+	}
 	/* dodaj drugą część */
 	if( osumc < src->Length )
-		if( (ercode = ms_array_push_values(
+	{
+		ercode = ms_array_push_values(
 			dst,
 			(unsigned char*)src->Items + osumc * src->ItemSize,
 			src->Length - osumc
-		)) )
+		);
+		if( ercode )
 			return ercode;
+	}
 	
 	return MSEC_OK;
 }
@@ -588,10 +600,10 @@ int ms_array_insert( MS_ARRAY *array, size_t index, const void *item )
 	/* sprawdź czy nowy element się zmieści */
 	if( array->Length >= array->Capacity )
 	{
-		int ercode = !array->FuncIncrease
+		int ercode = ms_array_realloc( array, !array->FuncIncrease
 			? array->Capacity + 1
-			: 0;
-		if( (ercode = ms_array_realloc(array, ercode)) )
+			: 0 );
+		if( ercode )
 			return ercode;
 	}
 	/* przesuń elementy */

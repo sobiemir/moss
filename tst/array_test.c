@@ -1123,6 +1123,9 @@ MST_TESTSUITE MSV_ArraySuite =
 	int main( int argc, char **argv )
 	{
 		MSTST_ARRAY_DATA data = { NULL, NULL };
+		
+		IGVAR argc;
+		IGVAR argv;
 
 		/* przypisz dane do zbioru */
 		MSV_ArraySuite.Data = &data;

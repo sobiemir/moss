@@ -218,7 +218,7 @@ INLINE static int mst_run_test( MST_TESTFUNC *func, size_t current, size_t count
 		IGRET printf( "-------------------------------------------------------------------------------" );
 	else
 		IGRET printf( "--------------------------------------------------------------------- ["
-			TERMCOLORMAGNETA("%03zu/%03zu") "]\n", current, count );
+			TERMCOLORMAGNETA("%03" PFSIZET "/%03" PFSIZET) "]\n", current, count );
 	IGRET printf( "[" TERMCOLORCYAN("TEST") "] %s\n", func->Name );
 
 	/* opis testu */
@@ -230,10 +230,10 @@ INLINE static int mst_run_test( MST_TESTFUNC *func, size_t current, size_t count
 
 	/* wypisz rezultat */
 	if( message )
-		IGRET printf( "[" TERMCOLORCYAN("STAT") "] " TERMCOLORRED("FAILED!") " > Passed asserts: %zu\n",
+		IGRET printf( "[" TERMCOLORCYAN("STAT") "] " TERMCOLORRED("FAILED!") " > Passed asserts: %" PFSIZET "\n",
 			func->PassedAsserts );
 	else
-		IGRET printf( "[" TERMCOLORCYAN("STAT") "] " TERMCOLORGREEN("SUCCESS!") " > Passed asserts: %zu\n",
+		IGRET printf( "[" TERMCOLORCYAN("STAT") "] " TERMCOLORGREEN("SUCCESS!") " > Passed asserts: %" PFSIZET "\n",
 			func->PassedAsserts );
 
 	/* wyświetl błędy w przypadku gdy funkcja została zakończona niepowodzeniem */

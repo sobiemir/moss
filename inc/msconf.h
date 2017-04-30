@@ -42,20 +42,21 @@
 #	define MSD_HASH_DJB            /* funkcje skrótu używające algorytmów z rodziny DJB2 */
 #	define MSD_HASH_XXHASH         /* funkcje skrótu używające algorytmu xxHash */
 
-	/* sdbm         [SDBM]
-	 * djb2         [DJB]
-	 * djb2a        [DJB]
-	 * joaat        [JOAAT]
-	 * fnv1         [FNV]
-	 * fnv1a        [FNV]
-	 * murmur1      [MURMUR]
-	 * murmur2      [MURMUR]
-	 * murmur3      [MURMUR]
-	 * xxhash       [XXHASH]
+	/* 1.  sdbm    [SDBM]
+	 * 2.  djb2    [DJB]
+	 * 3.  djb2a   [DJB]
+	 * 4.  joaat   [JOAAT]
+	 * 5.  fnv1    [FNV]
+	 * 6.  fnv1a   [FNV]
+	 * 7.  murmur1 [MURMUR]
+	 * 8.  murmur2 [MURMUR]
+	 * 9.  murmur3 [MURMUR]
+	 * 10. xxhash  [XXHASH]
 	 */
-#	define MSD_STRING_HASH sdbm     /* funkcja skrótu używana domyślnie dla ciągu znaków */
+#	define MSD_STRING_HASH 1        /* funkcja skrótu używana domyślnie dla ciągu znaków */
 #	define MSD_STRING_HASH_64       /* preferuj 64 bitową wersję skrótu gdy jest dostępna */
-#	define MSD_TERMCOLOR            /* domyślnie wyświetlaj kolory w terminalu */
+
+#	define MSD_NOTERMCOLOR          /* nie wyświetlaj kolorów w terminalu */
 #endif
 
 /* te makra muszą być zdefiniowane */
@@ -63,13 +64,13 @@
 #	define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
 #endif
 
-#define IGRET   /* ignorowanie zwracanej wartości przez funkcję */
-#define IGVAR   /* ignorowanie zmiennej w przypadku gdy nie jest używana */
+#define IGRET          /* ignorowanie zwracanej wartości przez funkcję */
+#define IGVAR (void*)  /* ignorowanie zmiennej w przypadku gdy nie jest używana */
 
 /* sprawdź czy skrót dla ciągu znaków został włączony, jeżeli tak, wymuś dołączanie danego algorytmu */
 #ifdef MSD_STRING_HASH
 	/* sdbm, tylko wersja 32 bitowa */
-#	if MSD_STRING_HASH == sdbm
+#	if MSD_STRING_HASH == 1
 #		ifndef MSD_HASH_SDBM
 #			define MSD_HASH_SDBM
 #		endif
@@ -137,6 +138,9 @@
 /* wyłącz ostrzeżenia o niebezpiecznych funkcjach w MSC */
 #ifdef MSD_COMPILER_MSC
 #	define _CRT_SECURE_NO_WARNINGS
+#	define PFSIZET "Iu"
+#else
+#	define PFSIZET "zu"
 #endif
 
 /* różny inline w zależności od kompilatora */
@@ -190,7 +194,7 @@ typedef long long          llong_mst;         /* typ long long, może go nie by�
 typedef unsigned long long ullong_mst;        /* typ long long, wersja bez znaku */
 
 /* kolory w terminalu */
-#ifdef MSD_TERMCOLOR
+#ifndef MSD_NOTERMCOLOR
 #	define TERMCOLORGREEN(_T_)   "\033[0;32;32m" _T_ "\033[0m"
 #	define TERMCOLORCYAN(_T_)    "\033[0;36m"    _T_ "\033[0m"
 #	define TERMCOLORRED(_T_)     "\033[0;32;31m" _T_ "\033[0m"
