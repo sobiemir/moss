@@ -46,14 +46,8 @@
 /* wstawia do tablicy funkcję i zamienia jej nazwę na ciąg znaków */
 #define MST_TFSTRINGIFY(X) X, STRINGIFY(X)
 
-/* inicjalizacja ostatnich wartości dla tablicy funkcji testów */
-#define MST_TFSYSINIT 0, 0
-
-/* inicjalizacja wartości bez danych tablicy funkcji testw */
-#define MST_TFNODATA NULL, MST_TFSYSINIT
-
 /* inicjalizacja ostatniego rekordu tablicy funkcji testw */
-#define MST_TFLASTRECORD NULL, NULL, NULL, MST_TFNODATA
+#define MST_TFLASTRECORD NULL, NULL, NULL, NULL, 0
 
 /* ================================================================================================================== */
 
@@ -104,12 +98,6 @@ typedef struct MSST_TESTFUNCT
 	 * Wartość tego pola jest uzupełniana automatycznie z poziomu funkcji testującej.
 	 */
 	size_t PassedAsserts;
-
-	/**
-	 * Indeks testu w zbiorze.
-	 * Wartość tego pola jest uzupełniana automatycznie z poziomu funkcji wywołującej dany zbiór.
-	 */
-	size_t Index;
 }
 MST_TESTFUNC;
 
@@ -144,7 +132,7 @@ typedef struct MSST_TESTSUITE
 	 * 
 	 * @param info Zbiór, w którym znajduje się funkcja.
 	 */
-	void (*Setup)(struct MSST_TESTSUITE *info);
+	int (*Setup)(struct MSST_TESTSUITE *info);
 
 	/**
 	 * Funkcja wywoływana zaraz po zakończeniu testów.
@@ -184,14 +172,14 @@ MST_TESTSUITE;
  * @param  Wyrażenie do sprawdzenia.
  * @return Treść błędu w przypadku gdy wyrażenie jest fałszywe.
  */
-#define mst_assert(_Test_) \
-	if( _Test_ ) \
+#define mst_assert(exp) \
+	if( exp ) \
 		info->PassedAsserts++; \
 	else \
 		return \
 			TERMCOLORMAGNETA("#") " Error in " TERMCOLORYELLOW(__FILE__) " on line " \
 				TERMCOLORBLUE(DBLSTRINGIFY(__LINE__)) "\n" \
-			TERMCOLORMAGNETA("#") " " STRINGIFY(_Test_)
+			TERMCOLORMAGNETA("#") " " STRINGIFY(exp)
 
 /**
  * Uruchamia podany w argumencie test.
@@ -210,12 +198,11 @@ INLINE static int mst_run_test( MST_TESTFUNC *func, size_t current, size_t count
 	assert( func->Name );
 	assert( func->Function );
 
-	func->Index         = current;
 	func->PassedAsserts = 0;
 
 	/* nazwa testu i numer */
 	if( current == 0 || count == 0 )
-		IGRET printf( "-------------------------------------------------------------------------------" );
+		IGRET printf( "-------------------------------------------------------------------------------\n" );
 	else
 		IGRET printf( "--------------------------------------------------------------------- ["
 			TERMCOLORMAGNETA("%03" PFSIZET "/%03" PFSIZET) "]\n", current, count );
@@ -240,7 +227,8 @@ INLINE static int mst_run_test( MST_TESTFUNC *func, size_t current, size_t count
 	if( message )
 		/* tu jest w porządku, printf zawsze coś wypisze więc zawsze coś zwróci
 		 * nawet w przypadku błędu zwrócona zostanie wartość ujemna */
-		return printf( "------\n%s\n", message );
+		return printf( "------\n" ),
+		       printf( "%s\n", message );
 
 	return 0;
 }
@@ -275,7 +263,8 @@ INLINE static int mst_run_suite( MST_TESTSUITE *suite )
 
 	/* inicjalizacja */
 	if( suite->Setup )
-		suite->Setup( suite );
+		if( (error = suite->Setup(suite)) )
+			return error;
 
 	IGRET printf( "===============================================================================\n" );
 	IGRET printf( "%s\n", suite->Desc );
@@ -296,7 +285,7 @@ INLINE static int mst_run_suite( MST_TESTSUITE *suite )
 	if( suite->TearDown )
 		suite->TearDown( suite );
 
-	return 0;
+	return error;
 }
 
 #endif

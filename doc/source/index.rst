@@ -19,11 +19,13 @@ Wychodząc z założenia że programista używając biblioteki wie co robi, pola
 tak jak to ma miejsce w przypadku innych bibliotek. Wszystkie pola struktur dostępne są z poziomu kodu,
 to co można a co nie można zmieniać zależy już tylko od programisty, bo przecież myślenie nie boli.
 
+
 .. toctree::
    :maxdepth: 2
    :caption: Spis treści:
    :numbered:
 
    configuration
+   mstest
    array
    hash

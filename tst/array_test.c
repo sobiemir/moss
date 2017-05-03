@@ -1076,21 +1076,21 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
  */
 MST_TESTFUNC MSV_ArraySuiteFunctions[] =
 {
-	{ MST_TFSTRINGIFY(mst_array_create),             FUNC_DESC_01, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_destroy),            FUNC_DESC_02, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_realloc),            FUNC_DESC_03, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_realloc_min),        FUNC_DESC_04, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_insert_value),       FUNC_DESC_05, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_insert_values),      FUNC_DESC_06, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_join_slice),         FUNC_DESC_07, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_join_slice_inverse), FUNC_DESC_08, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_copy),               FUNC_DESC_09, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_slice),              FUNC_DESC_10, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_remove_range),       FUNC_DESC_11, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_remove),             FUNC_DESC_12, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_base_return),        FUNC_DESC_13, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_base_insert),        FUNC_DESC_14, MST_TFNODATA },
-	{ MST_TFSTRINGIFY(mst_array_base_copy_return),   FUNC_DESC_15, MST_TFNODATA },
+	{ MST_TFSTRINGIFY(mst_array_create),             FUNC_DESC_01, NULL },
+	{ MST_TFSTRINGIFY(mst_array_destroy),            FUNC_DESC_02, NULL },
+	{ MST_TFSTRINGIFY(mst_array_realloc),            FUNC_DESC_03, NULL },
+	{ MST_TFSTRINGIFY(mst_array_realloc_min),        FUNC_DESC_04, NULL },
+	{ MST_TFSTRINGIFY(mst_array_insert_value),       FUNC_DESC_05, NULL },
+	{ MST_TFSTRINGIFY(mst_array_insert_values),      FUNC_DESC_06, NULL },
+	{ MST_TFSTRINGIFY(mst_array_join_slice),         FUNC_DESC_07, NULL },
+	{ MST_TFSTRINGIFY(mst_array_join_slice_inverse), FUNC_DESC_08, NULL },
+	{ MST_TFSTRINGIFY(mst_array_copy),               FUNC_DESC_09, NULL },
+	{ MST_TFSTRINGIFY(mst_array_slice),              FUNC_DESC_10, NULL },
+	{ MST_TFSTRINGIFY(mst_array_remove_range),       FUNC_DESC_11, NULL },
+	{ MST_TFSTRINGIFY(mst_array_remove),             FUNC_DESC_12, NULL },
+	{ MST_TFSTRINGIFY(mst_array_base_return),        FUNC_DESC_13, NULL },
+	{ MST_TFSTRINGIFY(mst_array_base_insert),        FUNC_DESC_14, NULL },
+	{ MST_TFSTRINGIFY(mst_array_base_copy_return),   FUNC_DESC_15, NULL },
 	{ MST_TFLASTRECORD }
 };
 
@@ -1101,7 +1101,7 @@ MST_TESTFUNC MSV_ArraySuiteFunctions[] =
 MST_TESTSUITE MSV_ArraySuite =
 {
 	">>> ARRAY MODULE",
-	FALSE,
+	TRUE,
 	NULL,
 	mst_array_teardown,
 	NULL,

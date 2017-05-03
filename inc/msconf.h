@@ -65,7 +65,7 @@
 #endif
 
 #define IGRET          /* ignorowanie zwracanej wartości przez funkcję */
-#define IGVAR (void*)  /* ignorowanie zmiennej w przypadku gdy nie jest używana */
+#define IGVAR (void)   /* ignorowanie zmiennej w przypadku gdy nie jest używana */
 
 /* sprawdź czy skrót dla ciągu znaków został włączony, jeżeli tak, wymuś dołączanie danego algorytmu */
 #ifdef MSD_STRING_HASH
