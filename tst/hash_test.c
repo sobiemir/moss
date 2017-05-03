@@ -25,45 +25,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  TODO:
- *  [ ] Check on Windows (2 byte wchar_t)
  */
 
 #include <stdio.h>
-#include <criterion/criterion.h>
+#include <msconf.h>
+#include <mstest.h>
 #include <moss/hash.h>
-
-/*
-======================================================================================================================
-------------------------------------------------------------------------------------------------------------------
-	POST TEST FUNCTIONS
-------------------------------------------------------------------------------------------------------------------
-======================================================================================================================
-*/
-
-ReportHook(POST_TEST)(struct criterion_test_stats *stats)
-{
-	printf( "===============================================================================\n" );
-	printf( "[" TERMCOLORCYAN("TEST") "] %s\n", stats->test->name );
-	printf( "[" TERMCOLORMAGNETA("DESC") "] %s\n", stats->test->data->description );
-
-	if( stats->crashed )
-		printf( "[" TERMCOLORRED("STAT") "] " TERMCOLORRED("Crash!") "\n" );
-	else if( stats->test_status == CR_STATUS_FAILED )
-		printf( "[" TERMCOLORRED("STAT") "] Asserts: [%d passed, %d failed, %d total]\n",
-			stats->passed_asserts, stats->failed_asserts, stats->passed_asserts + stats->failed_asserts);
-	else if( stats->test_status == CR_STATUS_PASSED )
-		printf( "[" TERMCOLORGREEN("STAT") "] Asserts: [%d passed, %d failed, %d total]\n",
-			stats->passed_asserts, stats->failed_asserts, stats->passed_asserts + stats->failed_asserts);
-
-	printf( "[" TERMCOLORYELLOW("INFO") "] Time: %f, Exit Code: %d, Progress: %u\n",
-		stats->elapsed_time, stats->exit_code, stats->progress );
-}
-ReportHook(POST_ALL)(struct criterion_global_stats *stats)
-{
-	printf( "===============================================================================\n" );
-}
 
 /*
 ======================================================================================================================
@@ -74,12 +41,10 @@ ReportHook(POST_ALL)(struct criterion_global_stats *stats)
 */
 
 /**
- * 01.
  * Testuje funkcje skrótu oparte na algorytmie DJB2.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, djb2,
-	.description = "Tests value returned by all djb2 functions." )
+char *mst_hash_djb2( MST_TESTFUNC *info )
 {
 	const char    atest[] =  "DJBKey";
 	const wchar_t wtest[] = L"DJBKey";
@@ -88,9 +53,9 @@ Test( moss_test, djb2,
 
 	/* char */
 	result = ms_hash_32_djb2( atest, strlen(atest) );
-	cr_assert_eq( result, 0xABDE625E );
+	mst_assert( result == 0xABDE625E );
 	result = ms_hash_mbs_32_djb2( atest );
-	cr_assert_eq( result, 0xABDE625E );
+	mst_assert( result == 0xABDE625E );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_djb2( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -101,18 +66,18 @@ Test( moss_test, djb2,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( wresult1, 0x07DB25DE );
-		cr_assert_eq( wresult2, 0x07DB25DE );
+		mst_assert( wresult1 == 0x07DB25DE );
+		mst_assert( wresult2 == 0x07DB25DE );
 	}
+
+	return MST_SUCCESS;
 }
 
 /**
- * 02.
  * Testuje funkcje skrótu oparte na algorytmie DJB2A.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, djb2a,
-	.description = "Tests value returned by all djb2a functions." )
+char *mst_hash_djb2a( MST_TESTFUNC *info )
 {
 	const char    atest[] =  "DJBKey";
 	const wchar_t wtest[] = L"DJBKey";
@@ -121,9 +86,9 @@ Test( moss_test, djb2a,
 
 	/* char */
 	result = ms_hash_32_djb2a( atest, strlen(atest) );
-	cr_assert_eq( result, 0x99329EBE );
+	mst_assert( result == 0x99329EBE );
 	result = ms_hash_mbs_32_djb2a( atest );
-	cr_assert_eq( result, 0x99329EBE );
+	mst_assert( result == 0x99329EBE );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_djb2a( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -134,9 +99,11 @@ Test( moss_test, djb2a,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( wresult1, 0x509BE3FE );
-		cr_assert_eq( wresult2, 0x509BE3FE );
+		mst_assert( wresult1 == 0x509BE3FE );
+		mst_assert( wresult2 == 0x509BE3FE );
 	}
+
+	return MST_SUCCESS;
 }
 
 /*
@@ -148,12 +115,10 @@ Test( moss_test, djb2a,
 */
 
 /**
- * 03.
  * Testuje funkcje skrótu oparte na algorytmie SDBM.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, sdbm,
-	.description = "Tests value returned by all sdbm functions." )
+char *mst_hash_sdbm( MST_TESTFUNC *info )
 {
 	const char    atest[] =  "SDBMKey";
 	const wchar_t wtest[] = L"SDBMKey";
@@ -162,9 +127,9 @@ Test( moss_test, sdbm,
 
 	/* char */
 	result = ms_hash_32_sdbm( atest, strlen(atest) );
-	cr_assert_eq( result, 0xFA861463 );
+	mst_assert( result == 0xFA861463 );
 	result = ms_hash_mbs_32_sdbm( atest );
-	cr_assert_eq( result, 0xFA861463 );
+	mst_assert( result == 0xFA861463 );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_sdbm( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -175,9 +140,11 @@ Test( moss_test, sdbm,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( wresult1, 0x53C918F1 );
-		cr_assert_eq( wresult2, 0x53C918F1 );
+		mst_assert( wresult1 == 0x53C918F1 );
+		mst_assert( wresult2 == 0x53C918F1 );
 	}
+
+	return MST_SUCCESS;
 }
 
 /*
@@ -189,12 +156,10 @@ Test( moss_test, sdbm,
 */
 
 /**
- * 04.
  * Testuje funkcje skrótu oparte na algorytmie JOAAT.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, joaat,
-	.description = "Tests value returned by all joaat functions." )
+char *mst_hash_joaat( MST_TESTFUNC *info )
 {
 	const char    atest[] =  "JoaaTKey";
 	const wchar_t wtest[] = L"JoaaTKey";
@@ -203,9 +168,9 @@ Test( moss_test, joaat,
 
 	/* char */
 	result = ms_hash_32_joaat( atest, strlen(atest) );
-	cr_assert_eq( result, 0x94E6381F );
+	mst_assert( result == 0x94E6381F );
 	result = ms_hash_mbs_32_joaat( atest );
-	cr_assert_eq( result, 0x94E6381F );
+	mst_assert( result == 0x94E6381F );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_joaat( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -216,9 +181,11 @@ Test( moss_test, joaat,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( wresult1, 0x311CEE84 );
-		cr_assert_eq( wresult2, 0x311CEE84 );
+		mst_assert( wresult1 == 0x311CEE84 );
+		mst_assert( wresult2 == 0x311CEE84 );
 	}
+
+	return MST_SUCCESS;
 }
 
 /*
@@ -230,12 +197,10 @@ Test( moss_test, joaat,
 */
 
 /**
- * 05.
  * Testuje funkcje skrótu oparte na algorytmie FNV-1.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, fnv1,
-	.description = "Tests value returned by all 32 and 64 bit fnv1 functions." )
+char *mst_hash_fnv1( MST_TESTFUNC *info )
 {
 	const char    atest[] =  "FNVFamilyKey";
 	const wchar_t wtest[] = L"FNVFamilyKey";
@@ -245,15 +210,15 @@ Test( moss_test, fnv1,
 
 	/* char, wersja 32 bitowa */
 	result32 = ms_hash_32_fnv1( atest, strlen(atest) );
-	cr_assert_eq( result32, 0x7119B356 );
+	mst_assert( result32 == 0x7119B356 );
 	result32 = ms_hash_mbs_32_fnv1( atest );
-	cr_assert_eq( result32, 0x7119B356 );
+	mst_assert( result32 == 0x7119B356 );
 
 	/* char, wersja 64 bitowa */
 	result64 = ms_hash_64_fnv1( atest, strlen(atest) );
-	cr_assert_eq( result64, 0xC552531A28539836 );
+	mst_assert( result64 == 0xC552531A28539836 );
 	result64 = ms_hash_mbs_64_fnv1( atest );
-	cr_assert_eq( result64, 0xC552531A28539836 );
+	mst_assert( result64 == 0xC552531A28539836 );
 
 	/* wchar_t, wersja 32 bitowa */
 	w32result1 = ms_hash_32_fnv1( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -268,20 +233,20 @@ Test( moss_test, fnv1,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( w32result1, 0x20ED7910 );
-		cr_assert_eq( w32result2, 0x20ED7910 );
-		cr_assert_eq( w64result1, 0x211BBD1C5D42E1D0 );
-		cr_assert_eq( w64result2, 0x211BBD1C5D42E1D0 );
+		mst_assert( w32result1 == 0x20ED7910 );
+		mst_assert( w32result2 == 0x20ED7910 );
+		mst_assert( w64result1 == 0x211BBD1C5D42E1D0 );
+		mst_assert( w64result2 == 0x211BBD1C5D42E1D0 );
 	}
+
+	return MST_SUCCESS;
 }
 
 /**
- * 06.
  * Testuje funkcje skrótu oparte na algorytmie FNV-1A.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, fnv1a,
-	.description = "Tests value returned by all 32 and 64 bit fnv1 functions." )
+char *mst_hash_fnv1a( MST_TESTFUNC *info )
 {
 	const char    atest[] =  "FNVFamilyKey";
 	const wchar_t wtest[] = L"FNVFamilyKey";
@@ -291,15 +256,15 @@ Test( moss_test, fnv1a,
 
 	/* char, wersja 32 bitowa */
 	result32 = ms_hash_32_fnv1a( atest, strlen(atest) );
-	cr_assert_eq( result32, 0x94A2258C );
+	mst_assert( result32 == 0x94A2258C );
 	result32 = ms_hash_mbs_32_fnv1a( atest );
-	cr_assert_eq( result32, 0x94A2258C );
+	mst_assert( result32 == 0x94A2258C );
 
 	/* char, wersja 64 bitowa */
 	result64 = ms_hash_64_fnv1a( atest, strlen(atest) );
-	cr_assert_eq( result64, 0x27693918C0BB3CCC );
+	mst_assert( result64 == 0x27693918C0BB3CCC );
 	result64 = ms_hash_mbs_64_fnv1a( atest );
-	cr_assert_eq( result64, 0x27693918C0BB3CCC );
+	mst_assert( result64 == 0x27693918C0BB3CCC );
 
 	/* wchar_t, wersja 32 bitowa */
 	w32result1 = ms_hash_32_fnv1a( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -314,11 +279,13 @@ Test( moss_test, fnv1a,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( w32result1, 0x9D543B0A );
-		cr_assert_eq( w32result2, 0x9D543B0A );
-		cr_assert_eq( w64result1, 0x87D2CE8C5EFA642A );
-		cr_assert_eq( w64result2, 0x87D2CE8C5EFA642A );
+		mst_assert( w32result1 == 0x9D543B0A );
+		mst_assert( w32result2 == 0x9D543B0A );
+		mst_assert( w64result1 == 0x87D2CE8C5EFA642A );
+		mst_assert( w64result2 == 0x87D2CE8C5EFA642A );
 	}
+
+	return MST_SUCCESS;
 }
 
 /*
@@ -330,13 +297,11 @@ Test( moss_test, fnv1a,
 */
 
 /**
- * 07.
  * Testuje funkcje skrótu oparte na algorytmie Murmur.
  * Sprawdza warianty: standardowy.
  * Ze względu na algorytm nie zostały utworzone warianty mbs i wcs.
  */
-Test( moss_test, murmur1,
-	.description = "Tests value returned by murmur function." )
+char *mst_hash_murmur1( MST_TESTFUNC *info )
 {
 	const char *atest[] =
 	{
@@ -348,23 +313,23 @@ Test( moss_test, murmur1,
 	uint32_t result;
 
 	result = ms_hash_32_murmur1( atest[0], strlen(atest[0]) );
-	cr_assert_eq( result, 0xAF772697 );
+	mst_assert( result == 0xAF772697 );
 	result = ms_hash_32_murmur1( atest[1], strlen(atest[1]) );
-	cr_assert_eq( result, 0xEF00677C );
+	mst_assert( result == 0xEF00677C );
 	result = ms_hash_32_murmur1( atest[2], strlen(atest[2]) );
-	cr_assert_eq( result, 0x66F61852 );
+	mst_assert( result == 0x66F61852 );
 	result = ms_hash_32_murmur1( atest[3], strlen(atest[3]) );
-	cr_assert_eq( result, 0xC0AE799F );
+	mst_assert( result == 0xC0AE799F );
+
+	return MST_SUCCESS;
 }
 
 /**
- * 08.
  * Testuje funkcje skrótu oparte na algorytmie Murmur2.
  * Sprawdza warianty: standardowy.
  * Ze względu na algorytm nie zostały utworzone warianty mbs i wcs.
  */
-Test( moss_test, murmur2,
-	.description = "Tests value returned by 32 and 64 bit murmur2 functions." )
+char *mst_hash_murmur2( MST_TESTFUNC *info )
 {
 	const char *atest[] =
 	{
@@ -382,40 +347,40 @@ Test( moss_test, murmur2,
 
 	/* char, wersja 32 bitowa */
 	result32 = ms_hash_32_murmur2( atest[0], strlen(atest[0]) );
-	cr_assert_eq( result32, 0xA6A87356 );
+	mst_assert( result32 == 0xA6A87356 );
 	result32 = ms_hash_32_murmur2( atest[1], strlen(atest[1]) );
-	cr_assert_eq( result32, 0xFE6E2293 );
+	mst_assert( result32 == 0xFE6E2293 );
 	result32 = ms_hash_32_murmur2( atest[2], strlen(atest[2]) );
-	cr_assert_eq( result32, 0x5FF5020B );
+	mst_assert( result32 == 0x5FF5020B );
 	result32 = ms_hash_32_murmur2( atest[3], strlen(atest[3]) );
-	cr_assert_eq( result32, 0xF1D9CC0B );
+	mst_assert( result32 == 0xF1D9CC0B );
 
 	/* char, wersja 64 bitowa */
 	result64 = ms_hash_64_murmur2( atest[0], strlen(atest[0]) );
-	cr_assert_eq( result64, 0xE725056E186EB4D6 );
+	mst_assert( result64 == 0xE725056E186EB4D6 );
 	result64 = ms_hash_64_murmur2( atest[1], strlen(atest[1]) );
-	cr_assert_eq( result64, 0x033CB80EC8BEB4BE );
+	mst_assert( result64 == 0x033CB80EC8BEB4BE );
 	result64 = ms_hash_64_murmur2( atest[2], strlen(atest[2]) );
-	cr_assert_eq( result64, 0x2EB3FB4D381F500E );
+	mst_assert( result64 == 0x2EB3FB4D381F500E );
 	result64 = ms_hash_64_murmur2( atest[3], strlen(atest[3]) );
-	cr_assert_eq( result64, 0xF68B2345BE9FAD33 );
+	mst_assert( result64 == 0xF68B2345BE9FAD33 );
 	result64 = ms_hash_64_murmur2( atest[4], strlen(atest[4]) );
-	cr_assert_eq( result64, 0x18A99EA9BFB13235 );
+	mst_assert( result64 == 0x18A99EA9BFB13235 );
 	result64 = ms_hash_64_murmur2( atest[5], strlen(atest[5]) );
-	cr_assert_eq( result64, 0x03E0C9B2EBC1F413 );
+	mst_assert( result64 == 0x03E0C9B2EBC1F413 );
 	result64 = ms_hash_64_murmur2( atest[6], strlen(atest[6]) );
-	cr_assert_eq( result64, 0x2F972DF4971465F0 );
+	mst_assert( result64 == 0x2F972DF4971465F0 );
 	result64 = ms_hash_64_murmur2( atest[7], strlen(atest[7]) );
-	cr_assert_eq( result64, 0xD10ECF806D50F7D9 );
+	mst_assert( result64 == 0xD10ECF806D50F7D9 );
+
+	return MST_SUCCESS;
 }
 
 /**
- * 09.
  * Testuje funkcje skrótu oparte na algorytmie Murmur3.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-Test( moss_test, murmur3,
-	.description = "Tests value returned by murmur3 functions." )
+char *mst_hash_murmur3( MST_TESTFUNC *info )
 {
 	const char *atest[] =
 	{
@@ -437,21 +402,21 @@ Test( moss_test, murmur3,
 
 	/* char */
 	result = ms_hash_32_murmur3( atest[0], strlen(atest[0]) );
-	cr_assert_eq( result, 0xF3D48C5C );
+	mst_assert( result == 0xF3D48C5C );
 	result = ms_hash_mbs_32_murmur3( atest[0] );
-	cr_assert_eq( result, 0xF3D48C5C );
+	mst_assert( result == 0xF3D48C5C );
 	result = ms_hash_32_murmur3( atest[1], strlen(atest[1]) );
-	cr_assert_eq( result, 0xAEE175B3 );
+	mst_assert( result == 0xAEE175B3 );
 	result = ms_hash_mbs_32_murmur3( atest[1] );
-	cr_assert_eq( result, 0xAEE175B3 );
+	mst_assert( result == 0xAEE175B3 );
 	result = ms_hash_32_murmur3( atest[2], strlen(atest[2]) );
-	cr_assert_eq( result, 0x859648EE );
+	mst_assert( result == 0x859648EE );
 	result = ms_hash_mbs_32_murmur3( atest[2] );
-	cr_assert_eq( result, 0x859648EE );
+	mst_assert( result == 0x859648EE );
 	result = ms_hash_32_murmur3( atest[3], strlen(atest[3]) );
-	cr_assert_eq( result, 0xE2050FD7 );
+	mst_assert( result == 0xE2050FD7 );
 	result = ms_hash_mbs_32_murmur3( atest[3] );
-	cr_assert_eq( result, 0xE2050FD7 );
+	mst_assert( result == 0xE2050FD7 );
 
 	/* wchar_t */
 	wresult1[0] = ms_hash_32_murmur3( wtest[0], wcslen(wtest[0]) * sizeof(wchar_t) );
@@ -468,15 +433,17 @@ Test( moss_test, murmur3,
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		cr_assert_eq( wresult1[0], 0x26384360 );
-		cr_assert_eq( wresult2[0], 0x26384360 );
-		cr_assert_eq( wresult1[1], 0x6E196D7C );
-		cr_assert_eq( wresult2[1], 0x6E196D7C );
-		cr_assert_eq( wresult1[2], 0x955C377D );
-		cr_assert_eq( wresult2[2], 0x955C377D );
-		cr_assert_eq( wresult1[3], 0x47EC00B5 );
-		cr_assert_eq( wresult2[3], 0x47EC00B5 );
+		mst_assert( wresult1[0] == 0x26384360 );
+		mst_assert( wresult2[0] == 0x26384360 );
+		mst_assert( wresult1[1] == 0x6E196D7C );
+		mst_assert( wresult2[1] == 0x6E196D7C );
+		mst_assert( wresult1[2] == 0x955C377D );
+		mst_assert( wresult2[2] == 0x955C377D );
+		mst_assert( wresult1[3] == 0x47EC00B5 );
+		mst_assert( wresult2[3] == 0x47EC00B5 );
 	}
+
+	return MST_SUCCESS;
 }
 
 /*
@@ -488,13 +455,11 @@ Test( moss_test, murmur3,
 */
 
 /**
- * 10.
  * Testuje funkcje skrótu oparte na algorytmie xxHash w wersji 32 bitowej.
  * Sprawdza warianty: standardowy, mbs, wcs.
  * Wersje zostały oddzielone z racji skomplikowania algorytmu.
  */
-Test( moss_test, xxhash32,
-	.description = "Tests value returned by 32 bit xxhash functions." )
+char *mst_hash_xxhash32( MST_TESTFUNC *info )
 {
 	const char *atest[] =
 	{
@@ -551,8 +516,8 @@ Test( moss_test, xxhash32,
 	for( iter = 0; iter < 16; ++iter )
 	{
 		/* printf( "PASS: %zu\n", iter ); */
-		cr_assert_eq( ms_hash_32_xxhash(atest[iter], strlen(atest[iter])), svals[iter] );
-		cr_assert_eq( ms_hash_mbs_32_xxhash(atest[iter]), svals[iter] );
+		mst_assert( ms_hash_32_xxhash(atest[iter], strlen(atest[iter])) == svals[iter] );
+		mst_assert( ms_hash_mbs_32_xxhash(atest[iter]) == svals[iter] );
 	}
 
 	/* wchar_t */
@@ -574,13 +539,15 @@ Test( moss_test, xxhash32,
 		for( iter = 0; iter < 16; ++iter )
 		{
 			/* printf( "PASS: %zu\n", iter ); */
-			cr_assert_eq( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)), wvals[iter] );
-			cr_assert_eq( ms_hash_wcs_32_xxhash(wtest[iter]), wvals[iter] );
+			mst_assert( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
+			mst_assert( ms_hash_wcs_32_xxhash(wtest[iter]) == wvals[iter] );
 		}
 
-		cr_assert_eq( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)), 0xE684C0C9 );
-		cr_assert_eq( ms_hash_wcs_32_xxhash(wtest[16]), 0xE684C0C9 );
+		mst_assert( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)) == 0xE684C0C9 );
+		mst_assert( ms_hash_wcs_32_xxhash(wtest[16]) == 0xE684C0C9 );
 	}
+
+	return MST_SUCCESS;
 }
 
 /**
@@ -589,8 +556,7 @@ Test( moss_test, xxhash32,
  * Sprawdza warianty: standardowy, mbs, wcs.
  * Wersje zostały oddzielone z racji skomplikowania algorytmu.
  */
-Test( moss_test, xxhash64,
-	.description = "Tests value returned by 64 bit xxhash functions." )
+char *mst_hash_xxhash64( MST_TESTFUNC *info )
 {
 	const char *atest[] =
 	{
@@ -683,8 +649,8 @@ Test( moss_test, xxhash64,
 	for( iter = 0; iter < 32; ++iter )
 	{
 		/* printf( "PASS: %zu\n", iter ); */
-		cr_assert_eq( ms_hash_64_xxhash(atest[iter], strlen(atest[iter])), svals[iter] );
-		cr_assert_eq( ms_hash_mbs_64_xxhash(atest[iter]), svals[iter] );
+		mst_assert( ms_hash_64_xxhash(atest[iter], strlen(atest[iter])) == svals[iter] );
+		mst_assert( ms_hash_mbs_64_xxhash(atest[iter]) == svals[iter] );
 	}
 
 	/* wchar_t */
@@ -710,11 +676,98 @@ Test( moss_test, xxhash64,
 		for( iter = 0; iter < 32; ++iter )
 		{
 			/* printf( "PASS: %zu\n", iter ); */
-			cr_assert_eq( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)), wvals[iter] );
-			cr_assert_eq( ms_hash_wcs_64_xxhash(wtest[iter]), wvals[iter] );
+			mst_assert( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
+			mst_assert( ms_hash_wcs_64_xxhash(wtest[iter]) == wvals[iter] );
 		}
 
-		cr_assert_eq( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)), 0x562A87F545E2D7A5 );
-		cr_assert_eq( ms_hash_wcs_64_xxhash(wtest[32]), 0x562A87F545E2D7A5 );
+		mst_assert( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)) == 0x562A87F545E2D7A5 );
+		mst_assert( ms_hash_wcs_64_xxhash(wtest[32]) == 0x562A87F545E2D7A5 );
 	}
+
+	return MST_SUCCESS;
 }
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+	URUCHAMIANIE TESTÓW
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+/**
+ * Opisy funkcji testujących.
+ * Wyświetlane są zaraz pod nazwą funkcji podczas testowania.
+ * Uporzadkowane w kolejności rozmieszczenia funkcji w liście.
+ */
+#define FUNC_DESC_01 "Test value returned by all djb2 functions."
+#define FUNC_DESC_02 "Test value returned by all djb2a functions."
+#define FUNC_DESC_03 "Test value returned by all sdbm functions."
+#define FUNC_DESC_04 "Test value returned by all joaat functions."
+#define FUNC_DESC_05 "Test value returned by all 32 and 64 bit fnv1 functions."
+#define FUNC_DESC_06 "Test value returned by all 32 and 64 bit fnv1a functions."
+#define FUNC_DESC_07 "Test value returned by murmur1 function."
+#define FUNC_DESC_08 "Test value returned by 32 and 64 bit murmur2 functions."
+#define FUNC_DESC_09 "Test value returned by murmur3 functions."
+#define FUNC_DESC_10 "Test value returned by 32 bit xxhash functions."
+#define FUNC_DESC_11 "Test value returned by 64 bit xxhash functions."
+
+/**
+ * Lista funkcji testujących moduł.
+ * Każda z osobna uruchamiana jest przez odpowiednią funkcję.
+ * Dzięki zbiorowi funkcji zdefiniowanemu poniżej dzieje się to automatycznie.
+ * Funkcje nie są ze sobą powiązane, więc mogą być wykonywane w dowolnej kolejności.
+ */
+MST_TESTFUNC MSV_HashSuiteFunctions[] =
+{
+	{ MST_TFSTRINGIFY(mst_hash_djb2),     FUNC_DESC_01, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_djb2a),    FUNC_DESC_02, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_sdbm),     FUNC_DESC_03, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_joaat),    FUNC_DESC_04, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_fnv1),     FUNC_DESC_05, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_fnv1a),    FUNC_DESC_06, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_murmur1),  FUNC_DESC_07, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_murmur2),  FUNC_DESC_08, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_murmur3),  FUNC_DESC_09, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_xxhash32), FUNC_DESC_10, NULL },
+	{ MST_TFSTRINGIFY(mst_hash_xxhash64), FUNC_DESC_11, NULL },
+	{ MST_TFLASTRECORD }
+};
+
+/**
+ * Zbiór funkcji testujących moduł.
+ * Przekazywany do funkcji main, pozwala na uruchomienie wszystkich testów.
+ */
+MST_TESTSUITE MSV_HashSuite =
+{
+	">>> HASH MODULE",
+	TRUE,
+	NULL,
+	NULL,
+	NULL,
+	MSV_HashSuiteFunctions
+};
+
+/* w przypadku wszystkich zestawów na raz nie dołączaj funkcji main */
+#ifndef MST_ALL_SUITES
+
+	/**
+	 * Funkcja główna dołączana tylko przy uruchomieniu tego testu.
+	 * W przypadku testowania wszystkich modułów na raz, nie jest uwzględniana w kompilacji.
+	 * 
+	 * @param argc Ilość parametrów przekazywanych do programu.
+	 * @param argv Parametry przekazane do programu z wiersza poleceń.
+	 * 
+	 * @return Kod błędu lub wartość 0.
+	 */
+	int main( int argc, char **argv )
+	{
+		IGVAR argc;
+		IGVAR argv;
+
+		mst_run_suite( &MSV_HashSuite );
+
+		return 0;
+	}
+
+#endif

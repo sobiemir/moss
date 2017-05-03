@@ -52,9 +52,6 @@ if gcc \
 	-D MSD_HASH_DJB \
 	-D MSD_HASH_XXHASH \
 	-D MSD_HASH_SEED=1234 \
-	-lcriterion \
-	# -fshort-wchar \
-	# -fwide-exec-charset=UTF-16LE \
 	-o hash \
 	-fprofile-arcs \
 	-ftest-coverage;

@@ -1095,7 +1095,7 @@ MST_TESTFUNC MSV_ArraySuiteFunctions[] =
 };
 
 /**
- * Zbiór funkcji testujących moduł tablicy.
+ * Zbiór funkcji testujących moduł.
  * Przekazywany do funkcji main, pozwala na uruchomienie wszystkich testów.
  */
 MST_TESTSUITE MSV_ArraySuite =
@@ -1118,7 +1118,7 @@ MST_TESTSUITE MSV_ArraySuite =
 	 * @param argc Ilość parametrów przekazywanych do programu.
 	 * @param argv Parametry przekazane do programu z wiersza poleceń.
 	 * 
-	 * @return [description]
+	 * @return Kod błędu lub wartość 0.
 	 */
 	int main( int argc, char **argv )
 	{
