@@ -53,7 +53,7 @@
 	 * 9.  murmur3 [MURMUR]
 	 * 10. xxhash  [XXHASH]
 	 */
-#	define MSD_STRING_HASH 1        /* funkcja skrótu używana domyślnie dla ciągu znaków */
+#	define MSD_STRING_HASH sdbm        /* funkcja skrótu używana domyślnie dla ciągu znaków */
 #	define MSD_STRING_HASH_64       /* preferuj 64 bitową wersję skrótu gdy jest dostępna */
 
 #	define MSD_NOTERMCOLOR          /* nie wyświetlaj kolorów w terminalu */
@@ -64,13 +64,15 @@
 #	define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
 #endif
 
+#define LIBEXPORT
+
 #define IGRET          /* ignorowanie zwracanej wartości przez funkcję */
 #define IGVAR (void)   /* ignorowanie zmiennej w przypadku gdy nie jest używana */
 
 /* sprawdź czy skrót dla ciągu znaków został włączony, jeżeli tak, wymuś dołączanie danego algorytmu */
 #ifdef MSD_STRING_HASH
 	/* sdbm, tylko wersja 32 bitowa */
-#	if MSD_STRING_HASH == 1
+#	if MSD_STRING_HASH == sdbm
 #		ifndef MSD_HASH_SDBM
 #			define MSD_HASH_SDBM
 #		endif
@@ -169,8 +171,6 @@
 #if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901L)
 #	include <stdbool.h>
 
-	typedef bool bool_mst;
-
 #	ifndef TRUE
 #		define TRUE true
 #	endif
@@ -178,7 +178,7 @@
 #		define FALSE false
 #	endif
 #else
-	typedef int bool_mst;
+	typedef int bool;
 
 #	ifndef TRUE
 #		define TRUE 1
@@ -188,10 +188,14 @@
 #	endif
 #endif
 
-typedef void*              voidptr_mst;       /* wskaźnik na void */
-typedef long double        ldouble_mst;       /* typ long double, może go nie być w starszych wersjach */
-typedef long long          llong_mst;         /* typ long long, może go nie być w starszych wersjach */
-typedef unsigned long long ullong_mst;        /* typ long long, wersja bez znaku */
+typedef void*              voidptr;       /* wskaźnik na void */
+typedef unsigned char      uchar;         /* 8 bitów */
+typedef unsigned short     ushort;        /* 16 bit */
+typedef unsigned int       uint;          /* 16/32 bity */
+typedef unsigned long      ulong;         /* 32/64 bity */
+typedef long long          llong;         /* 64 bity, może go nie być w starszych wersjach */
+typedef unsigned long long ullong;        /* 64 bity, wersja bez znaku */
+typedef long double        ldouble;       /* 64/80/128 bitów, może go nie być w starszych wersjach */
 
 /* kolory w terminalu */
 #ifndef MSD_NOTERMCOLOR
@@ -331,15 +335,6 @@ enum MSE_ERROR_CODE
 #define MSD_FLT_MAX_10_EXP  2           // ilość cyfr w FLT_MAX_10_EXP
 #define MSD_DBL_MAX_10_EXP  3           // ilość cyfr w DBL_MAX_10_EXP
 #define MSD_LDBL_MAX_10_EXP 4           // ilość cyfr w LDBL_MAX_10_EXP
-
-// skrócone typy danych int i domyślnie przyjmowane wartości
-typedef unsigned char      uchar;       // 8 bitów
-typedef unsigned short     ushort;      // 16 bit
-typedef unsigned int       uint;        // 16/32 bity
-typedef unsigned long      ulong;       // 32/64 bity
-typedef unsigned long long ullong;      // 64 bity
-typedef long long          llong;       // 64 bity
-typedef long double        ldouble;     // 64/80/128 bitów
 
 // unicode
 #ifdef MSD_UNICODE_STRINGS

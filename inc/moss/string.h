@@ -73,15 +73,15 @@
 #		define ms_string_hash_byte(data, len) \
 			MSD_CALLCONNECT(ms_hash_64_, MSD_STRING_HASH)( data, len )
 #	else
-#	define ms_string_hash_byte(data, len) \
-		MSD_CALLCONNECT(ms_hash_32_, MSD_STRING_HASH)( data, len )
+#		define ms_string_hash_byte(data, len) \
+			MSD_CALLCONNECT(ms_hash_32_, MSD_STRING_HASH)( data, len )
 #	endif
 #endif
 
 typedef struct MSS_MBINFO
 {
-	size_t        Offset;
-	unsigned char Bytes;
+	size_t Offset;
+	char   Bytes;
 }
 MS_MBINFO;
 
@@ -89,18 +89,19 @@ typedef struct MSS_STRING
 {
 	union
 	{
-		char     *CData;
-		wchar_t  *WData;
-		tchar    *TData;
-	};
+		char    *Char;
+		wchar_t *Wide;
+		tchar   *Type;
+	}
+	String;
 
 	size_t Length;
 	size_t Capacity;
 	size_t Hash;
 	float  Modifier;
-	bool_mst Wide;
-	bool_mst Destroy;
-	bool_mst Hashed;
+	bool   Wide;
+	bool   Destroy;
+	bool   Hashed;
 
 	MS_ARRAY *MBInfo;
 
