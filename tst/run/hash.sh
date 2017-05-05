@@ -32,8 +32,7 @@ cd $DIR1
 
 # kompiluj moduł i przetestuj go
 # należy przetestować wszystkie dostępne funkcje skrótu
-if gcc \
-	-Wall \
+if gcc -g -O0 -Wall \
 	-I../../inc \
 	$DIR2/hash_test.c \
 	$DIR2/../src/hash/djb.c \

@@ -54,7 +54,7 @@ IF NOT EXIST "%dir1%" (
 cd "%dir1%"
 
 :: kompiluj test
-cl /Zi /Od /Wall^
+cl /Zi /Od /W4^
 	/I../../inc^
 	"%dir2%/array_test.c"^
 	"%dir2%/../src/array.c"^
