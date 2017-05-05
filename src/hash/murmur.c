@@ -37,6 +37,11 @@
 #define MSN_H64M2   0xC6A4A7935BD1E995ull
 #define MSN_H32M1   0xC6A4A793
 
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(push) )
+	__pragma( warning(disable:4127))    /* conditional expression is constant */
+#endif
+
 /**
  * Miesza 32 bitowy skrót danych z podaną wartością.
  * 
@@ -216,7 +221,7 @@ uint32_t ms_hash_mbs_32_murmur3( const char *data )
 	assert( data );
 
 	/* mieszaj i licz długość ciągu znaków */
-	while( ch4b = *cdat++, !(nbit = MSX_FIND8B0IN32B(ch4b)) )
+	while( ch4b = *cdat++, (nbit = MSX_FIND8B0IN32B(ch4b)) == 0 )
 		hash  = msf_hash_mix32_value( hash, ch4b ),
 		slen += 4;
 
@@ -256,7 +261,7 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
 
 	/* 2 bajtowy wchar_t */
 	if( sizeof(wchar_t) == 2 )
-		while( (ch4b = *cdat++) )
+		while( (ch4b = *cdat++) != 0 )
 		{
 			/* sprawdź czy pierwszy znak w porcji będzie równy 0 */
 			if( !(ch4b & 0x0000FFFF) )
@@ -277,7 +282,7 @@ uint32_t ms_hash_wcs_32_murmur3( const wchar_t *data )
 		}
 	/* 4 bajtowy wchar_t - brak odpadków... */
 	else if( sizeof(wchar_t) == 4 )
-		while( (ch4b = *cdat++) )
+		while( (ch4b = *cdat++) != 0 )
 			hash  = msf_hash_mix32_value( hash, ch4b ),
 			slen += 4;
 
@@ -305,3 +310,7 @@ INLINE static uint32_t msf_hash_mix32_value( uint32_t hash, uint32_t value )
 
 	return hash + ((hash << 2) + MSN_H32M3_3);
 }
+
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(pop) )
+#endif

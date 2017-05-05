@@ -82,6 +82,12 @@
 #define MSN_H64XX_4 9650029242287828579ull
 #define MSN_H64XX_5 2870177450012600261ull
 
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(push) )
+	__pragma( warning(disable:4307))    /* integral constant overflow */
+	__pragma( warning(disable:4127))    /* conditional expression is constant */
+#endif
+
 /**
  * Miesza 64 bitowy skrót danych z podaną wartością.
  * 
@@ -734,13 +740,13 @@ INLINE static size_t msf_hash_mbs_32s8b0_check( const uint32_t *data )
 {
 	size_t nbit;
 
-	if( (nbit = MSX_FIND8B0IN32B(data[0])) )
+	if( (nbit = MSX_FIND8B0IN32B(data[0])) != 0 )
 		return nbit;
-	if( (nbit = MSX_FIND8B0IN32B(data[1])) )
+	if( (nbit = MSX_FIND8B0IN32B(data[1])) != 0 )
 		return 4 + nbit;
-	if( (nbit = MSX_FIND8B0IN32B(data[2])) )
+	if( (nbit = MSX_FIND8B0IN32B(data[2])) != 0 )
 		return 8 + nbit;
-	if( (nbit = MSX_FIND8B0IN32B(data[3])) )
+	if( (nbit = MSX_FIND8B0IN32B(data[3])) != 0 )
 		return 12 + nbit;
 	
 	return 0;
@@ -752,13 +758,13 @@ INLINE static size_t msf_hash_mbs_64s8b0_check( const uint64_t *data )
 {
 	size_t nbit;
 
-	if( (nbit = MSX_FIND8B0IN64B(data[0])) )
+	if( (nbit = MSX_FIND8B0IN64B(data[0])) != 0 )
 		return nbit;
-	if( (nbit = MSX_FIND8B0IN64B(data[1])) )
+	if( (nbit = MSX_FIND8B0IN64B(data[1])) != 0 )
 		return 8 + nbit;
-	if( (nbit = MSX_FIND8B0IN64B(data[2])) )
+	if( (nbit = MSX_FIND8B0IN64B(data[2])) != 0 )
 		return 16 + nbit;
-	if( (nbit = MSX_FIND8B0IN64B(data[3])) )
+	if( (nbit = MSX_FIND8B0IN64B(data[3])) != 0 )
 		return 24 + nbit;
 
 	return 0;
@@ -770,13 +776,13 @@ INLINE static size_t msf_hash_mbs_64s16b0_check( const uint64_t *data )
 {
 	size_t nbit;
 
-	if( (nbit = MSX_FIND16B0IN64B(data[0])) )
+	if( (nbit = MSX_FIND16B0IN64B(data[0])) != 0 )
 		return nbit;
-	if( (nbit = MSX_FIND16B0IN64B(data[1])) )
+	if( (nbit = MSX_FIND16B0IN64B(data[1])) != 0 )
 		return 4 + nbit;
-	if( (nbit = MSX_FIND16B0IN64B(data[2])) )
+	if( (nbit = MSX_FIND16B0IN64B(data[2])) != 0 )
 		return 8 + nbit;
-	if( (nbit = MSX_FIND16B0IN64B(data[3])) )
+	if( (nbit = MSX_FIND16B0IN64B(data[3])) != 0 )
 		return 12 + nbit;
 
 	return 0;
@@ -788,13 +794,13 @@ INLINE static size_t msf_hash_mbs_64s32b0_check( const uint64_t *data )
 {
 	size_t nbit;
 
-	if( (nbit = MSX_FIND32B0IN64B(data[0])) )
+	if( (nbit = MSX_FIND32B0IN64B(data[0])) != 0 )
 		return nbit;
-	if( (nbit = MSX_FIND32B0IN64B(data[1])) )
+	if( (nbit = MSX_FIND32B0IN64B(data[1])) != 0 )
 		return 2 + nbit;
-	if( (nbit = MSX_FIND32B0IN64B(data[2])) )
+	if( (nbit = MSX_FIND32B0IN64B(data[2])) != 0 )
 		return 4 + nbit;
-	if( (nbit = MSX_FIND32B0IN64B(data[3])) )
+	if( (nbit = MSX_FIND32B0IN64B(data[3])) != 0 )
 		return 6 + nbit;
 
 	return 0;
@@ -806,13 +812,13 @@ INLINE static size_t msf_hash_mbs_32s16b0_check( const uint32_t *data )
 {
 	size_t nbit;
 
-	if( (nbit = MSX_FIND16B0IN32B(data[0])) )
+	if( (nbit = MSX_FIND16B0IN32B(data[0])) != 0 )
 		return nbit;
-	if( (nbit = MSX_FIND16B0IN32B(data[1])) )
+	if( (nbit = MSX_FIND16B0IN32B(data[1])) != 0 )
 		return 2 + nbit;
-	if( (nbit = MSX_FIND16B0IN32B(data[2])) )
+	if( (nbit = MSX_FIND16B0IN32B(data[2])) != 0 )
 		return 4 + nbit;
-	if( (nbit = MSX_FIND16B0IN32B(data[3])) )
+	if( (nbit = MSX_FIND16B0IN32B(data[3])) != 0 )
 		return 6 + nbit;
 	
 	return 0;
@@ -833,3 +839,7 @@ INLINE static size_t msf_hash_mbs_32s32b0_check( const uint32_t *data )
 	
 	return 0;
 }
+
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(pop) )
+#endif

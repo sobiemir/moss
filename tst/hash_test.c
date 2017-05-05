@@ -32,6 +32,11 @@
 #include <mstest.h>
 #include <moss/hash.h>
 
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(push) )
+	__pragma( warning(disable:4127))    /* conditional expression is constant */
+#endif
+
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
@@ -63,6 +68,8 @@ char *mst_hash_djb2( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( wresult1 == 0x1C78C0DE );
+		mst_assert( wresult2 == 0x1C78C0DE );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -96,6 +103,8 @@ char *mst_hash_djb2a( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( wresult1 == 0xB9704D7E );
+		mst_assert( wresult2 == 0xB9704D7E );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -137,6 +146,8 @@ char *mst_hash_sdbm( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( wresult1 == 0x3A38E971 );
+		mst_assert( wresult2 == 0x3A38E971 );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -178,6 +189,8 @@ char *mst_hash_joaat( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( wresult1 == 0xC24C203E );
+		mst_assert( wresult2 == 0xC24C203E );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -230,6 +243,10 @@ char *mst_hash_fnv1( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( w32result1 == 0x7AFBDF48 );
+		mst_assert( w32result2 == 0x7AFBDF48 );
+		mst_assert( w64result1 == 0x3CB9F0BF944BFFC8 );
+		mst_assert( w64result2 == 0x3CB9F0BF944BFFC8 );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -276,6 +293,10 @@ char *mst_hash_fnv1a( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( w32result1 == 0xFA945892 );
+		mst_assert( w32result2 == 0xFA945892 );
+		mst_assert( w64result1 == 0xBC28813FCFD3D0F2 );
+		mst_assert( w64result2 == 0xBC28813FCFD3D0F2 );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -430,6 +451,14 @@ char *mst_hash_murmur3( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
+		mst_assert( wresult1[0] == 0xF3F54C78 );
+		mst_assert( wresult2[0] == 0xF3F54C78 );
+		mst_assert( wresult1[1] == 0x90A3A98D );
+		mst_assert( wresult2[1] == 0x90A3A98D );
+		mst_assert( wresult1[2] == 0x3849F3E5 );
+		mst_assert( wresult2[2] == 0x3849F3E5 );
+		mst_assert( wresult1[3] == 0x8AD19CEE );
+		mst_assert( wresult2[3] == 0x8AD19CEE );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -523,6 +552,24 @@ char *mst_hash_xxhash32( MST_TESTFUNC *info )
 	/* wchar_t */
 	if( sizeof(wchar_t) == 2 )
 	{
+		/* bok + góra = indeks który nie przeszedł lub testowany indeks */
+		uint32_t wvals[] =
+		{
+			/*   0           1           2           3    */
+			0xB1727C1C, 0xE7BFFC27, 0x12EC6C22, 0x3E3E6AB6, /* 1  */
+			0x1715C13C, 0xF739C79A, 0xA99CCC93, 0x6D9C4A7B, /* 5  */
+			0xD6862D63, 0xDDDDE141, 0x83E080EC, 0x8C33E16E, /* 9  */
+			0xDF5028E9, 0xEA6D9F73, 0xDCB2601E, 0xBFF627A8  /* 13 */
+		};
+
+		for( iter = 0; iter < 16; ++iter )
+		{
+			/* printf( "PASS: %zu\n", iter ); */
+			mst_assert( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
+			mst_assert( ms_hash_wcs_32_xxhash(wtest[iter]) == wvals[iter] );
+		}
+		mst_assert( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)) == 0xE7A5359C );
+		mst_assert( ms_hash_wcs_32_xxhash(wtest[16]) == 0xE7A5359C );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -542,7 +589,6 @@ char *mst_hash_xxhash32( MST_TESTFUNC *info )
 			mst_assert( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
 			mst_assert( ms_hash_wcs_32_xxhash(wtest[iter]) == wvals[iter] );
 		}
-
 		mst_assert( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)) == 0xE684C0C9 );
 		mst_assert( ms_hash_wcs_32_xxhash(wtest[16]) == 0xE684C0C9 );
 	}
@@ -656,6 +702,28 @@ char *mst_hash_xxhash64( MST_TESTFUNC *info )
 	/* wchar_t */
 	if( sizeof(wchar_t) == 2 )
 	{
+		/* bok + góra = indeks który nie przeszedł lub testowany indeks */
+		uint64_t wvals[] =
+		{
+			/*       0                   1                  2                   3         */
+			0xC4B3F6FA7DC28773, 0x7A512B6C3210BE77, 0x2FAC324BEA747D96, 0xEED2C0A835410B66, /* 1  */
+			0x00953C5A4095F61D, 0x81D3478290B1F178, 0xD35FC1F6B85D13D8, 0x977D4B0FDFA8F1C1, /* 5  */
+			0x7ADF94D2914CD233, 0x16C809B48FB63AB8, 0xFFE4BABA597677B6, 0xD160F19584FCAB13, /* 9  */
+			0xA1C4C718619FA515, 0x483B2F9572EE18A3, 0x77205C92EB87C6AE, 0x9F164DE6454C2164, /* 13 */
+			0xA3E0BFA318EF4DE9, 0x26DA2CF97AAFBC99, 0x167BF77AFDBB7EBB, 0xA8CEDEC59916E568, /* 17 */
+			0xDFE3383DE455529E, 0x4EDC0ED2EF444C66, 0x0FCC0AD42C9F62A9, 0x7237B9FE45D6B848, /* 21 */
+			0x27895691C9934944, 0x203324A6A23BB2BC, 0x400ADB9EC70177D6, 0x226130124B5A2E5F, /* 25 */
+			0x3ABCD6C65D38E409, 0xDA9E8FBE6A3D8EF6, 0x6BAF6788CE53AC4E, 0x5777F60E5EE4569F  /* 29 */
+		};
+
+		for( iter = 0; iter < 32; ++iter )
+		{
+			/* printf( "PASS: %zu\n", iter ); */
+			mst_assert( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
+			mst_assert( ms_hash_wcs_64_xxhash(wtest[iter]) == wvals[iter] );
+		}
+		mst_assert( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)) == 0xED8644FBB587A3EA );
+		mst_assert( ms_hash_wcs_64_xxhash(wtest[32]) == 0xED8644FBB587A3EA );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -679,7 +747,6 @@ char *mst_hash_xxhash64( MST_TESTFUNC *info )
 			mst_assert( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
 			mst_assert( ms_hash_wcs_64_xxhash(wtest[iter]) == wvals[iter] );
 		}
-
 		mst_assert( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)) == 0x562A87F545E2D7A5 );
 		mst_assert( ms_hash_wcs_64_xxhash(wtest[32]) == 0x562A87F545E2D7A5 );
 	}
@@ -771,3 +838,7 @@ MST_TESTSUITE MSV_HashSuite =
 	}
 
 #endif
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(pop) )
+#endif
+

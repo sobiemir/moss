@@ -83,9 +83,9 @@ const struct MSS_ARRAYFUNCTIONS MSC_ArrayFunctions =
 
 void *ms_array_alloc( size_t size, size_t capacity )
 {
-	MS_ARRAY *array = malloc( sizeof *array );
+	MS_ARRAY *array;
 
-	if( !array )
+	if( (array = malloc(sizeof *array)) == NULL )
 		return NULL;
 
 	if( ms_array_init(array, size, capacity) )
@@ -165,8 +165,7 @@ int ms_array_realloc( void *aptr, size_t capacity )
 		SETERRNOANDRETURN( MSEC_DATA_OVERFLOW );
 
 	/* przydziel nową ilość pamięci */
-	tmp = realloc( array->Items, capacity * array->ItemSize );
-	if( !tmp )
+	if( (tmp = realloc(array->Items, capacity * array->ItemSize)) == NULL )
 		return MSEC_MEMORY_ALLOCATION;
 
 	array->Items    = tmp;
@@ -226,8 +225,7 @@ int ms_array_copy( void *adst, const void *asrc )
 	assert( src->Items );
 	assert( dst );
 
-	ercode = ms_array_init( dst, src->ItemSize, src->Capacity );
-	if( ercode )
+	if( (ercode = ms_array_init(dst, src->ItemSize, src->Capacity)) != 0 )
 		return ercode;
 
 	IGRET memcpy( dst->Items, src->Items, src->Capacity * src->ItemSize );
@@ -246,8 +244,7 @@ void *ms_array_copy_alloc( const void *aptr )
 	assert( array );
 	assert( array->Items );
 
-	retval = ms_array_alloc( array->ItemSize, array->Capacity );
-	if( !retval )
+	if( (retval = ms_array_alloc(array->ItemSize, array->Capacity)) == NULL )
 		return NULL;
 
 	IGRET memcpy( retval->Items, array->Items, array->Capacity * array->ItemSize );
@@ -385,19 +382,13 @@ int ms_array_join_slice_inverse( void *adst, const void *asrc, size_t offset, si
 		SETERRNOANDRETURN( MSEC_OUT_OF_RANGE );
 
 	if( dst->Length < src->Length - count )
-	{
-		ercode = ms_array_realloc_min( dst, src->Length - count );
-		if( ercode )
+		if( (ercode = ms_array_realloc_min(dst, src->Length - count)) != 0 )
 			return ercode;
-	}
 
 	/* dodaj pierwszą część */
-	if( offset > 0 )
-	{
-		ercode = ms_array_push_values( dst, src->Items, offset );
-		if( ercode )
-			return ercode;
-	}
+	if( offset > 0 && (ercode = ms_array_push_values(dst, src->Items, offset)) != 0 )
+		return ercode;
+
 	/* dodaj drugą część */
 	if( osumc < src->Length )
 	{

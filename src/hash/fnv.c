@@ -30,6 +30,11 @@
 
 #include <moss/hash.h>
 
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(push) )
+	__pragma( warning(disable:4127))    /* conditional expression is constant */
+#endif
+
 /* ================================================================================================================== */
 
 uint32_t ms_hash_32_fnv1( const void *data, size_t length )
@@ -109,7 +114,7 @@ uint32_t ms_hash_mbs_32_fnv1( const char *data )
 
 	assert( data );
 
-	while( (c = (uint8_t)*data++) )
+	while( (c = (uint8_t)*data++) != 0 )
 		hash += (hash << 1) + (hash << 4) + (hash << 7) +
 		        (hash << 8) + (hash << 24),
 		hash ^= c;
@@ -126,7 +131,7 @@ uint32_t ms_hash_mbs_32_fnv1a( const char *data )
 
 	assert( data );
 
-	while( (c = (uint8_t)*data++) )
+	while( (c = (uint8_t)*data++) != 0 )
 		hash ^= c,
 		hash += (hash << 1) + (hash << 4) + (hash << 7) +
 		        (hash << 8) + (hash << 24);
@@ -143,7 +148,7 @@ uint64_t ms_hash_mbs_64_fnv1( const char *data )
 
 	assert( data );
 
-	while( (c = (uint8_t)*data++) )
+	while( (c = (uint8_t)*data++) != 0 )
 		hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
 		        (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
 		hash ^= c;
@@ -160,7 +165,7 @@ uint64_t ms_hash_mbs_64_fnv1a( const char *data )
 
 	assert( data );
 
-	while( (c = (uint8_t)*data++) )
+	while( (c = (uint8_t)*data++) != 0 )
 		hash ^= c,
 		hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
 		        (hash << 7ull) + (hash << 8ull) + (hash << 40ull);
@@ -181,7 +186,7 @@ uint32_t ms_hash_wcs_32_fnv1( const wchar_t *data )
 	assert( data );
 
 	if( sizeof(wchar_t) == 2 )
-		while( (c = (uint16_t)*data++) )
+		while( (c = (uint16_t)*data++) != 0 )
 			hash += (hash << 1) + (hash << 4) + (hash << 7) +
 			        (hash << 8) + (hash << 24),
 			hash ^= (uint32_t)(c & 0x00FF),
@@ -190,7 +195,7 @@ uint32_t ms_hash_wcs_32_fnv1( const wchar_t *data )
 			hash ^= (uint32_t)(c & 0xFF00) >> 8;
 
 	else if( sizeof(wchar_t) == 4 )
-		while( (c = (uint32_t)*data++) )
+		while( (c = (uint32_t)*data++) != 0 )
 			hash += (hash << 1) + (hash << 4) + (hash << 7) +
 			        (hash << 8) + (hash << 24),
 			hash ^= (uint32_t)(c & 0x000000FF),
@@ -217,7 +222,7 @@ uint32_t ms_hash_wcs_32_fnv1a( const wchar_t *data )
 	assert( data );
 
 	if( sizeof(wchar_t) == 2 )
-		while( (c = (uint16_t)*data++) )
+		while( (c = (uint16_t)*data++) != 0 )
 			hash ^= (uint32_t)(c & 0x00FF),
 			hash += (hash << 1) + (hash << 4) + (hash << 7) +
 			        (hash << 8) + (hash << 24),
@@ -226,7 +231,7 @@ uint32_t ms_hash_wcs_32_fnv1a( const wchar_t *data )
 			        (hash << 8) + (hash << 24);
 
 	else if( sizeof(wchar_t) == 4 )
-		while( (c = (uint32_t)*data++) )
+		while( (c = (uint32_t)*data++) != 0 )
 			hash ^= (uint32_t)(c & 0x00FF),
 			hash += (hash << 1) + (hash << 4) + (hash << 7) +
 			        (hash << 8) + (hash << 24),
@@ -253,7 +258,7 @@ uint64_t ms_hash_wcs_64_fnv1( const wchar_t *data )
 	assert( data );
 
 	if( sizeof(wchar_t) == 2 )
-		while( (c = (uint16_t)*data++) )
+		while( (c = (uint16_t)*data++) != 0 )
 			hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
 			        (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
 			hash ^= (uint32_t)(c & 0x00FF),
@@ -262,7 +267,7 @@ uint64_t ms_hash_wcs_64_fnv1( const wchar_t *data )
 			hash ^= (uint32_t)(c & 0xFF00) >> 8;
 
 	else if( sizeof(wchar_t) == 4 )
-		while( (c = (uint32_t)*data++) )
+		while( (c = (uint32_t)*data++) != 0 )
 			hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
 			        (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
 			hash ^= (uint32_t)(c & 0x000000FF),
@@ -289,7 +294,7 @@ uint64_t ms_hash_wcs_64_fnv1a( const wchar_t *data )
 	assert( data );
 
 	if( sizeof(wchar_t) == 2 )
-		while( (c = (uint16_t)*data++) )
+		while( (c = (uint16_t)*data++) != 0 )
 			hash ^= (uint32_t)(c & 0x00FF),
 			hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
 			        (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
@@ -298,7 +303,7 @@ uint64_t ms_hash_wcs_64_fnv1a( const wchar_t *data )
 			        (hash << 7ull) + (hash << 8ull) + (hash << 40ull);
 
 	else if( sizeof(wchar_t) == 4 )
-		while( (c = (uint32_t)*data++) )
+		while( (c = (uint32_t)*data++) != 0 )
 			hash ^= (uint32_t)(c & 0x000000FF),
 			hash += (hash << 1ull) + (hash << 4ull) + (hash << 5ull) +
 			        (hash << 7ull) + (hash << 8ull) + (hash << 40ull),
@@ -315,4 +320,7 @@ uint64_t ms_hash_wcs_64_fnv1a( const wchar_t *data )
 	return hash;
 }
 
+#endif
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(pop) )
 #endif

@@ -30,6 +30,11 @@
 
 #include <moss/hash.h>
 
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(push) )
+	__pragma( warning(disable:4127))    /* conditional expression is constant */
+#endif
+
 /* ================================================================================================================== */
 
 uint32_t ms_hash_32_djb2( const void *data, size_t length )
@@ -71,7 +76,7 @@ uint32_t ms_hash_mbs_32_djb2( const char *data )
 
 	assert( data );
 
-	while( (c = (uint8_t)*data++) )
+	while( (c = (uint8_t)*data++) != 0 )
 		hash = ((hash << 5) + hash) + c;
 
 	return hash;
@@ -86,7 +91,7 @@ uint32_t ms_hash_mbs_32_djb2a( const char *data )
 
 	assert( data );
 
-	while( (c = (uint8_t)*data++) )
+	while( (c = (uint8_t)*data++) != 0 )
 		hash = ((hash << 5) + hash) ^ c;
 
 	return hash;
@@ -105,11 +110,11 @@ uint32_t ms_hash_wcs_32_djb2( const wchar_t *data )
 	assert( data );
 
 	if( sizeof(wchar_t) == 2 )
-		while( (c = (uint16_t)*data++) )
+		while( (c = (uint16_t)*data++) != 0 )
 			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x00FF)     ),
 			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0xFF00) >> 8);
 	else if( sizeof(wchar_t) == 4 )
-		while( (c = (uint32_t)*data++) )
+		while( (c = (uint32_t)*data++) != 0 )
 			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x000000FF)      ),
 			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x0000FF00) >> 8 ),
 			hash = ((hash << 5) + hash) + ((uint32_t)(c & 0x00FF0000) >> 16),
@@ -128,11 +133,11 @@ uint32_t ms_hash_wcs_32_djb2a( const wchar_t *data )
 	assert( data );
 
 	if( sizeof(wchar_t) == 2 )
-		while( (c = (uint16_t)*data++) )
+		while( (c = (uint16_t)*data++) != 0 )
 			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x00FF)     ),
 			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0xFF00) >> 8);
 	else if( sizeof(wchar_t) == 4 )
-		while( (c = (uint32_t)*data++) )
+		while( (c = (uint32_t)*data++) != 0 )
 			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x000000FF)      ),
 			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x0000FF00) >> 8 ),
 			hash = ((hash << 5) + hash) ^ ((uint32_t)(c & 0x00FF0000) >> 16),
@@ -141,4 +146,7 @@ uint32_t ms_hash_wcs_32_djb2a( const wchar_t *data )
 	return hash;
 }
 
+#endif
+#ifdef MSD_COMPILER_MSC
+	__pragma( warning(pop) )
 #endif

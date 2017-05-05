@@ -263,7 +263,7 @@ INLINE static int mst_run_suite( MST_TESTSUITE *suite )
 
 	/* inicjalizacja */
 	if( suite->Setup )
-		if( (error = suite->Setup(suite)) )
+		if( (error = suite->Setup(suite)) != 0 )
 			return error;
 
 	IGRET printf( "===============================================================================\n" );
