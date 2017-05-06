@@ -105,7 +105,9 @@ int ms_array_init( void *aptr, size_t size, size_t capacity )
 
 	assert( array );
 
-	array->Capacity = capacity;
+	array->Capacity = capacity == 0
+		? MSD_ARRAY_DEFAULT_SIZE
+		: capacity;
 	array->ItemSize = size;
 	array->Length   = 0;
 	array->Modifier = 2.f;

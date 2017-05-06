@@ -59,6 +59,11 @@
 #	define MSD_NOTERMCOLOR          /* nie wyświetlaj kolorów w terminalu */
 #endif
 
+/* Domyślny rozmiar tablicy używany w przypadku podania 0 podczas inicjalizacji. */
+#ifndef MSD_ARRAY_DEFAULT_SIZE
+#	define MSD_ARRAY_DEFAULT_SIZE 32
+#endif
+
 /* te makra muszą być zdefiniowane */
 #ifndef MSD_HASH_SEED
 #	define MSD_HASH_SEED 0x1C9D0367     /* wartość początkowa skrótu używana w niektórych funkcjach */
@@ -167,8 +172,10 @@
 #include <stddef.h>
 #include <errno.h>
 
-/* typ bool dostępny jest od C99 */
-#if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901L)
+/* typ bool dostępny jest od C99
+   w C++ bool jest typem wbudowanym
+   UWAGA na kompilator CL, który ustawia __cplusplus nawet gdy kompiluje w C! */
+#if (defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901L)) || defined(__cplusplus)
 #	include <stdbool.h>
 
 #	ifndef TRUE
@@ -214,6 +221,9 @@ typedef long double        ldouble;       /* 64/80/128 bitów, może go nie być
 #	define TERMCOLORBLUE(_T_)    _T_
 #endif
 
+
+#define MSD_CONNECT(x, y) x ## y
+#define MSD_CALLCONNECT(x, y) MSD_CONNECT(x, y)
 
 
 #define MSD_DEBUG
@@ -319,8 +329,6 @@ enum MSE_ERROR_CODE
 	MSEC_CHAIN_ALLOCATION
 };
 
-/* Domyślny rozmiar tablicy używany w przypadku podania 0 podczas inicjalizacji. */
-#define MSD_ARRAY_INITIAL_SIZE 32
 
 
 

@@ -518,6 +518,8 @@ Tworzenie i inicjalizacja
     W przypadku błędu podczas tworzenia, zwrócona zostaje wartość *NULL*.
     Funkcja jako jedna z nielicznych ustawia pole :c:member:`MS_ARRAY.Destroy` na wartość *TRUE*.
     Przydzielone przez funkcję zasoby zawsze należy zwalniać, co umożliwia funkcja :c:func:`ms_array_free`.
+    Podanie wartości 0 w miejsce parametru ``capacity`` powoduje zmianę tej wartości przez funkcję na
+    domyślny rozmiar tablicy, definiowany w pliku konfiguracyjnym pod nazwą :c:macro:`MSD_ARRAY_DEFAULT_SIZE`.
 
     Przykład użycia funkcji::
 
@@ -540,6 +542,8 @@ Tworzenie i inicjalizacja
     Wszystkie funkcje tworzące tablice odwołują się bezpośrednio do tej funkcji.
     W przypadku błędu zwracany jest jego kod, w przeciwnym razie wartość :c:member:`MSE_ERROR_CODES.MSEC_OK`.
     Przydzielone przez funkcję zasoby zawsze należy zwalniać, co umożliwia funkcja :c:func:`ms_array_free`.
+    Podanie wartości 0 w miejsce parametru ``capacity`` powoduje zmianę tej wartości przez funkcję na
+    domyślny rozmiar tablicy, definiowany w pliku konfiguracyjnym pod nazwą :c:macro:`MSD_ARRAY_DEFAULT_SIZE`.
 
     Przykład użycia funkcji::
 
@@ -566,6 +570,8 @@ Tworzenie i inicjalizacja
     W przypadku błędu podczas tworzenia tablicy, pole :c:member:`MS_ARRAY.Items` jest równe *NULL*.
     Utworzona w ten sposób tablica nadal wymaga zwolnienia przydzielonych zasobów poprzez wywołanie funkcji
     :c:func:`ms_array_free`.
+    W przypadku podania wartości 0 w miejsce parametru ``capacity`` funkcja przyjmuje domyślny rozmiar tablicy,
+    definiowany w pliku konfiguracyjnym pod nazwą :c:macro:`MSD_ARRAY_DEFAULT_SIZE`.
 
     Przykład użycia funkcji::
 

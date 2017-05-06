@@ -91,7 +91,7 @@ void mst_array_teardown( MST_TESTSUITE *suite )
 /*
 ======================================================================================================================
 ------------------------------------------------------------------------------------------------------------------
-	TWORZENIE, NISZCZENIE I KOPIOWANIE TABLICY
+	TWORZENIE I NISZCZENIE TABLICY
 ------------------------------------------------------------------------------------------------------------------
 ======================================================================================================================
 */
@@ -118,38 +118,51 @@ char *mst_array_create( MST_TESTFUNC *info )
 	ercode = ms_array_init( &data->Local2, sizeof(long double), 2 );
 	mst_assert( ercode == MSEC_OK );
 
+	/* tworzenie z domyślnym rozmiarem tablicy
+	   i tak wszystko przelatuje przez ms_array_init, więc wystarczy sprawdzić
+	   wartość tylko w jednej funkcji */
+	data->Pointer2 = ms_array_alloc( sizeof(long double), 0 );
+
 	mst_assert( data->Pointer1 );
 	mst_assert( data->Pointer1->Items );
+	mst_assert( data->Pointer2 );
+	mst_assert( data->Pointer2->Items );
 	mst_assert( data->Local1.Items );
 	mst_assert( data->Local2.Items );
 	
 	/* tylko tablice utworzone w pamięci mogą być usuwane w całości */
 	mst_assert( data->Pointer1->Destroy );
+	mst_assert( data->Pointer2->Destroy );
 	mst_assert( !data->Local1.Destroy );
 	mst_assert( !data->Local2.Destroy );
 
 	/* taki rozmiar został ustawiony przy tworzeniu */
 	mst_assert( data->Pointer1->Capacity == 2 );
+	mst_assert( data->Pointer2->Capacity == MSD_ARRAY_DEFAULT_SIZE );
 	mst_assert( data->Local1.Capacity == 2 );
 	mst_assert( data->Local2.Capacity == 2 );
 
 	/* długość jest 0, gdyż nie ma jeszcze żadnego elementu */
 	mst_assert( data->Pointer1->Length == 0 );
+	mst_assert( data->Pointer2->Length == 0 );
 	mst_assert( data->Local1.Length == 0 );
 	mst_assert( data->Local2.Length == 0 );
 
 	/* rozmiar elementu został podany przy tworzeniu, ma być taki sam */
 	mst_assert( data->Pointer1->ItemSize == sizeof(long double) );
+	mst_assert( data->Pointer2->ItemSize == sizeof(long double) );
 	mst_assert( data->Local1.ItemSize == sizeof(long double) );
 	mst_assert( data->Local2.ItemSize == sizeof(long double) );
 
 	/* początkowa funkcja odpowiadająca za zwiększanie */
 	mst_assert( data->Pointer1->FuncIncrease == MSC_ArrayFunctions.IncMultiply );
+	mst_assert( data->Pointer2->FuncIncrease == MSC_ArrayFunctions.IncMultiply );
 	mst_assert( data->Local1.FuncIncrease == MSC_ArrayFunctions.IncMultiply );
 	mst_assert( data->Local2.FuncIncrease == MSC_ArrayFunctions.IncMultiply );
 
 	/* początkowy modyfikator */
 	mst_assert( data->Pointer1->Modifier == 2.f );
+	mst_assert( data->Pointer2->Modifier == 2.f );
 	mst_assert( data->Local1.Modifier == 2.f );
 	mst_assert( data->Local2.Modifier == 2.f );
 
@@ -182,6 +195,7 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 
 	/* zwolnij pamięć - funkcja zwalnia wszystko */
 	ms_array_free( data->Pointer1 );
+	ms_array_free( data->Pointer2 );
 	/* nie można sprawdzić danych po usunięciu struktury */
 
 	ms_array_free( &data->Local2 );
@@ -193,72 +207,10 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 	mst_assert( data->Local2.Destroy  == FALSE );
 
 	data->Pointer1 = NULL;
+	data->Pointer2 = NULL;
 
 	/* próbuj zwolnić coś, co nie prowadzi do niczego */
 	ms_array_free( data->Pointer1 );
-
-	return MST_SUCCESS;
-}
-
-/**
- * Kopiowanie tablicy dwoma sposobami.
- * Pierwszy sposób to kopiowanie do istniejącej już w pamięci tablicy (ms_array_copy).
- * Drugi sposób to kopiowanie do nowej tablicy i zwrócenie wskazania na nią (ms_array_copy_alloc).
- */
-char *mst_array_copy( MST_TESTFUNC *info )
-{
-	MSTST_ARRAY_DATA *data;
-
-	size_t    iter;
-	int       ercode;
-	MS_ARRAY *array1, *array2, *array3;
-
-	mst_assert( info );
-	data = info->Data;
-	mst_assert( data->Local2.Items );
-	mst_assert( data->Local1.Items );
-	mst_assert( data->Pointer2 );
-
-	array1 = &data->Local2;
-	array2 = &data->Local1;
-
-	/* wyczyść tablice */
-	ms_array_free( array2 );
-	mst_assert( !array2->Items );
-
-	/* kopiuj wartości */
-	ercode = ms_array_copy( array2, array1 );
-	mst_assert( ercode == MSEC_OK );
-
-	/* obie tablice są lokalne, więc o polu Destroy ustawionym na false nie ma mowy */
-	mst_assert( array1->Capacity == array2->Capacity );
-	mst_assert( array1->Length == array2->Length );
-	mst_assert( array1->Destroy == array2->Destroy );
-	mst_assert( array1->Items != array2->Items );
-
-	/* sprawdź czy elementy są takie same */
-	for( iter = 0; iter < array1->Length; ++iter )
-		mst_assert( ms_array_get(array1, int, iter) == ms_array_get(array2, int, iter) );
-
-	/* tą tablicę należy usunąć gdyż jest to wskaźnik - inaczej mogą być wycieki pamięci */
-	ms_array_free( data->Pointer2 );
-
-	/* a teraz kopiuj zwracając wskaźnik do nowej tablicy */
-	array3 = data->Pointer2 = ms_array_copy_alloc( array1 );
-
-	/* przyrównaj do drugiej tablicy, wartości muszą być te same */
-	mst_assert( array3 );
-	mst_assert( array2->Capacity == array3->Capacity );
-	mst_assert( array2->Length == array3->Length );
-
-	/* oprócz destroy, pamięć przydzielona na strukturę musi być zawsze niszczona
-	 * więc w tym przypadku array3 musi mieć pole Destroy ustawione zawsze na true */
-	mst_assert( array2->Destroy != array3->Destroy );
-	mst_assert( array2->Items != array3->Items );
-
-	/* sprawdź czy elementy są takie same */
-	for( iter = 0; iter < array2->Length; ++iter )
-		mst_assert( ms_array_get(array2, int, iter) == ms_array_get(array3, int, iter) );
 
 	return MST_SUCCESS;
 }
@@ -669,6 +621,77 @@ char *mst_array_join_slice_inverse( MST_TESTFUNC *info )
 		mst_assert( items2[x] == items1[y] );
 	for( y = 0; y < 128; ++x, ++y )
 		mst_assert( items2[x] == items1[y] );
+
+	return MST_SUCCESS;
+}
+
+/*
+======================================================================================================================
+------------------------------------------------------------------------------------------------------------------
+	KOPIOWANIE TABLICY
+------------------------------------------------------------------------------------------------------------------
+======================================================================================================================
+*/
+
+/**
+ * Kopiowanie tablicy dwoma sposobami.
+ * Pierwszy sposób to kopiowanie do istniejącej już w pamięci tablicy (ms_array_copy).
+ * Drugi sposób to kopiowanie do nowej tablicy i zwrócenie wskazania na nią (ms_array_copy_alloc).
+ */
+char *mst_array_copy( MST_TESTFUNC *info )
+{
+	MSTST_ARRAY_DATA *data;
+
+	size_t    iter;
+	int       ercode;
+	MS_ARRAY *array1, *array2, *array3;
+
+	mst_assert( info );
+	data = info->Data;
+	mst_assert( data->Local2.Items );
+	mst_assert( data->Local1.Items );
+	mst_assert( data->Pointer2 );
+
+	array1 = &data->Local2;
+	array2 = &data->Local1;
+
+	/* wyczyść tablice */
+	ms_array_free( array2 );
+	mst_assert( !array2->Items );
+
+	/* kopiuj wartości */
+	ercode = ms_array_copy( array2, array1 );
+	mst_assert( ercode == MSEC_OK );
+
+	/* obie tablice są lokalne, więc o polu Destroy ustawionym na false nie ma mowy */
+	mst_assert( array1->Capacity == array2->Capacity );
+	mst_assert( array1->Length == array2->Length );
+	mst_assert( array1->Destroy == array2->Destroy );
+	mst_assert( array1->Items != array2->Items );
+
+	/* sprawdź czy elementy są takie same */
+	for( iter = 0; iter < array1->Length; ++iter )
+		mst_assert( ms_array_get(array1, int, iter) == ms_array_get(array2, int, iter) );
+
+	/* tą tablicę należy usunąć gdyż jest to wskaźnik - inaczej mogą być wycieki pamięci */
+	ms_array_free( data->Pointer2 );
+
+	/* a teraz kopiuj zwracając wskaźnik do nowej tablicy */
+	array3 = data->Pointer2 = ms_array_copy_alloc( array1 );
+
+	/* przyrównaj do drugiej tablicy, wartości muszą być te same */
+	mst_assert( array3 );
+	mst_assert( array2->Capacity == array3->Capacity );
+	mst_assert( array2->Length == array3->Length );
+
+	/* oprócz destroy, pamięć przydzielona na strukturę musi być zawsze niszczona
+	 * więc w tym przypadku array3 musi mieć pole Destroy ustawione zawsze na true */
+	mst_assert( array2->Destroy != array3->Destroy );
+	mst_assert( array2->Items != array3->Items );
+
+	/* sprawdź czy elementy są takie same */
+	for( iter = 0; iter < array2->Length; ++iter )
+		mst_assert( ms_array_get(array2, int, iter) == ms_array_get(array3, int, iter) );
 
 	return MST_SUCCESS;
 }
