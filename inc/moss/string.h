@@ -43,9 +43,6 @@
 #	include <moss/hash.h>
 #endif
 
-#define MSD_CONNECT(x, y) x ## y
-#define MSD_CALLCONNECT(x, y) MSD_CONNECT(x, y)
-
 /* standardowe funkcje skrótu dla ciągu znaków, używające jednego algorytmu */
 #ifdef MSD_STRING_HASH
 	/* dedykowana dla mbs */
@@ -91,9 +88,9 @@ typedef struct MSS_STRING
 	{
 		char    *Char;
 		wchar_t *Wide;
-		tchar   *Type;
+		tchar   *Auto;
 	}
-	String;
+	Data;
 
 	size_t Length;
 	size_t Capacity;
@@ -108,6 +105,7 @@ typedef struct MSS_STRING
 	size_t (*FuncIncrease)(size_t capacity, float modifier);
 }
 MS_STRING;
+
 
 MS_STRING *ms_string_alloc_cs( const char *cstr, size_t capacity );
 MS_STRING *ms_string_alloc_mbs( const char *mbstr, size_t capacity );
@@ -125,21 +123,36 @@ int ms_string_realloc( MS_STRING *str, size_t capacity );
 int ms_string_realloc_min( MS_STRING *str, size_t min );
 
 int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t count );
-int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_t count );
+int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_t bytes );
+// int ms_string_insert_mbsc( MS_STRING *str, size_t index, const char *mbstr, size_t count );
 int ms_string_insert_wcs( MS_STRING *str, size_t index, const wchar_t *wcstr, size_t count );
 
-int ms_string_insert_c( MS_STRING *str, size_t index, char chr );
-int ms_string_insert_wc( MS_STRING *str, size_t index, wchar_t wchr );
+// int ms_string_insert_c( MS_STRING *str, size_t index, char chr );
+// int ms_string_insert_wc( MS_STRING *str, size_t index, wchar_t wchr );
 
-size_t ms_string_hash( MS_STRING *str );
+// size_t ms_string_hash( MS_STRING *str );
 
-size_t ms_string_mbslen_wcs( const wchar_t *wstr, size_t count );
-size_t ms_string_mbslen( const char *mbstr, size_t bytes );
-int ms_string_mbsinfo( const char *mbs, MS_ARRAY *info, size_t bytes );
-int ms_string_wcstombs_info( const wchar_t *wstr, MS_ARRAY *info, size_t count );
+size_t ms_string_length_mbs( const char *mbstr, size_t bytes );
+size_t ms_string_length_wcstombs( const wchar_t *wstr, size_t count );
+int ms_string_info_mbs( const char *mbs, size_t bytes, MS_ARRAY *info );
+int ms_string_info_wcstombs( const wchar_t *wstr, size_t count, MS_ARRAY *info );
 
 void ms_string_clear( MS_STRING *str );
-void ms_string_clean( MS_STRING *str );
 void ms_string_free( MS_STRING *str );
+
+#define ms_string_push_cs(str, cstr, count) \
+	ms_string_insert_cs( str, (str)->MBInfo \
+		? (str)->MBInfo->Length \
+		: (str)->Length, cstr, count )
+
+#define ms_string_push_mbs(str, mbstr, bytes) \
+	ms_string_insert_mbs( str, (str)->MBInfo \
+		? (str)->MBInfo->Length \
+		: (str)->Length, mbstr, bytes )
+
+#define ms_string_push_wcs(str, wcstr, count) \
+	ms_string_insert_wcs( str, (str)->MBInfo \
+		? (str)->MBInfo->Length \
+		: (str)->Length, wcstr, count )
 
 #endif
