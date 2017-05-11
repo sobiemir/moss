@@ -170,6 +170,7 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <limits.h>
 #include <errno.h>
 
 /* typ bool dostępny jest od C99
@@ -205,43 +206,50 @@ typedef unsigned long long ullong;        /* 64 bity, wersja bez znaku */
 typedef long double        ldouble;       /* 64/80/128 bitów, może go nie być w starszych wersjach */
 
 /* kolory w terminalu */
-#ifndef MSD_NOTERMCOLOR
-#	define TERMCOLORGREEN(_T_)   "\033[0;32;32m" _T_ "\033[0m"
-#	define TERMCOLORCYAN(_T_)    "\033[0;36m"    _T_ "\033[0m"
-#	define TERMCOLORRED(_T_)     "\033[0;32;31m" _T_ "\033[0m"
-#	define TERMCOLORYELLOW(_T_)  "\033[0;33m"    _T_ "\033[0m"
-#	define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
-#	define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
-#else
+#ifdef MSD_NOTERMCOLOR
 #	define TERMCOLORGREEN(_T_)   _T_
 #	define TERMCOLORCYAN(_T_)    _T_
 #	define TERMCOLORRED(_T_)     _T_
 #	define TERMCOLORYELLOW(_T_)  _T_
 #	define TERMCOLORMAGNETA(_T_) _T_
 #	define TERMCOLORBLUE(_T_)    _T_
+#else
+#	define TERMCOLORGREEN(_T_)   "\033[0;32;32m" _T_ "\033[0m"
+#	define TERMCOLORCYAN(_T_)    "\033[0;36m"    _T_ "\033[0m"
+#	define TERMCOLORRED(_T_)     "\033[0;32;31m" _T_ "\033[0m"
+#	define TERMCOLORYELLOW(_T_)  "\033[0;33m"    _T_ "\033[0m"
+#	define TERMCOLORMAGNETA(_T_) "\033[0;35m"    _T_ "\033[0m"
+#	define TERMCOLORBLUE(_T_)    "\033[0;32;34m" _T_ "\033[0m"
 #endif
 
-
+/* łączenie elementów */
 #define MSD_CONNECT(x, y) x ## y
 #define MSD_CALLCONNECT(x, y) MSD_CONNECT(x, y)
 
-
+/* debugowanie i ustawianie błędów w errno */
 #define MSD_DEBUG
 #define MSD_ERRORINERRNO
 
-
-
+/* zwracanie i ustawianie błędu w zmiennej errno */
 #ifdef MSD_ERRORINERRNO
 #	define SETERRNOANDRETURN(err) return (errno = err), err
 #	define SETERRNO(err) errno = err
 #	define SETERRNOANDRETURNV(err) errno = err; return
 #	define SETERRNOANDRETURNC(err, ret) return (errno = err), ret
+/* oczywiście ustawianie w errno można wyłączyć */
 #else
 #	define SETERRNOANDRETURN(err) return err
 #	define SETERRNO(err)
 #	define SETERRNOANDRETURNV(err) return
 #	define SETERRNOANDRETURNC(err, ret) return ret
 #endif
+
+/* szacunkowa ilość liczb w podanym typie liczbowym */
+#define ESTIMATEDINTSIZE(type) (3 * sizeof(type) * CHAR_BIT / 8)
+
+/* tworzy wyrażenie z podwyrażeń, używając podanego pośrodku komparatora */
+#define EXPRESSIONMAKE(left, compare, right) \
+	STRINGIFY(left) " " TERMCOLORYELLOW(STRINGIFY(compare)) " " STRINGIFY(right)
 
 #define TEMPSWAPVALUES(tmp, a, b) tmp = a, a = b, b = tmp
 
@@ -319,8 +327,7 @@ enum MSE_ERROR_CODE
 	MSEC_INVALID_ARGUMENT,
 	MSEC_DATA_OVERFLOW,
 	MSEC_INVALID_VALUE,
-	
-	
+
 
 	MSEC_NULL_POINTER,
 	MSEC_BAD_CONTENT,

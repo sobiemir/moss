@@ -32,19 +32,15 @@
 
 #include <msconf.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <wchar.h>
 
 /* ================================================================================================================== */
 
-/**
- * Alias do wartości NULL.
- * Makro używane w testach w przypadku gdy funkcja nie zwraca żadnej wiadomości,
- * a więc z definicji jest poprawna, gdyż każde makro zostało wywołane poprawnie.
- */
-#define MST_SUCCESS NULL
-
 /* wstawia do tablicy funkcję i zamienia jej nazwę na ciąg znaków */
-#define MST_TFSTRINGIFY(X) X, STRINGIFY(X)
+#define MST_TFSTRINGIFY(x) x, STRINGIFY(x)
 
 /* inicjalizacja ostatniego rekordu tablicy funkcji testw */
 #define MST_TFLASTRECORD NULL, NULL, NULL, NULL, 0
@@ -67,7 +63,7 @@ typedef struct MSST_TESTFUNCT
 	 * @param  info Struktura funkcji testującej.
 	 * @return      Treść błędu lub NULL.
 	 */
-	char *(*Function)(struct MSST_TESTFUNCT *info);
+	int (*Function)(struct MSST_TESTFUNCT *info);
 
 	/**
 	 * Nazwa testu, wyświetlana w konsoli.
@@ -98,6 +94,14 @@ typedef struct MSST_TESTFUNCT
 	 * Wartość tego pola jest uzupełniana automatycznie z poziomu funkcji testującej.
 	 */
 	size_t PassedAsserts;
+
+	/**
+	 * Treść wiadomości.
+	 * Zmienna ta jest uzupełniana, gdy podczas działania funkcji wystąpi bład.
+	 * Pamięć dla tej zmiennej jest przydzielana, więc po wypisaniu błędu należy ją zwolnić,
+	 * aby zapobiec wyciekom pamięci.
+	 */
+	char *ErrorMessage;
 }
 MST_TESTFUNC;
 
@@ -164,74 +168,338 @@ MST_TESTSUITE;
 /* ================================================================================================================== */
 
 /**
- * Sprawdza czy podane wyrażenie jest prawdą.
- * Jeżeli wyrażenie jest prawdą, zwiększa licznik poprawnych asercji.
- * W przeciwnym wypadku makro wychodzi z funkcji, zwracając treść błędu.
- * Błąd formowany jest względem asercji oraz nazwy pliku i linii w którym wystąpił.
+ * Przygotowuje funkcję testową do używania asercji.
+ * To makro należy wywołać na samym początku, bezpośrednio po deklarajach zmiennych ale przed użyciem
+ * jakiejkolwiek funkcji.
  * 
- * @param  Wyrażenie do sprawdzenia.
- * @return Treść błędu w przypadku gdy wyrażenie jest fałszywe.
+ * @param teststr Struktura z informacjami o funkcji testowej.
+ */
+#define mst_prepare(teststr) \
+	MST_TESTFUNC *_TestFunc_ = teststr; \
+	assert( teststr ); \
+	assert( teststr->PassedAsserts == 0 ); \
+	assert( !teststr->ErrorMessage )
+
+/**
+ * Sprawdza dwie liczby całkowite lub naturalne używając podanego operatora.
+ * Sprawdzane wyrażenie formułowane jest z dwóch argumentów porównywanych podawanym operatorem.
+ * W przypadku gdy wyrażenie będzie niepoprawne, wywołana zostanie odpowiednia funkcja raportu.
+ * 
+ * @param  left    Lewa strona wyrażenia.
+ * @param  compare Komparator - operator porównania.
+ * @param  right   Prawa strona wyrażenia.
+ * @param  prefix  Prefiks funkcji - s lub u (wszystkie / dodatnie).
+ * @return         Kod błędu lub nic.
+ */
+#define mst_assert_integer(left, compare, right, prefix) \
+	/* sprawdź prawą i lewą stronę względem komparatora */ \
+	if( left compare right ) \
+		_TestFunc_->PassedAsserts++; \
+	/* jeżeli się nie zgadzają, sprawdź do którego parametru dopasowywać typ */ \
+	else if( sizeof(left) > sizeof(right) ) \
+		return sizeof(left) <= sizeof(int) \
+			? mst_report_ ## prefix ## int( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+				__FILE__, __LINE__, left, right ) \
+			: sizeof(left) <= sizeof(long) \
+				? mst_report_ ## prefix ## long( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, left, right ) \
+				: mst_report_ ## prefix ## llong( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, left, right ); \
+	/* nie można porównywać typów całkowitych ze zmiennoprzecinkowymi */ \
+	else \
+		return sizeof(right) <= sizeof(int) \
+			? mst_report_ ## prefix ## int( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+				__FILE__, __LINE__, left, right ) \
+			: sizeof(right) <= sizeof(long) \
+				? mst_report_ ## prefix ## long( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, left, right ) \
+				: mst_report_ ## prefix ## llong( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, left, right )
+
+/**
+ * Sprawdza dwie liczby całkowite używając podanego operatora.
+ * Sprawdzane wyrażenie formułowane jest z dwóch argumentów porównywanych podawanym operatorem.
+ * Wywołuje makro mst_assert_integer z prefiksem s.
+ * W przypadku gdy wyrażenie będzie niepoprawne, wywołana zostanie odpowiednia funkcja raportu.
+ * 
+ * @param  left    Lewa strona wyrażenia.
+ * @param  compare Komparator - operator porównania.
+ * @param  right   Prawa strona wyrażenia.
+ * @return         Kod błędu lub nic.
+ */
+#define mst_assert_sint(left, compare, right) mst_assert_integer(left, compare, right, s)
+
+/**
+ * Sprawdza dwie liczby naturalne używając podanego operatora.
+ * Sprawdzane wyrażenie formułowane jest z dwóch argumentów porównywanych podawanym operatorem.
+ * Wywołuje makro mst_assert_integer z prefiksem u.
+ * W przypadku gdy wyrażenie będzie niepoprawne, wywołana zostanie odpowiednia funkcja raportu.
+ * 
+ * @param  left    Lewa strona wyrażenia.
+ * @param  compare Komparator - operator porównania.
+ * @param  right   Prawa strona wyrażenia.
+ * @return         Kod błędu lub nic.
+ */
+#define mst_assert_uint(left, compare, right) mst_assert_integer(left, compare, right, u) 
+
+/**
+ * Sprawdza dwie liczby zmiennoprzecinkowe używając podanego operatora.
+ * Sprawdzane wyrażenie formułowane jest z dwóch argumentów porównywanych podawanym operatorem.
+ * W przypadku gdy wyrażenie będzie niepoprawne, wywołana zostanie odpowiednia funkcja raportu.
+ * Makro do poprawy z racji błędnego porównywania liczb zmiennoprzecinkowych.
+ * 
+ * @param  left    Lewa strona wyrażenia.
+ * @param  compare Komparator - operator porównania.
+ * @param  right   Prawa strona wyrażenia.
+ * @return         Kod błędu lub nic.
+ */
+#define mst_assert_float(left, compare, right) \
+	/* tak się nie powinno porównywać liczb zmiennoprzecinkowych */ \
+	if( left compare right ) \
+		_TestFunc_->PassedAsserts++; \
+	/* jeżeli liczby się nie zgadzają, sprawdź do którego parametru dostosować typ */ \
+	else if( sizeof(left) > sizeof(right) ) \
+		return sizeof(left) <= sizeof(double) \
+			? mst_report_double( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+				__FILE__, __LINE__, left, right ) \
+			: mst_report_ldouble( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+				__FILE__, __LINE__, left, right ); \
+	else \
+		return sizeof(right) <= sizeof(double) \
+			? mst_report_double( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+				__FILE__, __LINE__, left, right ) \
+			: mst_report_ldouble( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+				__FILE__, __LINE__, left, right )
+
+/**
+ * Sprawdza czy wyrażenie jest poprawne.
+ * W przypadku gdy nie jest poprawne, wywoływana jest funkcja mst_report, formułująca treść błędu.
+ * 
+ * @param  exp Wyrażenie do sprawdzenia.
+ * @return     Kod błędu lub nic.
  */
 #define mst_assert(exp) \
 	if( exp ) \
-		info->PassedAsserts++; \
+		_TestFunc_->PassedAsserts++; \
 	else \
-		return \
-			TERMCOLORMAGNETA("#") " Error in " TERMCOLORYELLOW(__FILE__) " on line " \
-				TERMCOLORBLUE(DBLSTRINGIFY(__LINE__)) "\n" \
-			TERMCOLORMAGNETA("#") " " STRINGIFY(exp)
+		return mst_report( _TestFunc_, STRINGIFY(exp), __FILE__, __LINE__ )
+
+/**
+ * Porównuje dwa ciągi znaków, składających się ze znaków jednobajtowych.
+ * W przypadku gdy dwa ciągi nie są takie same, wywoływana jest funkcja mst_report_cs,
+ * odpowiedzialna za formowanie treści błędu.
+ * 
+ * @param  left  Pierwszy ciąg do sprawdzenia.
+ * @param  right Drugi ciąg do sprawdzenia.
+ * @return       Kod błędu lub nic.
+ */
+#define mst_assert_cs(left, right) \
+	if( strcmp(left, right) == 0 ) \
+		_TestFunc_->PassedAsserts++; \
+	else \
+		return mst_report_cs( _TestFunc_, __FILE__, __LINE__, left, right )
+
+/**
+ * Porównuje dwa ciągi znaków, składających się ze znaków wielobajtowych.
+ * Na ten moment wywołuje makro mst_assert_cs.
+ * 
+ * @param  left  Pierwszy ciąg do sprawdzenia.
+ * @param  right Drugi ciąg do sprawdzenia.
+ * @return       Kod błędu lub nic.
+ */
+#define mst_assert_mbs(left, right) mst_assert_cs(left, right)
+
+/**
+ * Porównuje dwa ciągi znaków, składających się ze znaków o typie wchar_t.
+ * W przypadku gdy dwa ciągi nie są takie same, wywoływana jest funkcja mst_report_wcs,
+ * odpowiedzialna za formowanie treści błędu.
+ * 
+ * @param  left  Pierwszy ciąg do sprawdzenia.
+ * @param  right Drugi ciąg do sprawdzenia.
+ * @return       Kod błędu lub nic.
+ */
+#define mst_assert_wcs(left, right) \
+	if( wcscmp(left, right) == 0 ) \
+		_TestFunc_->PassedAsserts++; \
+	else \
+		return mst_report_wcs( _TestFunc_, __FILE__, __LINE__, left, right )
+
+/* ================================================================================================================== */
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb całkowitych o typie char/short/int.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_sint lub mst_assert_integer.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_sint( MST_TESTFUNC *info, char *exp, char *file, int line, int a, int b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb całkowitych o typie char/short/int/long.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_sint lub mst_assert_integer.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_slong( MST_TESTFUNC *info, char *exp, char *file, int line, long a, long b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb całkowitych o typie char/short/int/long/llong.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_sint lub mst_assert_integer.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_sllong( MST_TESTFUNC *info, char *exp, char *file, int line, llong a, llong b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_uint lub mst_assert_integer.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_uint( MST_TESTFUNC *info, char *exp, char *file, int line, uint a, uint b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint/luong.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_uint lub mst_assert_integer.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_ulong( MST_TESTFUNC *info, char *exp, char *file, int line, ulong a, ulong b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint/luong/ullong.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_uint lub mst_assert_integer.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_ullong( MST_TESTFUNC *info, char *exp, char *file, int line, ullong a, ullong b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb zmiennoprzecinkowych o typie double.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_float.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_double( MST_TESTFUNC *info, char *exp, char *file, int line, double a, double b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb zmiennoprzecinkowych o typie ldouble.
+ * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_float.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Wartość wyrażenia z lewej strony równania.
+ * @param  b    Wartość wyrażenia z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_ldouble( MST_TESTFUNC *info, char *exp, char *file, int line, ldouble a, ldouble b );
+
+/**
+ * Funkcja formułuje błąd asercji.
+ * Jest to odmiana raportu, gdzie nie są wypisywane wartości prawej i lewej strony.
+ * Do błędu, zapisywanego w zmiennej ErrorMessage zapisywane jest tylko wyrażenie.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report( MST_TESTFUNC *info, char *exp, char *file, int line );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch ciągów znaków o jendno lub wielobajtowych znakach.
+ * Błąd zapisywany jest do zmiennej ErrrorMessage w strukturze, podawanej w parametrze info.
+ * W jego treści wypisywane są pod sobą dwa ciągi znaków do porównania.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_cs oraz mst_assert_mbs.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Ciąg znaków z lewej strony równania.
+ * @param  b    Ciąg znaków z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_cs( MST_TESTFUNC *info, char *file, int line, const char *a, const char *b );
+
+/**
+ * Funkcja formułuje błąd przy porównywaniu dwóch ciągów znaków o typie wchar_t.
+ * Błąd zapisywany jest do zmiennej ErrrorMessage w strukturze, podawanej w parametrze info.
+ * W jego treści wypisywane są pod sobą dwa ciągi znaków do porównania.
+ * Funkcja wywoływana jest automatycznie przez makro mst_assert_wcs.
+ * 
+ * @param  info Struktura informacyjna z testem jednostkowym.
+ * @param  file Nazwa pliku w którym błąd jest raportowany.
+ * @param  line Linia błędu.
+ * @param  a    Ciąg znaków z lewej strony równania.
+ * @param  b    Ciąg znaków z prawej strony równania.
+ * @return      Kod błędu lub wartość 0.
+ */
+int mst_report_wcs( MST_TESTFUNC *info, char *file, int line, const wchar_t *a, const wchar_t *b );
 
 /**
  * Uruchamia podany w argumencie test.
  * Podczas uruchamiania wyświetla komunikaty w konsoli.
  * 
- * @param  func    Struktura zawierająca funkcję testu do uruchomienia.
+ * @param  info    Struktura zawierająca funkcję testu do uruchomienia.
  * @param  current Indeks aktualnego testu (informacyjnie), 0 gdy brak.
  * @param  count   Ilość wszystkich testów (informacyjnie), 0 gdy brak.
  * @return         Gdy w funkcji wystąpił błąd, zwraca wartość różną od 0.
  */
-INLINE static int mst_run_test( MST_TESTFUNC *func, size_t current, size_t count )
-{
-	char *message;
-
-	assert( func );
-	assert( func->Name );
-	assert( func->Function );
-
-	func->PassedAsserts = 0;
-
-	/* nazwa testu i numer */
-	if( current == 0 || count == 0 )
-		IGRET printf( "-------------------------------------------------------------------------------\n" );
-	else
-		IGRET printf( "--------------------------------------------------------------------- ["
-			TERMCOLORMAGNETA("%03" PFSIZET "/%03" PFSIZET) "]\n", current, count );
-	IGRET printf( "[" TERMCOLORCYAN("TEST") "] %s\n", func->Name );
-
-	/* opis testu */
-	if( func->Desc )
-		IGRET printf( "[" TERMCOLORCYAN("DESC") "] %s\n", func->Desc );
-
-	/* wywołaj funkcję */
-	message = func->Function( func );
-
-	/* wypisz rezultat */
-	if( message )
-		IGRET printf( "[" TERMCOLORCYAN("STAT") "] " TERMCOLORRED("FAILED!") " > Passed asserts: %" PFSIZET "\n",
-			func->PassedAsserts );
-	else
-		IGRET printf( "[" TERMCOLORCYAN("STAT") "] " TERMCOLORGREEN("SUCCESS!") " > Passed asserts: %" PFSIZET "\n",
-			func->PassedAsserts );
-
-	/* wyświetl błędy w przypadku gdy funkcja została zakończona niepowodzeniem */
-	if( message )
-		/* tu jest w porządku, printf zawsze coś wypisze więc zawsze coś zwróci
-		 * nawet w przypadku błędu zwrócona zostanie wartość ujemna */
-		return printf( "------\n" ),
-		       printf( "%s\n", message );
-
-	return 0;
-}
+int mst_run_test( MST_TESTFUNC *info, size_t current, size_t count );
 
 /**
  * Uruchamia podany w argumencie zestaw testów.
@@ -239,53 +507,9 @@ INLINE static int mst_run_test( MST_TESTFUNC *func, size_t current, size_t count
  * Dane przekazywane do zestawu traktowane są jako dane zapasowe.
  * W przypadku gdy test nie posiada danych, do jego funkcji przekazywane są dane z zestawu.
  * 
- * @param  suite 
+ * @param  suite Struktura zawierająca zestaw testów do uruchomienia.
  * @return       Gdy w funkcji wystąpił błąd, zwraca wartość różną od 0.
  */
-INLINE static int mst_run_suite( MST_TESTSUITE *suite )
-{
-	MST_TESTFUNC *tests;
-	size_t        ammount = 0;
-	size_t        current = 1;
-	int           error   = 0;
-
-	assert( suite );
-	assert( suite->Tests );
-	assert( suite->Desc );
-
-	tests = suite->Tests;
-
-	/* oblicz ilość wszystkich testów */
-	while( (tests++)->Function )
-		ammount++;
-
-	tests = suite->Tests;
-
-	/* inicjalizacja */
-	if( suite->Setup )
-		if( (error = suite->Setup(suite)) != 0 )
-			return error;
-
-	IGRET printf( "===============================================================================\n" );
-	IGRET printf( "%s\n", suite->Desc );
-
-	while( tests->Function )
-	{
-		/* przypisz domyślne dane jeżeli ich nie podano */
-		if( tests->Data == NULL )
-			tests->Data = suite->Data;
-
-		/* przerwij działanie funkcji w przypadku błędu tylko wtedy, gdy takie zachowanie zostało ustalone */
-		if( (error |= mst_run_test(tests++, current++, ammount)) && suite->BreakOnError )
-			break;
-	}
-	IGRET printf( "===============================================================================\n" );
-
-	/* zakończenie */
-	if( suite->TearDown )
-		suite->TearDown( suite );
-
-	return error;
-}
+int mst_run_suite( MST_TESTSUITE *suite );
 
 #endif
