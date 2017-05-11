@@ -8,7 +8,7 @@
  *      \ \_\\ \_\ \____/\/\____/\/\____/
  *       \/_/ \/_/\/___/  \/___/  \/___/ 
  *
- *  Header for Unit Test module...
+ *  Header file for Unit Test (MSTest) module...
  *
  *  This file is part of Moss Library
  *  Copyright (c) by sobiemir <sobiemir@aculo.pl>
