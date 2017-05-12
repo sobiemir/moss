@@ -49,7 +49,7 @@
 
 /* ================================================================================================================== */
 
-int mst_report( MST_TESTFUNC *info, char *exp, char *file, int line )
+int mst_report( MST_TESTFUNC *info, const char *exp, const char *file, int line )
 {
 	char tpl[] =
 		TERMCOLORMAGNETA("#") " Error in " TERMCOLORYELLOW("%s") " on line " TERMCOLORBLUE("%d") "\n"
@@ -66,63 +66,28 @@ int mst_report( MST_TESTFUNC *info, char *exp, char *file, int line )
 
 /* ================================================================================================================== */
 
-int mst_report_sint( MST_TESTFUNC *info, char *exp, char *file, int line, int a,  int b )
-{
-	__MST_REPORT_NUMBER_BODY( "%d", ESTIMATEDINTSIZE(int) );
-}
-
-/* ================================================================================================================== */
-
-int mst_report_slong( MST_TESTFUNC *info, char *exp, char *file, int line, long a,  long b )
-{
-	__MST_REPORT_NUMBER_BODY( "%ld", ESTIMATEDINTSIZE(long) );
-}
-
-/* ================================================================================================================== */
-
-int mst_report_sllong( MST_TESTFUNC *info, char *exp, char *file, int line, llong a,  llong b )
+int mst_report_sint( MST_TESTFUNC *info, const char *exp, const char *file, int line, llong a,  llong b )
 {
 	__MST_REPORT_NUMBER_BODY( "%lld", ESTIMATEDINTSIZE(llong) );
 }
 
 /* ================================================================================================================== */
 
-int mst_report_uint( MST_TESTFUNC *info, char *exp, char *file, int line, uint a, uint b )
-{
-	__MST_REPORT_NUMBER_BODY( "%u", ESTIMATEDINTSIZE(uint) );
-}
-
-/* ================================================================================================================== */
-
-int mst_report_ulong( MST_TESTFUNC *info, char *exp, char *file, int line, ulong a,  ulong b )
-{
-	__MST_REPORT_NUMBER_BODY( "%lu", ESTIMATEDINTSIZE(ulong) );
-}
-
-/* ================================================================================================================== */
-
-int mst_report_ullong( MST_TESTFUNC *info, char *exp, char *file, int line, ullong a,  ullong b )
+int mst_report_uint( MST_TESTFUNC *info, const char *exp, const char *file, int line, ullong a,  ullong b )
 {
 	__MST_REPORT_NUMBER_BODY( "%llu", ESTIMATEDINTSIZE(ullong) );
 }
 
 /* ================================================================================================================== */
 
-int mst_report_double( MST_TESTFUNC *info, char *exp, char *file, int line, double a,  double b )
-{
-	__MST_REPORT_NUMBER_BODY( "%f", 14 );
-}
-
-/* ================================================================================================================== */
-
-int mst_report_ldouble( MST_TESTFUNC *info, char *exp, char *file, int line, ldouble a,  ldouble b )
+int mst_report_float( MST_TESTFUNC *info, const char *exp, const char *file, int line, ldouble a,  ldouble b )
 {
 	__MST_REPORT_NUMBER_BODY( "%Lf", 24 );
 }
 
 /* ================================================================================================================== */
 
-int mst_report_cs( MST_TESTFUNC *info, char *file, int line, const char *a, const char *b )
+int mst_report_cs( MST_TESTFUNC *info, const char *file, int line, const char *a, const char *b )
 {
 	/* szablon wiadomości */
 	char tpl[] =
@@ -143,7 +108,7 @@ int mst_report_cs( MST_TESTFUNC *info, char *file, int line, const char *a, cons
 
 /* ================================================================================================================== */
 
-int mst_report_wcs( MST_TESTFUNC *info, char *file, int line, const wchar_t *a, const wchar_t *b )
+int mst_report_wcs( MST_TESTFUNC *info, const char *file, int line, const wchar_t *a, const wchar_t *b )
 {
 	/* szablon wiadomości */
 	char tpl[] =

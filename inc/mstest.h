@@ -181,42 +181,6 @@ MST_TESTSUITE;
 	assert( !teststr->ErrorMessage )
 
 /**
- * Sprawdza dwie liczby całkowite lub naturalne używając podanego operatora.
- * Sprawdzane wyrażenie formułowane jest z dwóch argumentów porównywanych podawanym operatorem.
- * W przypadku gdy wyrażenie będzie niepoprawne, wywołana zostanie odpowiednia funkcja raportu.
- * 
- * @param  left    Lewa strona wyrażenia.
- * @param  compare Komparator - operator porównania.
- * @param  right   Prawa strona wyrażenia.
- * @param  prefix  Prefiks funkcji - s lub u (wszystkie / dodatnie).
- * @return         Kod błędu lub nic.
- */
-#define mst_assert_integer(left, compare, right, prefix) \
-	/* sprawdź prawą i lewą stronę względem komparatora */ \
-	if( left compare right ) \
-		_TestFunc_->PassedAsserts++; \
-	/* jeżeli się nie zgadzają, sprawdź do którego parametru dopasowywać typ */ \
-	else if( sizeof(left) > sizeof(right) ) \
-		return sizeof(left) <= sizeof(int) \
-			? mst_report_ ## prefix ## int( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-				__FILE__, __LINE__, left, right ) \
-			: sizeof(left) <= sizeof(long) \
-				? mst_report_ ## prefix ## long( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-					__FILE__, __LINE__, left, right ) \
-				: mst_report_ ## prefix ## llong( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-					__FILE__, __LINE__, left, right ); \
-	/* nie można porównywać typów całkowitych ze zmiennoprzecinkowymi */ \
-	else \
-		return sizeof(right) <= sizeof(int) \
-			? mst_report_ ## prefix ## int( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-				__FILE__, __LINE__, left, right ) \
-			: sizeof(right) <= sizeof(long) \
-				? mst_report_ ## prefix ## long( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-					__FILE__, __LINE__, left, right ) \
-				: mst_report_ ## prefix ## llong( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-					__FILE__, __LINE__, left, right )
-
-/**
  * Sprawdza dwie liczby całkowite używając podanego operatora.
  * Sprawdzane wyrażenie formułowane jest z dwóch argumentów porównywanych podawanym operatorem.
  * Wywołuje makro mst_assert_integer z prefiksem s.
@@ -227,7 +191,14 @@ MST_TESTSUITE;
  * @param  right   Prawa strona wyrażenia.
  * @return         Kod błędu lub nic.
  */
-#define mst_assert_sint(left, compare, right) mst_assert_integer(left, compare, right, s)
+#define mst_assert_sint(left, compare, right) \
+	/* sprawdź prawą i lewą stronę względem komparatora */ \
+	if( left compare right ) \
+		_TestFunc_->PassedAsserts++; \
+	/* jeżeli się nie zgadzają, zapisz błąd do zmiennej */ \
+	else \
+		return mst_report_sint( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, (llong)left, (llong)right )
 
 /**
  * Sprawdza dwie liczby naturalne używając podanego operatora.
@@ -240,7 +211,14 @@ MST_TESTSUITE;
  * @param  right   Prawa strona wyrażenia.
  * @return         Kod błędu lub nic.
  */
-#define mst_assert_uint(left, compare, right) mst_assert_integer(left, compare, right, u) 
+#define mst_assert_uint(left, compare, right) \
+	/* sprawdź prawą i lewą stronę względem komparatora */ \
+	if( left compare right ) \
+		_TestFunc_->PassedAsserts++; \
+	/* jeżeli się nie zgadzają, zapisz błąd do zmiennej */ \
+	else \
+		return mst_report_sint( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, (llong)left, (llong)right )
 
 /**
  * Sprawdza dwie liczby zmiennoprzecinkowe używając podanego operatora.
@@ -257,19 +235,10 @@ MST_TESTSUITE;
 	/* tak się nie powinno porównywać liczb zmiennoprzecinkowych */ \
 	if( left compare right ) \
 		_TestFunc_->PassedAsserts++; \
-	/* jeżeli liczby się nie zgadzają, sprawdź do którego parametru dostosować typ */ \
-	else if( sizeof(left) > sizeof(right) ) \
-		return sizeof(left) <= sizeof(double) \
-			? mst_report_double( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-				__FILE__, __LINE__, left, right ) \
-			: mst_report_ldouble( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-				__FILE__, __LINE__, left, right ); \
+	/* jeżeli się nie zgadzają, zapisz błąd do zmiennej */ \
 	else \
-		return sizeof(right) <= sizeof(double) \
-			? mst_report_double( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-				__FILE__, __LINE__, left, right ) \
-			: mst_report_ldouble( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-				__FILE__, __LINE__, left, right )
+		return mst_report_float( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+			__FILE__, __LINE__, (ldouble)left, (ldouble)right )
 
 /**
  * Sprawdza czy wyrażenie jest poprawne.
@@ -327,36 +296,6 @@ MST_TESTSUITE;
 /* ================================================================================================================== */
 
 /**
- * Funkcja formułuje błąd przy porównywaniu dwóch liczb całkowitych o typie char/short/int.
- * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
- * Funkcja wywoływana jest automatycznie przez makro mst_assert_sint lub mst_assert_integer.
- * 
- * @param  info Struktura informacyjna z testem jednostkowym.
- * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
- * @param  file Nazwa pliku w którym błąd jest raportowany.
- * @param  line Linia błędu.
- * @param  a    Wartość wyrażenia z lewej strony równania.
- * @param  b    Wartość wyrażenia z prawej strony równania.
- * @return      Kod błędu lub wartość 0.
- */
-int mst_report_sint( MST_TESTFUNC *info, char *exp, char *file, int line, int a, int b );
-
-/**
- * Funkcja formułuje błąd przy porównywaniu dwóch liczb całkowitych o typie char/short/int/long.
- * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
- * Funkcja wywoływana jest automatycznie przez makro mst_assert_sint lub mst_assert_integer.
- * 
- * @param  info Struktura informacyjna z testem jednostkowym.
- * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
- * @param  file Nazwa pliku w którym błąd jest raportowany.
- * @param  line Linia błędu.
- * @param  a    Wartość wyrażenia z lewej strony równania.
- * @param  b    Wartość wyrażenia z prawej strony równania.
- * @return      Kod błędu lub wartość 0.
- */
-int mst_report_slong( MST_TESTFUNC *info, char *exp, char *file, int line, long a, long b );
-
-/**
  * Funkcja formułuje błąd przy porównywaniu dwóch liczb całkowitych o typie char/short/int/long/llong.
  * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
  * Funkcja wywoływana jest automatycznie przez makro mst_assert_sint lub mst_assert_integer.
@@ -369,37 +308,7 @@ int mst_report_slong( MST_TESTFUNC *info, char *exp, char *file, int line, long 
  * @param  b    Wartość wyrażenia z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_sllong( MST_TESTFUNC *info, char *exp, char *file, int line, llong a, llong b );
-
-/**
- * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint.
- * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
- * Funkcja wywoływana jest automatycznie przez makro mst_assert_uint lub mst_assert_integer.
- * 
- * @param  info Struktura informacyjna z testem jednostkowym.
- * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
- * @param  file Nazwa pliku w którym błąd jest raportowany.
- * @param  line Linia błędu.
- * @param  a    Wartość wyrażenia z lewej strony równania.
- * @param  b    Wartość wyrażenia z prawej strony równania.
- * @return      Kod błędu lub wartość 0.
- */
-int mst_report_uint( MST_TESTFUNC *info, char *exp, char *file, int line, uint a, uint b );
-
-/**
- * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint/luong.
- * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
- * Funkcja wywoływana jest automatycznie przez makro mst_assert_uint lub mst_assert_integer.
- * 
- * @param  info Struktura informacyjna z testem jednostkowym.
- * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
- * @param  file Nazwa pliku w którym błąd jest raportowany.
- * @param  line Linia błędu.
- * @param  a    Wartość wyrażenia z lewej strony równania.
- * @param  b    Wartość wyrażenia z prawej strony równania.
- * @return      Kod błędu lub wartość 0.
- */
-int mst_report_ulong( MST_TESTFUNC *info, char *exp, char *file, int line, ulong a, ulong b );
+int mst_report_sint( MST_TESTFUNC *info, const char *exp, const char *file, int line, llong a, llong b );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint/luong/ullong.
@@ -414,10 +323,10 @@ int mst_report_ulong( MST_TESTFUNC *info, char *exp, char *file, int line, ulong
  * @param  b    Wartość wyrażenia z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_ullong( MST_TESTFUNC *info, char *exp, char *file, int line, ullong a, ullong b );
+int mst_report_uint( MST_TESTFUNC *info, const char *exp, const char *file, int line, ullong a, ullong b );
 
 /**
- * Funkcja formułuje błąd przy porównywaniu dwóch liczb zmiennoprzecinkowych o typie double.
+ * Funkcja formułuje błąd przy porównywaniu dwóch liczb zmiennoprzecinkowych o typie float/double/ldouble.
  * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
  * Funkcja wywoływana jest automatycznie przez makro mst_assert_float.
  * 
@@ -429,22 +338,7 @@ int mst_report_ullong( MST_TESTFUNC *info, char *exp, char *file, int line, ullo
  * @param  b    Wartość wyrażenia z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_double( MST_TESTFUNC *info, char *exp, char *file, int line, double a, double b );
-
-/**
- * Funkcja formułuje błąd przy porównywaniu dwóch liczb zmiennoprzecinkowych o typie ldouble.
- * Błąd zapisywany jest do zmiennej ErrorMessage w strukturze, podawanej w parametrze info.
- * Funkcja wywoływana jest automatycznie przez makro mst_assert_float.
- * 
- * @param  info Struktura informacyjna z testem jednostkowym.
- * @param  exp  Sprawdzane wyrażenie w postaci tekstu.
- * @param  file Nazwa pliku w którym błąd jest raportowany.
- * @param  line Linia błędu.
- * @param  a    Wartość wyrażenia z lewej strony równania.
- * @param  b    Wartość wyrażenia z prawej strony równania.
- * @return      Kod błędu lub wartość 0.
- */
-int mst_report_ldouble( MST_TESTFUNC *info, char *exp, char *file, int line, ldouble a, ldouble b );
+int mst_report_float( MST_TESTFUNC *info, const char *exp, const char *file, int line, ldouble a, ldouble b );
 
 /**
  * Funkcja formułuje błąd asercji.
@@ -458,7 +352,7 @@ int mst_report_ldouble( MST_TESTFUNC *info, char *exp, char *file, int line, ldo
  * @param  line Linia błędu.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report( MST_TESTFUNC *info, char *exp, char *file, int line );
+int mst_report( MST_TESTFUNC *info, const char *exp, const char *file, int line );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch ciągów znaków o jendno lub wielobajtowych znakach.
@@ -473,7 +367,7 @@ int mst_report( MST_TESTFUNC *info, char *exp, char *file, int line );
  * @param  b    Ciąg znaków z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_cs( MST_TESTFUNC *info, char *file, int line, const char *a, const char *b );
+int mst_report_cs( MST_TESTFUNC *info, const char *file, int line, const char *a, const char *b );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch ciągów znaków o typie wchar_t.
@@ -488,7 +382,7 @@ int mst_report_cs( MST_TESTFUNC *info, char *file, int line, const char *a, cons
  * @param  b    Ciąg znaków z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_wcs( MST_TESTFUNC *info, char *file, int line, const wchar_t *a, const wchar_t *b );
+int mst_report_wcs( MST_TESTFUNC *info, const char *file, int line, const wchar_t *a, const wchar_t *b );
 
 /**
  * Uruchamia podany w argumencie test.
