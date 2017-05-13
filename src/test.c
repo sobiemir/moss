@@ -49,7 +49,7 @@
 
 /* ================================================================================================================== */
 
-int mst_report( MST_TESTFUNC *info, const char *exp, const char *file, int line )
+int mst_report( MST_FUNCTION *info, const char *exp, const char *file, int line )
 {
 	char tpl[] =
 		TERMCOLORMAGNETA("#") " Error in " TERMCOLORYELLOW("%s") " on line " TERMCOLORBLUE("%d") "\n"
@@ -66,33 +66,33 @@ int mst_report( MST_TESTFUNC *info, const char *exp, const char *file, int line 
 
 /* ================================================================================================================== */
 
-int mst_report_sint( MST_TESTFUNC *info, const char *exp, const char *file, int line, llong a,  llong b )
+int mst_report_sint( MST_FUNCTION *info, const char *exp, const char *file, int line, llong a,  llong b )
 {
 	__MST_REPORT_NUMBER_BODY( "%lld", ESTIMATEDINTSIZE(llong) );
 }
 
 /* ================================================================================================================== */
 
-int mst_report_uint( MST_TESTFUNC *info, const char *exp, const char *file, int line, ullong a,  ullong b )
+int mst_report_uint( MST_FUNCTION *info, const char *exp, const char *file, int line, ullong a,  ullong b )
 {
 	__MST_REPORT_NUMBER_BODY( "%llu", ESTIMATEDINTSIZE(ullong) );
 }
 
 /* ================================================================================================================== */
 
-int mst_report_float( MST_TESTFUNC *info, const char *exp, const char *file, int line, ldouble a,  ldouble b )
+int mst_report_float( MST_FUNCTION *info, const char *exp, const char *file, int line, ldouble a,  ldouble b )
 {
 	__MST_REPORT_NUMBER_BODY( "%Lf", 24 );
 }
 
 /* ================================================================================================================== */
 
-int mst_report_cs( MST_TESTFUNC *info, const char *file, int line, const char *a, const char *b )
+int mst_report_cs( MST_FUNCTION *info, const char *file, int line, const char *a, const char *b )
 {
 	/* szablon wiadomości */
 	char tpl[] =
 		TERMCOLORMAGNETA("#") " Error in " TERMCOLORYELLOW("%s") " on line " TERMCOLORBLUE("%d") "\n"
-		TERMCOLORMAGNETA("#") " Function " TERMCOLORBLUE("strcmp") "( L, R ) failed for sigle byte string... \n"
+		TERMCOLORMAGNETA("#") " Function " TERMCOLORBLUE("strcmp") "( L, R ) failed... \n"
 		TERMCOLORMAGNETA("#") " L = %s\n"
 		TERMCOLORMAGNETA("#") " R = %s";
 	/* przydziel miejsce na komunikat o błędzie */
@@ -108,12 +108,12 @@ int mst_report_cs( MST_TESTFUNC *info, const char *file, int line, const char *a
 
 /* ================================================================================================================== */
 
-int mst_report_wcs( MST_TESTFUNC *info, const char *file, int line, const wchar_t *a, const wchar_t *b )
+int mst_report_wcs( MST_FUNCTION *info, const char *file, int line, const wchar_t *a, const wchar_t *b )
 {
 	/* szablon wiadomości */
 	char tpl[] =
 		TERMCOLORMAGNETA("#") " Error in " TERMCOLORYELLOW("%s") " on line " TERMCOLORBLUE("%d") "\n"
-		TERMCOLORMAGNETA("#") " Function " TERMCOLORBLUE("strcmp") "( L, R ) failed for sigle byte string... \n"
+		TERMCOLORMAGNETA("#") " Function " TERMCOLORBLUE("wcscmp") "( L, R ) failed... \n"
 		TERMCOLORMAGNETA("#") " L = %ls\n"
 		TERMCOLORMAGNETA("#") " R = %ls";
 	/* przydziel miejsce na komunikat o błędzie */
@@ -129,7 +129,7 @@ int mst_report_wcs( MST_TESTFUNC *info, const char *file, int line, const wchar_
 
 /* ================================================================================================================== */
 
-int mst_run_test( MST_TESTFUNC *info, size_t current, size_t count )
+int mst_run_test( MST_FUNCTION *info, size_t current, size_t count )
 {
 	int ercode;
 
@@ -179,9 +179,9 @@ int mst_run_test( MST_TESTFUNC *info, size_t current, size_t count )
 
 /* ================================================================================================================== */
 
-int mst_run_suite( MST_TESTSUITE *suite )
+int mst_run_suite( MST_SUITE *suite )
 {
-	MST_TESTFUNC *tests;
+	MST_FUNCTION *tests;
 	size_t        ammount = 0;
 	size_t        current = 1;
 	int           error   = 0;

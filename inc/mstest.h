@@ -40,10 +40,10 @@
 /* ================================================================================================================== */
 
 /* wstawia do tablicy funkcję i zamienia jej nazwę na ciąg znaków */
-#define MST_TFSTRINGIFY(x) x, STRINGIFY(x)
+#define MST_STRINGIFY(x) x, STRINGIFY(x)
 
 /* inicjalizacja ostatniego rekordu tablicy funkcji testw */
-#define MST_TFLASTRECORD NULL, NULL, NULL, NULL, 0
+#define MST_LASTRECORD NULL, NULL, NULL, NULL, 0, NULL
 
 /* ================================================================================================================== */
 
@@ -52,7 +52,7 @@
  * Część z tych pól jest obowiązkowa, część opcjonalna, a część uzupełniana automatycznie.
  * Szczegóły dostępne w opisach poszczególnych pól.
  */
-typedef struct MSST_TESTFUNCT
+typedef struct MSST_FUNCTION
 {
 	/**
 	 * Funkcja testująca.
@@ -63,7 +63,7 @@ typedef struct MSST_TESTFUNCT
 	 * @param  info Struktura funkcji testującej.
 	 * @return      Treść błędu lub NULL.
 	 */
-	int (*Function)(struct MSST_TESTFUNCT *info);
+	int (*Function)(struct MSST_FUNCTION *info);
 
 	/**
 	 * Nazwa testu, wyświetlana w konsoli.
@@ -103,7 +103,7 @@ typedef struct MSST_TESTFUNCT
 	 */
 	char *ErrorMessage;
 }
-MST_TESTFUNC;
+MST_FUNCTION;
 
 /**
  * Struktura zawierająca informacje o zestawie funkcji testujących dany moduł.
@@ -111,7 +111,7 @@ MST_TESTFUNC;
  * Struktura zawiera również wskaźniki na funkcje, które mogą być uruchomione przed uruchomieniem
  * funkcji testujących, aby przygotować dane, oraz zaraz po ich zakończeniu, aby dane usunąć z pamięci.
  */
-typedef struct MSST_TESTSUITE
+typedef struct MSST_SUITE
 {
 	/**
 	 * Opis zestawu funkcji.
@@ -136,7 +136,7 @@ typedef struct MSST_TESTSUITE
 	 * 
 	 * @param info Zbiór, w którym znajduje się funkcja.
 	 */
-	int (*Setup)(struct MSST_TESTSUITE *info);
+	int (*Setup)(struct MSST_SUITE *info);
 
 	/**
 	 * Funkcja wywoływana zaraz po zakończeniu testów.
@@ -145,7 +145,7 @@ typedef struct MSST_TESTSUITE
 	 * 
 	 * @param info Zbiór, w którym znajduje się funkcja.
 	 */
-	void (*TearDown)(struct MSST_TESTSUITE *info);
+	void (*TearDown)(struct MSST_SUITE *info);
 
 	/**
 	 * Dane globalne dla zbioru.
@@ -157,13 +157,13 @@ typedef struct MSST_TESTSUITE
 	/**
 	 * Lista struktur zawierających informacje o funkcjach testowych.
 	 * Ostatni element tej listy powinien mieć wszystkie wartości równe ZERO.
-	 * Dla tego celu zostało utworzone makro MST_TFLASTRECORD, które można podać jako ostatni element tablicy.
+	 * Dla tego celu zostało utworzone makro MST_LASTRECORD, które można podać jako ostatni element tablicy.
 	 * Funkcje testowe wywoływane są po kolei.
 	 * Pole jest obowiązkowe.
 	 */
-	MST_TESTFUNC *Tests;
+	MST_FUNCTION *Tests;
 }
-MST_TESTSUITE;
+MST_SUITE;
 
 /* ================================================================================================================== */
 
@@ -175,7 +175,7 @@ MST_TESTSUITE;
  * @param teststr Struktura z informacjami o funkcji testowej.
  */
 #define mst_prepare(teststr) \
-	MST_TESTFUNC *_TestFunc_ = teststr; \
+	MST_FUNCTION *_TestFunc_ = teststr; \
 	assert( teststr ); \
 	assert( teststr->PassedAsserts == 0 ); \
 	assert( !teststr->ErrorMessage )
@@ -198,7 +198,7 @@ MST_TESTSUITE;
 	/* jeżeli się nie zgadzają, zapisz błąd do zmiennej */ \
 	else \
 		return mst_report_sint( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-					__FILE__, __LINE__, (llong)left, (llong)right )
+					__FILE__, __LINE__, left, right )
 
 /**
  * Sprawdza dwie liczby naturalne używając podanego operatora.
@@ -217,8 +217,8 @@ MST_TESTSUITE;
 		_TestFunc_->PassedAsserts++; \
 	/* jeżeli się nie zgadzają, zapisz błąd do zmiennej */ \
 	else \
-		return mst_report_sint( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-					__FILE__, __LINE__, (llong)left, (llong)right )
+		return mst_report_uint( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
+					__FILE__, __LINE__, left, right )
 
 /**
  * Sprawdza dwie liczby zmiennoprzecinkowe używając podanego operatora.
@@ -238,7 +238,7 @@ MST_TESTSUITE;
 	/* jeżeli się nie zgadzają, zapisz błąd do zmiennej */ \
 	else \
 		return mst_report_float( _TestFunc_, EXPRESSIONMAKE(left, compare, right), \
-			__FILE__, __LINE__, (ldouble)left, (ldouble)right )
+			__FILE__, __LINE__, left, right )
 
 /**
  * Sprawdza czy wyrażenie jest poprawne.
@@ -308,7 +308,7 @@ MST_TESTSUITE;
  * @param  b    Wartość wyrażenia z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_sint( MST_TESTFUNC *info, const char *exp, const char *file, int line, llong a, llong b );
+int mst_report_sint( MST_FUNCTION *info, const char *exp, const char *file, int line, llong a, llong b );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch liczb naturalnych o typie uchar/ushort/uint/luong/ullong.
@@ -323,7 +323,7 @@ int mst_report_sint( MST_TESTFUNC *info, const char *exp, const char *file, int 
  * @param  b    Wartość wyrażenia z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_uint( MST_TESTFUNC *info, const char *exp, const char *file, int line, ullong a, ullong b );
+int mst_report_uint( MST_FUNCTION *info, const char *exp, const char *file, int line, ullong a, ullong b );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch liczb zmiennoprzecinkowych o typie float/double/ldouble.
@@ -338,7 +338,7 @@ int mst_report_uint( MST_TESTFUNC *info, const char *exp, const char *file, int 
  * @param  b    Wartość wyrażenia z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_float( MST_TESTFUNC *info, const char *exp, const char *file, int line, ldouble a, ldouble b );
+int mst_report_float( MST_FUNCTION *info, const char *exp, const char *file, int line, ldouble a, ldouble b );
 
 /**
  * Funkcja formułuje błąd asercji.
@@ -352,7 +352,7 @@ int mst_report_float( MST_TESTFUNC *info, const char *exp, const char *file, int
  * @param  line Linia błędu.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report( MST_TESTFUNC *info, const char *exp, const char *file, int line );
+int mst_report( MST_FUNCTION *info, const char *exp, const char *file, int line );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch ciągów znaków o jendno lub wielobajtowych znakach.
@@ -367,7 +367,7 @@ int mst_report( MST_TESTFUNC *info, const char *exp, const char *file, int line 
  * @param  b    Ciąg znaków z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_cs( MST_TESTFUNC *info, const char *file, int line, const char *a, const char *b );
+int mst_report_cs( MST_FUNCTION *info, const char *file, int line, const char *a, const char *b );
 
 /**
  * Funkcja formułuje błąd przy porównywaniu dwóch ciągów znaków o typie wchar_t.
@@ -382,7 +382,7 @@ int mst_report_cs( MST_TESTFUNC *info, const char *file, int line, const char *a
  * @param  b    Ciąg znaków z prawej strony równania.
  * @return      Kod błędu lub wartość 0.
  */
-int mst_report_wcs( MST_TESTFUNC *info, const char *file, int line, const wchar_t *a, const wchar_t *b );
+int mst_report_wcs( MST_FUNCTION *info, const char *file, int line, const wchar_t *a, const wchar_t *b );
 
 /**
  * Uruchamia podany w argumencie test.
@@ -393,7 +393,7 @@ int mst_report_wcs( MST_TESTFUNC *info, const char *file, int line, const wchar_
  * @param  count   Ilość wszystkich testów (informacyjnie), 0 gdy brak.
  * @return         Gdy w funkcji wystąpił błąd, zwraca wartość różną od 0.
  */
-int mst_run_test( MST_TESTFUNC *info, size_t current, size_t count );
+int mst_run_test( MST_FUNCTION *info, size_t current, size_t count );
 
 /**
  * Uruchamia podany w argumencie zestaw testów.
@@ -404,6 +404,6 @@ int mst_run_test( MST_TESTFUNC *info, size_t current, size_t count );
  * @param  suite Struktura zawierająca zestaw testów do uruchomienia.
  * @return       Gdy w funkcji wystąpił błąd, zwraca wartość różną od 0.
  */
-int mst_run_suite( MST_TESTSUITE *suite );
+int mst_run_suite( MST_SUITE *suite );
 
 #endif
