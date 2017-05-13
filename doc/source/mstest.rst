@@ -55,34 +55,37 @@ Oczywiście nie zawsze jest to możliwe.
 Przykład funkcji testujących::
 
     /* test dla dodawania */
-    char *f_test_add( MST_TESTFUNC *info )
+    int f_test_add( MST_FUNCTION *info )
     {
         struct EXTRADATA *data = (struct EXTRADATA*)info->Data;
+        mst_prepare( info );
 
         data->result = f_add( data->a, data->b );
-        mst_assert( data->result == 5 );
+        mst_assert_sint( data->result, ==, 5 );
 
-        return MST_SUCCESS;
+        return MSET_OK;
     }
     /* test dla odejmowania */
-    char *f_test_sub( MST_TESTFUNC *info )
+    int f_test_sub( MST_FUNCTION *info )
     {
         struct EXTRADATA *data = (struct EXTRADATA*)info->Data;
+        mst_prepare( info );
 
         data->result = f_sub( data->a, data->b );
-        mst_assert( data->result == 1 );
+        mst_assert_sint( data->result, ==, 1 );
 
-        return MST_SUCCESS;
+        return MSET_OK;
     }
     /* test dla mnożenia */
-    char *f_test_mul( MST_TESTFUNC *info )
+    int f_test_mul( MST_FUNCTION *info )
     {
         struct EXTRADATA *data = (struct EXTRADATA*)info->Data;
+        mst_prepare( info );
 
         data->result = f_mul( data->a, data->b );
-        mst_assert( data->result == 6 );
+        mst_assert_sint( data->result, ==, 6 );
 
-        return MST_SUCCESS;
+        return MSET_OK;
     }
 
 Utworzenie funkcji testujących napisany kod, jest już większą połową sukcesu.
@@ -90,8 +93,8 @@ Teraz wystarczy zainicjalizować struktury, odpowiedzialne za testy.
 W tym momencie można wybrać jedno z dwóch rozwiązań - albo wywoływać każdy test pojedynczo,
 albo wszystkie na raz po przypisaniu ich do struktury zestawu.
 Poniżej zaprezentowana została druga opcja.
-Warto się zastanowić, czy funkcje dostępne w strukturze zbioru, przekazywane do pól :c:member:`MST_TESTSUITE.Setup`
-oraz :c:member:`MST_TESTSUITE.TearDown` nie ułatwią wykonywania testów i zarządzania pamięcią.
+Warto się zastanowić, czy funkcje dostępne w strukturze zbioru, przekazywane do pól :c:member:`MST_SUITE.Setup`
+oraz :c:member:`MST_SUITE.TearDown` nie ułatwią wykonywania testów i zarządzania pamięcią.
 
 Pozostała część kodu::
 
@@ -99,12 +102,12 @@ Pozostała część kodu::
         int a, b, result;
     };
 
-    char *f_test_add( MST_TESTFUNC *info );
-    char *f_test_sub( MST_TESTFUNC *info );
-    char *f_test_mul( MST_TESTFUNC *info );
+    int f_test_add( MST_FUNCTION *info );
+    int f_test_sub( MST_FUNCTION *info );
+    int f_test_mul( MST_FUNCTION *info );
 
     /* funkcja przygotowująca dane */
-    int setup_op_function( MST_TESTSUITE *info )
+    int setup_op_function( MST_SUITE *info )
     {
         struct EXTRADATA *data;
 
@@ -122,7 +125,7 @@ Pozostała część kodu::
     }
 
     /* funkcja zwalniająca pamięć po danych */
-    void teardown_op_function( MST_TESTSUITE *info )
+    void teardown_op_function( MST_SUITE *info )
     {
         free( info->Data );
     }
@@ -130,14 +133,14 @@ Pozostała część kodu::
     /* funkcja główna, uruchamiająca test */
     int main( int argc, char **argv )
     {
-        MST_TESTFUNC operation_funcs[] = {
-            { MST_TFSTRINGIFY(f_test_add), "Add two numbers", NULL },
-            { MST_TFSTRINGIFY(f_test_sub), "Substract two numbers", NULL },
-            { MST_TFSTRINGIFY(f_test_mul), "Multiply two numbers", NULL },
-            { MST_TFLASTRECORD }
+        MST_FUNCTION operation_funcs[] = {
+            { MST_STRINGIFY(f_test_add), "Add two numbers", NULL },
+            { MST_STRINGIFY(f_test_sub), "Substract two numbers", NULL },
+            { MST_STRINGIFY(f_test_mul), "Multiply two numbers", NULL },
+            { MST_LASTRECORD }
         };
 
-        MST_TESTSUITE operation_suite = {
+        MST_SUITE operation_suite = {
             "Test add, sub and mul functions",
             FALSE,                    /* BreakOnError */
             setup_op_function,        /* Setup */
@@ -165,8 +168,9 @@ Przykładowe wyjście:
     [DESC] Substract two numbers
     [STAT] FAILED! > Passed asserts: 0
     ------
-    # Error in test.c on line 37
+    # Error in test.c on line 90
     # data->result == 1
+    # Where: L = -1 and R = 1
     --------------------------------------------------------------------- [003/003]
     [TEST] f_test_mul
     [DESC] Multiply two numbers
@@ -175,29 +179,29 @@ Przykładowe wyjście:
 
 Jak można zauważyć, powyższy kod wygenerował błąd w trakcie działania funkcji ``f_test_sub``.
 Przyglądając się bliżej funkcji ``f_sub``, można zauważyć, że podczas odejmowania argumenty podane zostały na odwrót.
-Testy umieszczone w zestawie nie zostały przerwane podczas wystąpienia błędu, ponieważ pole :c:member:`MST_TESTSUITE.BreakOnError`
+Testy umieszczone w zestawie nie zostały przerwane podczas wystąpienia błędu, ponieważ pole :c:member:`MST_SUITE.BreakOnError`
 zostało ustawione na wartość ``FALSE``.
 Testy nie są zależne od siebie, więc ustawianie tego pola na wartość ``TRUE`` jest niepotrzebne.
 Oczywiście nie ulega wątpliwości to, że aby błąd został wykryty, test jednostkowy musi być poprawnie napisany.
 
-Struktury i funkcje
+Struktury
 ---------------------------------------------------------
 
-.. c:type:: MST_TESTFUNC
+.. c:type:: MST_FUNCTION
 
     Struktura odpowiedzialna za przechowywanie informacji o funkcji testującej daną część kodu.
     Większość pól struktury w głównej mierze wykorzystywana jest w funkcji :c:func:`mst_run_test`, gdzie używane są
     podczas wyświetlania w konsoli informacji o uruchamianym teście.
     Można je również wykorzystać bezpośrednio wewnątrz uruchomionego testu, gdzie cała struktura przekazywana
     jest do argumentu funkcji testującej.
-    Pole :c:member:`MST_TESTFUNC.PassedAsserts` zwiększane jest automatycznie za każdy razem, gdy wywoływane jest
+    Pole :c:member:`MST_FUNCTION.PassedAsserts` zwiększane jest automatycznie za każdy razem, gdy wywoływane jest
     makro :c:macro:`mst_assert`.
 
     Strukturę można inicjalizować w następujący sposób::
 
         int additional_data = 5;
 
-        MST_TESTFUNC test = {
+        MST_FUNCTION test = {
             module_part_test_func,             /* Function */
             "testing_function",                /* Name */
             "Some description of this test.",  /* Desc */
@@ -210,7 +214,7 @@ Struktury i funkcje
     zostawiać inicjalizacje na pastwę losu kompilatora. Jest to ważna rada w przypadku gdy test uruchamia się z zestawu
     i to właśnie z niego argument ma być podesłany do funkcji.
 
-    .. c:member:: char *Function(MST_TESTFUNC *info)
+    .. c:member:: char *Function(MST_FUNCTION *info)
 
         Funkcja testująca uruchamiana przez funkcję :c:func:`mst_run_test`.
         Powinna udowodnić poprawność testowanego kodu poprzez stosowanie makra :c:macro:`mst_assert`
@@ -222,7 +226,7 @@ Struktury i funkcje
 
         Przykład prostej funkcji testującej::
 
-            char *test_function( MST_TESTFUNC *info )
+            char *test_function( MST_FUNCTION *info )
             {
                 int ercode;
                 mst_assert( info->Data != NULL );
@@ -271,33 +275,40 @@ Struktury i funkcje
 
         Pole to można pominąć podczas inicjalizacji struktury::
 
-            MST_TESTFUNC test = { test_func, "func_name", "desc", NULL };
+            MST_FUNCTION test = { test_func, "func_name", "desc", NULL };
 
-.. c:type:: MST_TESTSUITE
+    .. c:member:: char *ErrorMessage
+
+        Treść błędu generowanego podczas działania testu.
+        W trakcie błędu, dla zmiennej przydzielana jest pamięć, potrzebna do przechowania treści wiadomości.
+        Zmienna ta jest wypełniana automatycznie przez funkcje raportujące błędy, wywoływane przez asercje.
+        Pamięć przydzielona dla tej zmiennej nie jest zwalniana automatycznie.
+
+.. c:type:: MST_SUITE
 
     Struktura odpowiedzialna za przechowywanie informacji o zestawie, zawierającym funkcje testujące.
     W głównej mierze struktura wykorzystywana jest w funkcji :c:func:`mst_run_suite`.
-    Jednym z ważniejszych pól jest pole :c:member:`MST_TESTSUITE.BreakOnError`, gdzie wartość decyduje o tym,
+    Jednym z ważniejszych pól jest pole :c:member:`MST_SUITE.BreakOnError`, gdzie wartość decyduje o tym,
     czy zbiór podczas działania zostanie przerwany po wykryciu błędu.
     Struktura jest przekazywana do funkcji wywoływanych przed rozpoczęciem i zaraz po zakończeniu
     wszystkich dostępnych w tablicy testów.
     Ostatni test w tablicy powinien zawierać wszystkie pola równe wartości *NULL* lub 0.
-    Najlepszym sposobem jest inicjalizacja ostatniego rekordu makrem :c:macro:`MST_TFLASTRECORD`.
+    Najlepszym sposobem jest inicjalizacja ostatniego rekordu makrem :c:macro:`MST_LASTRECORD`.
 
     Przykład inicjalizacji struktury::
 
         /* lista funkcji testujących */
-        MST_TESTFUNC suite_functions[] = {
-            { MST_TFSTRINGIFY(mst_test_01), "Desc_01", NULL },
-            { MST_TFSTRINGIFY(mst_test_02), "Desc_02", NULL },
-            { MST_TFSTRINGIFY(mst_test_02), "Desc_03", NULL },
-            { MST_TFLASTRECORD }
+        MST_FUNCTION suite_functions[] = {
+            { MST_STRINGIFY(mst_test_01), "Desc_01", NULL },
+            { MST_STRINGIFY(mst_test_02), "Desc_02", NULL },
+            { MST_STRINGIFY(mst_test_02), "Desc_03", NULL },
+            { MST_LASTRECORD }
         };
 
         int sample_data = 5;
 
         /* inicjalizacja struktury dla zestawu */
-        MST_TESTSUITE suite_tests = {
+        MST_SUITE suite_tests = {
             "Suite description",      /* Desc */
             TRUE,                     /* BreakOnError */
             setup_test_function,      /* Setup */
@@ -309,7 +320,7 @@ Struktury i funkcje
     Powyższy kod utworzy zestaw testów, przerywanych w przypadku wystąpienia błędu.
     Każda struktura testu otrzyma wartość ``sample_data`` w polu odpowiedzialnym za dane.
     Każdy test może być zależny od danych, zmodyfikowanych w poprzednim teście, dlatego
-    struktura posiada pole :c:member:`MST_TESTSUITE.BreakOnError` ustawione na wartość ``TRUE``.
+    struktura posiada pole :c:member:`MST_SUITE.BreakOnError` ustawione na wartość ``TRUE``.
 
     .. c:member:: char *Desc
 
@@ -327,7 +338,7 @@ Struktury i funkcje
         testów natychmiast zostaje przerwany, zwracając błąd. W przeciwnym wypadku funkcja nadal zwróci błąd, ale
         dopiero po zakończeniu wykonywania wszystkich znajdujących się w zestawie testów.
 
-    .. c:member:: int Setup(MST_TESTSUITE *info)
+    .. c:member:: int Setup(MST_SUITE *info)
 
         Funkcja wywoływana przed wykonaniem jakiekogolwiek testu.
         Może być potraktowana jako funkcja pozwalająca na przygotowanie danych do testowania.
@@ -338,7 +349,7 @@ Struktury i funkcje
 
         Przykład prostej funkcji::
 
-            int setup_test( MST_TESTSUITE *info )
+            int setup_test( MST_SUITE *info )
             {
                 if( info->Data )
                     return MSEC_INVALID_ARGUMENT;
@@ -355,11 +366,11 @@ Struktury i funkcje
         :param info: Wskaźnik na strukturę zawierającą informacje o uruchomionym zestawie.
         :return: Kod błędu który wystąpił podczas działania funkcji lub wartość 0.
 
-    .. c:member:: void TearDown(MST_TESTSUITE *info)
+    .. c:member:: void TearDown(MST_SUITE *info)
 
         Funkcja wywoływana po wykonaniu testów zawartych w zestawie.
         Wywołanie tej funkcji występuje nawet gdy w trakcie testów wyktyty zostanie błąd a struktura będzie
-        miała ustawione pole :c:member:`MST_TESTSUITE.BreakOnError` na wartość ``TRUE``.
+        miała ustawione pole :c:member:`MST_SUITE.BreakOnError` na wartość ``TRUE``.
         Główne zastosowanie tej funkcji to zwalnianie pamięci pozostałej po wykonanych testach.
         Pole nie jest wymagane i w przypadku braku funkcji należy podać wartość *NULL*.
 
@@ -369,7 +380,7 @@ Struktury i funkcje
                 MS_ARRAY a1, a2, a3, a4;
             };
 
-            void teardown_test( MST_TESTSUITE *info )
+            void teardown_test( MST_SUITE *info )
             {
                 struct ARRAYSET *aset = (struct ARRAYSET*)info->Data;
 
@@ -390,94 +401,65 @@ Struktury i funkcje
 
         Dodatkowe dane przekazywane do struktury testu.
         W przypadku gdy struktura testu zawiera swoje własne dane, pole to nie jest wykorzystywane.
-        W przeciwnym wypadku wartość pola kopiowana jest do pola :c:member:`MST_TESTFUNC.Data`, gdzie
+        W przeciwnym wypadku wartość pola kopiowana jest do pola :c:member:`MST_FUNCTION.Data`, gdzie
         przekazywana jest wraz ze strukturą do funkcji testującej.
         Pole to nie jest wymagane i powinno być ustawiane na wartość *NULL* w przypadku gdy do funkcji nie mają
         być przekazywane żadne dane.
 
-    .. c:member:: MST_TESTFUNC *Tests
+    .. c:member:: MST_FUNCTION *Tests
 
         Tablica zawierająca testy do wykonania podczas uruchomienia zestawu.
         Wszystkie testy znajdujące się na liście w tym polu, zczytywane są i wykonywane przez funkcję :c:func:`mst_run_suite`.
         Testy wykonywane są w takiej kolejności w jakiej zostały podane w tablicy, aż do napotkania ostatniego rekordu, który
-        musi być zainicjalizowany wartościami *NULL* lub 0 dla każdego pola struktury :c:type:`MST_TESTFUNC`.
-        Do ułatwienia tego zadania stworzono makro o nazwie :c:macro:`MST_TFLASTRECORD`.
+        musi być zainicjalizowany wartościami *NULL* lub 0 dla każdego pola struktury :c:type:`MST_FUNCTION`.
+        Do ułatwienia tego zadania stworzono makro o nazwie :c:macro:`MST_LASTRECORD`.
 
         Przykład tablicy z testami przekazywanymi do zestawu::
 
-            MST_TESTFUNC TestFunctions[] =
+            MST_FUNCTION TestFunctions[] =
             {
-                { MST_TFSTRINGIFY(mst_test_01), "Desc_01", NULL },
-                { MST_TFSTRINGIFY(mst_test_02), "Desc_02", NULL },
-                { MST_TFSTRINGIFY(mst_test_03), "Desc_03", NULL },
-                { MST_TFSTRINGIFY(mst_test_04), "Desc_04", NULL },
-                { MST_TFSTRINGIFY(mst_test_05), "Desc_05", NULL },
-                { MST_TFSTRINGIFY(mst_test_06), "Desc_06", NULL },
-                { MST_TFSTRINGIFY(mst_test_07), "Desc_07", NULL },
-                { MST_TFSTRINGIFY(mst_test_08), "Desc_08", NULL },
-                { MST_TFSTRINGIFY(mst_test_09), "Desc_09", NULL },
+                { MST_STRINGIFY(mst_test_01), "Desc_01", NULL },
+                { MST_STRINGIFY(mst_test_02), "Desc_02", NULL },
+                { MST_STRINGIFY(mst_test_03), "Desc_03", NULL },
+                { MST_STRINGIFY(mst_test_04), "Desc_04", NULL },
+                { MST_STRINGIFY(mst_test_05), "Desc_05", NULL },
+                { MST_STRINGIFY(mst_test_06), "Desc_06", NULL },
+                { MST_STRINGIFY(mst_test_07), "Desc_07", NULL },
+                { MST_STRINGIFY(mst_test_08), "Desc_08", NULL },
+                { MST_STRINGIFY(mst_test_09), "Desc_09", NULL },
 
                 /* ostatni rekord można inicjalizować w ten sposób */
-                { MST_TFLASTRECORD },
+                { MST_LASTRECORD },
 
                 /* lub w ten, choć ostatnie 0 jest zbędne */
                 { NULL, NULL, NULL, NULL, 0 }
             };
 
-.. c:function:: int mst_run_test(MST_TESTFUNC *func, size_t current, size_t count)
+Funkcje
+---------------------------------------------------------
 
-    Funkcja uruchamia test jednostkowy przypisany do podanej struktury.
-    Przed jego uruchomieniem wyświetla informacje o teście podane w strukturze.
-    Funkcja wywoływana jest w głównej mierze wprost z funkcji :c:func:`mst_run_suite`, jednak może
-    być wywoływana samodzielnie.
-    Na uwagę zasługują ostatnie dwa parametry, reprezentujące numer aktualnego testu i ilość wszystkich testów.
-    Liczby te wyświetlane są nad informacjami wypisywanymi ze struktury.
-    Można je pominąć, wpisując w ich miejsce wartości 0, co spowoduje pominięcie ich w trakcie wypisywania
-    informacji w konsoli.
-    Funkcja w przypadku wystąpienia błędu zwróci wartość różną od 0, która będzie reprezentowała ilość
-    znaków w zwróconej przez test wiadomości wraz ze znakiem nowej linii.
-
-    Przykład użycia funkcji::
-
-        ...
-        MST_TESTFUNC test1 = { test_func1, "func_name1", "desc1", NULL };
-        MST_TESTFUNC test2 = { test_func2, "func_name2", "desc2", NULL };
-        ...
-        if( mst_run_test(&test1, 0, 0) )
-            return -1;
-        if( mst_run_test(&test2, 3, 50) )
-            return -1;
-        ...
-
-    .. rst-class:: parameters
-
-    :param func: Struktura zawierająca informacje o funkcji testującej.
-    :param current: Aktualny numer testu lub 0.
-    :param count: Ilość wszystkich testów lub 0.
-    :return: Wartość 0 lub w przypadku błędu ilość wypisanych znaków.
-
-.. c:function:: int mst_run_suite(MST_TESTSUITE *suite)
+.. c:function:: int mst_run_suite(MST_SUITE *suite)
 
     Funkcja uruchamia zestaw testów jednostkowych, przypisanych do podanej struktury w postaci tablicy.
     Przed uruchomieniem wyświetlana jest informacja o aktualnie działającym zestawie i wywoływana jest funkcja
-    :c:member:`MST_TESTSUITE.Setup`, pozwalająca na przygotowanie danych do testów.
-    Następnie wywoływane są po koleji wszystkie testy z tablicy przypisanej do pola :c:member:`MST_TESTSUITE.Tests`.
-    W przypadku gdy któryś z nich zwróci błąd a pole :c:member:`MST_TESTSUITE.BreakOnError` będzie ustawione
+    :c:member:`MST_SUITE.Setup`, pozwalająca na przygotowanie danych do testów.
+    Następnie wywoływane są po koleji wszystkie testy z tablicy przypisanej do pola :c:member:`MST_SUITE.Tests`.
+    W przypadku gdy któryś z nich zwróci błąd a pole :c:member:`MST_SUITE.BreakOnError` będzie ustawione
     na wartość ``TRUE``, pętla wywołująca funkcje testowe zostanie przerwana.
     Po zakończeniu wszystkich dostępnych w tablicy testów lub w przypadku ich przerwania, wywoływana jest funkcja zapisana
-    w polu :c:member:`MST_TESTSUITE.TearDown`, pozwalająca na zwolnienie pamięci przydzielonej na dane testowe.
+    w polu :c:member:`MST_SUITE.TearDown`, pozwalająca na zwolnienie pamięci przydzielonej na dane testowe.
     Kod błędu zwracany przez funkcję nie jest ustalony z racji tego, iż jest on zależny w głównej mierze od funkcji
     :c:func:`mst_run_test`.
 
     Przykład użycia funkcji::
 
         ...
-        MST_TESTFUNC tests[] = {
+        MST_FUNCTION tests[] = {
             { test_func1, "func_name1", "desc1", NULL },
             { test_func2, "func_name2", "desc2", NULL },
             { test_func3, "func_name3", "desc3", NULL }
         };
-        MST_TESTSUITE suite = {
+        MST_SUITE suite = {
             "Suite description",
             TRUE,
             NULL, NULL, NULL,
@@ -493,40 +475,214 @@ Struktury i funkcje
     :param func: Struktura zawierająca informacje o zestawie funkcji testujących.
     :return: Wartość różna od 0 w przypadku błędu lub 0.
 
+.. c:function:: int mst_run_test(MST_FUNCTION *info, size_t current, size_t count)
+
+    Funkcja uruchamia test jednostkowy przypisany do podanej struktury.
+    Przed jego uruchomieniem wyświetla informacje o teście podane w strukturze.
+    Funkcja wywoływana jest w głównej mierze wprost z funkcji :c:func:`mst_run_suite`, jednak może
+    być wywoływana samodzielnie.
+    Na uwagę zasługują ostatnie dwa parametry, reprezentujące numer aktualnego testu i ilość wszystkich testów.
+    Liczby te wyświetlane są nad informacjami wypisywanymi ze struktury.
+    Można je pominąć, wpisując w ich miejsce wartości 0, co spowoduje pominięcie ich w trakcie wypisywania
+    informacji w konsoli.
+    Funkcja w przypadku wystąpienia błędu zwróci wartość różną od 0, która będzie reprezentowała ilość
+    znaków w zwróconej przez test wiadomości.
+
+    Przykład użycia funkcji::
+
+        ...
+        MST_FUNCTION test1 = { test_func1, "func_name1", "desc1", NULL };
+        MST_FUNCTION test2 = { test_func2, "func_name2", "desc2", NULL };
+        ...
+        if( mst_run_test(&test1, 0, 0) )
+            return -1;
+        if( mst_run_test(&test2, 3, 50) )
+            return -1;
+        ...
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param current: Aktualny numer testu lub 0.
+    :param count: Ilość wszystkich testów lub 0.
+    :return: Wartość 0 lub w przypadku błędu ilość wypisanych znaków.
+
+.. c:function:: int mst_report_sint(MST_FUNCTION *info, const char *exp, const char *file, int line, llong a, llong b)
+
+    Tworzenie raportu o błędzie, spowodowanym przez asercje sprawdzanego wyrażenia, składającego się z dwóch liczb całkowitych.
+    Funkcja w głównej mierze wywoływana jest automatycznie przez makro :c:macro:`mst_assert_sint`.
+    Uruchomienie funkcji powoduje przydzielenie pamięci dla pola :c:member:`MST_FUNCTION.ErrorMessage` i zapisanie
+    w nim treści błędu, tworzonego z przekazanych parametrów.
+    Przydzieloną pamięć należy zwolnić samodzielnie po wykorzystaniu danych, zapisanych w zmiennej.
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param exp: Wyrażenie w którym wystąpił błąd.
+    :param file: Plik w którym wystąpił błąd.
+    :param line: Linia w której wystąpił błąd w pliku.
+    :param a: Lewa strona wyrażenia, znajdująca się przed operatorem głównym.
+    :param b: Prawa strona wyrażenia, znajdująca się po operatorze głównym.
+    :return: Kod błędu lub wartość 0.
+
+.. c:function:: int mst_report_uint(MST_FUNCTION *info, const char *exp, const char *file, int line, ullong a, ullong b)
+
+    Tworzenie raportu o błędzie, spowodowanym przez asercje sprawdzanego wyrażenia, składającego się z dwóch liczb naturalnych.
+    Funkcja w głównej mierze wywoływana jest automatycznie przez makro :c:macro:`mst_assert_uint`.
+    Uruchomienie funkcji powoduje przydzielenie pamięci dla pola :c:member:`MST_FUNCTION.ErrorMessage` i zapisanie
+    w nim treści błędu, tworzonego z przekazanych parametrów.
+    Przydzieloną pamięć należy zwolnić samodzielnie po wykorzystaniu danych, zapisanych w zmiennej.
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param exp: Wyrażenie w którym wystąpił błąd.
+    :param file: Plik w którym wystąpił błąd.
+    :param line: Linia w której wystąpił błąd w pliku.
+    :param a: Lewa strona wyrażenia, znajdująca się przed operatorem głównym.
+    :param b: Prawa strona wyrażenia, znajdująca się po operatorze głównym.
+    :return: Kod błędu lub wartość 0.
+
+.. c:function:: int mst_report_float(MST_FUNCTION *info, const char *exp, const char *file, int line, ldouble a, ldouble b)
+
+    Tworzenie raportu o błędzie, spowodowanym przez asercje sprawdzanego wyrażenia, składającego się z dwóch liczb rzeczywistych
+    reprezentowanych przez zapis zmiennoprzecinkowy.
+    Funkcja w głównej mierze wywoływana jest automatycznie przez makro :c:macro:`mst_assert_float`.
+    Uruchomienie funkcji powoduje przydzielenie pamięci dla pola :c:member:`MST_FUNCTION.ErrorMessage` i zapisanie
+    w nim treści błędu, tworzonego z przekazanych parametrów.
+    Przydzieloną pamięć należy zwolnić samodzielnie po wykorzystaniu danych, zapisanych w zmiennej.
+    Należy pamiętać, że porównywanie liczb zmiennoprzecinkowych nie wygląda tak samo jak porównywanie liczb całkowitych.
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param exp: Wyrażenie w którym wystąpił błąd.
+    :param file: Plik w którym wystąpił błąd.
+    :param line: Linia w której wystąpił błąd w pliku.
+    :param a: Lewa strona wyrażenia, znajdująca się przed operatorem głównym.
+    :param b: Prawa strona wyrażenia, znajdująca się po operatorze głównym.
+    :return: Kod błędu lub wartość 0.
+
+.. c:function:: int mst_report(MST_FUNCTION *info, const char *exp, const char *file, int line)
+
+    Tworzenie raportu o błędzie, spowodowanym przez asercje na wyrażeniu, które posiada z prawej i lewej strony typ logiczny.
+    Dlatego w raporcie wyświetlane jest tylko podane wyrażenie, bez informacji o wartościach stojących po prawej i lewej stronie.
+    Funkcja w głównej mierze wywoływana jest automatycznie przez makro :c:macro:`mst_assert`.
+    Uruchomienie funkcji powoduje przydzielenie pamięci dla pola :c:member:`MST_FUNCTION.ErrorMessage` i zapisanie
+    w nim treści błędu, tworzonego z przekazanych parametrów.
+    Przydzieloną pamięć należy zwolnić samodzielnie po wykorzystaniu danych, zapisanych w zmiennej.
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param exp: Wyrażenie w którym wystąpił błąd.
+    :param file: Plik w którym wystąpił błąd.
+    :param line: Linia w której wystąpił błąd w pliku.
+    :return: Kod błędu lub wartość 0.
+
+.. c:function:: int mst_report_cs(MST_FUNCTION *info, const char *file, int line, const char *a, const char *b)
+
+    Tworzenie raportu o błędzie, spowodowanym przez porównanie dwóch przekazanych ciągów znaków, zawierających znaki
+    składające się z jednego lub wielu bajtów.
+    Funkcja w głównej mierze wywoływana jest automatycznie przez makra :c:macro:`mst_assert_cs` oraz :c:macro:`mst_asser_mbs`.
+    Uruchomienie funkcji powoduje przydzielenie pamięci dla pola :c:member:`MST_FUNCTION.ErrorMessage` i zapisanie
+    w nim treści błędu, tworzonego z przekazanych parametrów.
+    Przydzieloną pamięć należy zwolnić samodzielnie po wykorzystaniu danych, zapisanych w zmiennej.
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param exp: Wyrażenie w którym wystąpił błąd.
+    :param file: Plik w którym wystąpił błąd.
+    :param line: Linia w której wystąpił błąd w pliku.
+    :param a: Ciąg znaków znajdujący się po lewej stronie.
+    :param b: Ciąg znaków znajdujący się po prawej stronie.
+    :return: Kod błędu lub wartość 0.
+
+.. c:function:: int mst_report_wcs(MST_FUNCTION *info, const char *file, int line, const wchar_t *a, const wchar_t *b)
+
+    Tworzenie raportu o błędzie, spowodowanym przez porównanie dwóch przekazanych ciągów znaków, zawierających znaki
+    o typie ``wchar_t`` o rozmiarze 2 lub 4 bajtów.
+    Funkcja w głównej mierze wywoływana jest automatycznie przez makro :c:macro:`mst_assert_wcs`.
+    Uruchomienie funkcji powoduje przydzielenie pamięci dla pola :c:member:`MST_FUNCTION.ErrorMessage` i zapisanie
+    w nim treści błędu, tworzonego z przekazanych parametrów.
+    Przydzieloną pamięć należy zwolnić samodzielnie po wykorzystaniu danych, zapisanych w zmiennej.
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+    :param exp: Wyrażenie w którym wystąpił błąd.
+    :param file: Plik w którym wystąpił błąd.
+    :param line: Linia w której wystąpił błąd w pliku.
+    :param a: Ciąg znaków znajdujący się po lewej stronie.
+    :param b: Ciąg znaków znajdujący się po prawej stronie.
+    :return: Kod błędu lub wartość 0.
+
 Makra
 ---------------------------------------------------------
 
-.. c:macro:: char *mst_assert(bool exp)
+.. c:macro:: void mst_prepare(MST_FUNCTION *info)
+
+    Przygotowuje strukturę danych w funkcji do użycia w makrach.
+    Makro to należy wywołać w funkcji testującej bezpośrednio po deklaracjach wykorzystywanych zmiennych.
+    Przy okazji sprawdza, czy struktura przekazana w parametrze jest poprawna.
+
+    Przykład użycia makra::
+
+        int test_function( MST_FUNCTION *info )
+        {
+            int x, y, z;
+
+            /* makro wywoływane zaraz po deklaracjach */
+            mst_prepare( info );
+
+            for( x = 5; y = 1, z = 0; z < 10; ++z )
+                mst_assert( x + y == x++ + ++y - 1 );
+
+            return MSEC_OK;
+        }
+
+    .. rst-class:: parameters
+
+    :param info: Struktura zawierająca informacje o funkcji testującej.
+
+.. c:macro:: int mst_assert(expression exp)
 
     Makro sprawdzające wartość wyrażenia podanego w argumencie.
-    Makro zwiększa wartość pola :c:member:`MST_TESTFUNC.PassedAsserts` w przypadku gdy wyrażenie podane w argumencie
+    Makro zwiększa wartość pola :c:member:`MST_FUNCTION.PassedAsserts` w przypadku gdy wyrażenie podane w argumencie
     okaże się prawdziwe.
-    Gdy wyrażenie okaże się fałszywe, makro natychmiast zakończy funkcję w której zostało wywołane, zwracając
-    szczegółowe informacje na temat asercji, dlatego każda funkcja w której makro będzie uruchamiane, musi
-    zwracać typ ``char*``, reprezentujący treść błędu.
+    Gdy wyrażenie okaże się fałszywe, makro natychmiast zakończy funkcję w której zostało wywołane.
+    Wywoływana funkcja raportowania powinna zwracać ilość znaków zapisanych w zmiennej :c:member:`MST_FUNCTION.ErrorMessage`,
+    dlatego funkcja w której makro jest wywoływane, musi zwracać typ ``int``.
     Asercja ta działa dobrze w przypadku sprawdzania poprawności zmiennych o typie logicznym czy przyrównywania
     wartość do *NULL*.
     W pozostałych przypadkach informacje mogą się okazać zbyt mało szczegółowe.
-    Makro formułuje błąd używając aktualnej linii i pliku w którym asercja została wywołana oraz wyrażenia
-    zamienianego na ciąg znaków.
+    Makro wywołuje funkcje raportowania :c:func:`mst_report`, automatycznie uzupełniając potrzebne argumenty.
 
     Pełny przykład użycia makra::
 
-        char *test_function( MST_TESTFUNC *info )
+        int test_function( MST_FUNCTION *info )
         {
+            bool istrue = TRUE;
+
+            mst_prepare( info );
+
             /* ta asercja będzie w porządku */
-            mst_assert( 2 + 2 == 4 );
+            mst_assert( istrue == TRUE );
 
             /* ta już nie, funkcja powinna zwrócić błąd */
-            mst_assert( 2 + 2 == 5 );
+            mst_assert( istrue == FALSE );
 
-            return MST_SUCCESS;
+            return MSEC_OK;
         }
 
         int main( int argc, char **argv )
         {
-            MST_TESTFUNC tfunc = { MST_TFLASTRECORD };
-            printf( "%s\n", test_function(&tfunc) );
+            MST_FUNCTION tfunc = { MST_LASTRECORD };
+            int ercode = test_function( &tfunc );
+
+            printf( "Error code: 0x%X\nMessage:\n-----------------\n%s\n",
+                ercode, tfunc.ErrorMessage );
 
             return 0;
         }
@@ -535,60 +691,352 @@ Makra
 
     .. sourcecode:: none
 
-        # Error in test.c on line 9
-        # 2 + 2 == 5
+        Error code: 0x2A
+        Message:
+        -----------------
+        # Error in test.c on line 14
+        # istrue == 0
 
     .. rst-class:: parameters
 
     :param exp: Wyrażenie do sprawdzenia.
-    :return: Treść błędu bezpośrednio w funkcji w której makro zostało wywołane.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
 
-.. c:macro:: MST_SUCCESS
+.. c:macro:: int mst_assert_sint(expression left, operator compare, expression right)
 
-    Makro wstawiające w miejsce wystąpienia wartość *NULL*.
-    Używane głównie w funkcjach testujących na samym końcu podczas zwracania wartości.
-    Dzięki niemu widać od razu w których miejscach funkcja wykonuje się poprawnie.
+    Makro sprawdzające wartość wyrażenia formułowanego z podanych argumentów.
+    Wersja dla liczb całkowitych, pozwalająca na wyświetlenie wartości lewej i prawej strony wyrażenia.
+    Makro zwiększa wartość pola :c:member:`MST_FUNCTION.PassedAsserts` w przypadku gdy wyrażenie okaże się prawdziwe.
+    W przeciwnym wypadku makro natychmiast zakończy funkcję w której zostało wywołane.
+    Wywoływana funkcja raportowania powinna zwracać ilość znaków zapisanych w zmiennej :c:member:`MST_FUNCTION.ErrorMessage`,
+    dlatego funkcja w której makro jest wywoływane, musi zwracać typ ``int``.
+    Makro wywołuje funkcje raportowania :c:func:`mst_report_sint`, automatycznie uzupełniając potrzebne argumenty.
 
-    Prosty przykład użycia makra::
+    Pełny przykład użycia makra::
 
-        char *test_function( MST_TESTFUNC *info )
+        int test_function( MST_FUNCTION *info )
         {
-            ...
-            return MST_SUCCESS;
+            mst_prepare( info );
+
+            /* ta asercja będzie w porządku */
+            mst_assert_sint( 2 + 2, ==, 4 );
+
+            /* ta już nie, funkcja powinna zwrócić błąd */
+            mst_assert_sint( 2 + 2, ==, 5 );
+
+            return MSEC_OK;
         }
 
-.. c:macro:: part MST_TFSTRINGIFY(literal func)
+        int main( int argc, char **argv )
+        {
+            MST_FUNCTION tfunc = { MST_LASTRECORD };
+            int ercode = test_function( &tfunc );
+
+            printf( "Error code: 0x%X\nMessage:\n-----------------\n%s\n",
+                ercode, tfunc.ErrorMessage );
+
+            return 0;
+        }
+
+    Przykładowe wyjście:
+
+    .. sourcecode:: none
+
+        Error code: 0x42
+        Message:
+        -----------------
+        # Error in test.c on line 11
+        # 2 + 2 == 5
+        # Where: L = 4 and R = 5
+
+    .. rst-class:: parameters
+
+    :param left: Lewa strona wyrażenia.
+    :param compare: Operator, stojący pomiędzy prawą a lewą stroną.
+    :param right: Prawa strona wyrażenia.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
+
+.. c:macro:: int mst_assert_uint(expression left, operator compare, expression right)
+
+    Makro sprawdzające wartość wyrażenia formułowanego z podanych argumentów.
+    Wersja dla liczb naturalnych, pozwalająca na wyświetlenie wartości lewej i prawej strony wyrażenia.
+    Makro zwiększa wartość pola :c:member:`MST_FUNCTION.PassedAsserts` w przypadku gdy wyrażenie okaże się prawdziwe.
+    W przeciwnym wypadku makro natychmiast zakończy funkcję w której zostało wywołane.
+    Wywoływana funkcja raportowania powinna zwracać ilość znaków zapisanych w zmiennej :c:member:`MST_FUNCTION.ErrorMessage`,
+    dlatego funkcja w której makro jest wywoływane, musi zwracać typ ``int``.
+    Makro wywołuje funkcje raportowania :c:func:`mst_report_uint`, automatycznie uzupełniając potrzebne argumenty.
+
+    Pełny przykład użycia makra::
+
+        int test_function( MST_FUNCTION *info )
+        {
+            ullong max = ULLONG_MAX;
+
+            mst_prepare( info );
+
+            /* ta asercja będzie w porządku */
+            mst_assert_uint( max - 3, ==, max - 3 );
+
+            /* ta już nie, funkcja powinna zwrócić błąd */
+            mst_assert_uint( max - 3, ==, max - 4 );
+
+            return MSEC_OK;
+        }
+
+        int main( int argc, char **argv )
+        {
+            MST_FUNCTION tfunc = { MST_LASTRECORD };
+            int ercode = test_function( &tfunc );
+
+            printf( "Error code: 0x%X\nMessage:\n-----------------\n%s\n",
+                ercode, tfunc.ErrorMessage );
+
+            return 0;
+        }
+
+    Przykładowe wyjście:
+
+    .. sourcecode:: none
+
+        Error code: 0x70
+        Message:
+        -----------------
+        # Error in test.c on line 14
+        # max - 3 == max - 4
+        # Where: L = 18446744073709551612 and R = 18446744073709551611
+
+    .. rst-class:: parameters
+
+    :param left: Lewa strona wyrażenia.
+    :param compare: Operator, stojący pomiędzy prawą a lewą stroną.
+    :param right: Prawa strona wyrażenia.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
+
+.. c:macro:: int mst_assert_float(expression left, operator compare, expression right)
+
+    Makro sprawdzające wartość wyrażenia formułowanego z podanych argumentów.
+    Wersja dla liczb zmiennoprzecinkowych, pozwalająca na wyświetlenie wartości lewej i prawej strony wyrażenia.
+    Makro zwiększa wartość pola :c:member:`MST_FUNCTION.PassedAsserts` w przypadku gdy wyrażenie okaże się prawdziwe.
+    W przeciwnym wypadku makro natychmiast zakończy funkcję w której zostało wywołane.
+    Wywoływana funkcja raportowania powinna zwracać ilość znaków zapisanych w zmiennej :c:member:`MST_FUNCTION.ErrorMessage`,
+    dlatego funkcja w której makro jest wywoływane, musi zwracać typ ``int``.
+    Makro wywołuje funkcje raportowania :c:func:`mst_report_float`, automatycznie uzupełniając potrzebne argumenty.
+
+    Pełny przykład użycia makra::
+
+        int test_function( MST_FUNCTION *info )
+        {
+            float fnum = 0.2f;
+
+            mst_prepare( info );
+
+            /* ta asercja będzie w porządku */
+            mst_assert_float( fnum, ==, 0.2f );
+
+            /* ta już nie, funkcja powinna zwrócić błąd */
+            mst_assert_float( fnum - 0.1f, ==, 0.2f );
+
+            return MSEC_OK;
+        }
+
+        int main( int argc, char **argv )
+        {
+            MST_FUNCTION tfunc = { MST_LASTRECORD };
+            int ercode = test_function( &tfunc );
+
+            printf( "Error code: 0x%X\nMessage:\n-----------------\n%s\n",
+                ercode, tfunc.ErrorMessage );
+
+            return 0;
+        }
+
+    Przykładowe wyjście:
+
+    .. sourcecode:: none
+
+        Error code: 0x59
+        Message:
+        -----------------
+        # Error in main.c on line 14
+        # fnum - 0.1f == 0.2f
+        # Where: L = 0.100000 and R = 0.200000
+
+    .. rst-class:: parameters
+
+    :param left: Lewa strona wyrażenia.
+    :param compare: Operator, stojący pomiędzy prawą a lewą stroną.
+    :param right: Prawa strona wyrażenia.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
+
+.. c:macro:: int mst_assert_cs(const char *left, const char *right)
+
+    Makro pozwalające na porównanie dwóch ciągów znaków, zawierających znaki jednobajtowe.
+    Ciągi porównywane są funkcją ``strcmp``.
+    Makro zwiększa wartość pola :c:member:`MST_FUNCTION.PassedAsserts` w przypadku gdy wyrażenie okaże się prawdziwe.
+    W przeciwnym wypadku makro natychmiast zakończy funkcję w której zostało wywołane.
+    Wywoływana funkcja raportowania powinna zwracać ilość znaków zapisanych w zmiennej :c:member:`MST_FUNCTION.ErrorMessage`,
+    dlatego funkcja w której makro jest wywoływane, musi zwracać typ ``int``.
+    Makro wywołuje funkcje raportowania :c:func:`mst_report_cs`, automatycznie uzupełniając potrzebne argumenty.
+
+    Pełny przykład użycia makra::
+
+        int test_function( MST_FUNCTION *info )
+        {
+            const char *str = "The quick brown fox jumps over the lazy dog.";
+            mst_prepare( info );
+
+            /* ta asercja będzie w porządku */
+            mst_assert_cs(
+                str,
+                "The quick brown fox jumps over the lazy dog."
+            );
+
+            /* ta już nie, funkcja powinna zwrócić błąd */
+            mst_assert_cs(
+                str,
+                "The quick brown fox jumps over the lazy cat."
+            );
+
+            return MSEC_OK;
+        }
+
+        int main( int argc, char **argv )
+        {
+            MST_FUNCTION tfunc = { MST_LASTRECORD };
+            int ercode = test_function( &tfunc );
+
+            printf( "Error code: 0x%X\nMessage:\n-----------------\n%s\n",
+                ercode, tfunc.ErrorMessage );
+
+            return 0;
+        }
+
+    Przykładowe wyjście:
+
+    .. sourcecode:: none
+
+        Error code: 0xA7
+        Message:
+        -----------------
+        # Error in main.c on line 19
+        # Function strcmp( L, R ) failed... 
+        # L = The quick brown fox jumps over the lazy dog.
+        # R = The quick brown fox jumps over the lazy cat.
+
+    .. rst-class:: parameters
+
+    :param left: Ciąg znaków po lewej stronie.
+    :param right: Ciąg znaków po prawej stronie.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
+
+.. c:macro:: int mst_assert_mbs(const char *left, const char *right)
+
+    Makro pozwalające na porównanie dwóch ciągów znaków, zawierających znaki jedno lub kilku bajtowe.
+    Na chwilę obecną makro to jest tylko aliasem makra o nazwie :c:macro:`mst_assert_cs`.
+    Warto jednak używać go do sprawdzania ciągów wielobajtowych znaków.
+
+    .. rst-class:: parameters
+
+    :param left: Ciąg znaków po lewej stronie.
+    :param right: Ciąg znaków po prawej stronie.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
+
+.. c:macro:: int mst_assert_wcs(const wchar_t *left, const wchar_t *right)
+
+    Makro pozwalające na porównanie dwóch ciągów znaków, zawierających znaki o typie ``wchar_t``.
+    Ciągi porównywane są funkcją ``wcscmp``.
+    Makro zwiększa wartość pola :c:member:`MST_FUNCTION.PassedAsserts` w przypadku gdy wyrażenie okaże się prawdziwe.
+    W przeciwnym wypadku makro natychmiast zakończy funkcję w której zostało wywołane.
+    Wywoływana funkcja raportowania powinna zwracać ilość znaków zapisanych w zmiennej :c:member:`MST_FUNCTION.ErrorMessage`,
+    dlatego funkcja w której makro jest wywoływane, musi zwracać typ ``int``.
+    Makro wywołuje funkcje raportowania :c:func:`mst_report_wcs`, automatycznie uzupełniając potrzebne argumenty.
+
+    Pełny przykład użycia makra::
+
+        int test_function( MST_FUNCTION *info )
+        {
+            const wchar_t *str =
+                L"Чушь: гид вёз кэб цапф, юный жмот съел хрящ.";
+            mst_prepare( info );
+
+            /* ta asercja będzie w porządku */
+            mst_assert_wcs(
+                str,
+                L"Чушь: гид вёз кэб цапф, юный жмот съел хрящ."
+            );
+
+            setlocale( LC_ALL, "" );
+
+            /* ta już nie, funkcja powinna zwrócić błąd */
+            mst_assert_wcs(
+                str,
+                L"Чушь: гид вёз кэб цапф, жмот съел хрящ."
+            );
+
+            return MSEC_OK;
+        }
+
+        int main( int argc, char **argv )
+        {
+            MST_FUNCTION tfunc = { MST_LASTRECORD };
+            int ercode = test_function( &tfunc );
+
+            printf( "Error code: 0x%X\nMessage:\n-----------------\n%s\n",
+                ercode, tfunc.ErrorMessage );
+
+            return 0;
+        }
+
+    Przykładowe wyjście:
+
+    .. sourcecode:: none
+
+        Error code: 0xE0
+        Message:
+        -----------------
+        # Error in main.c on line 23
+        # Function wcscmp( L, R ) failed... 
+        # L = Чушь: гид вёз кэб цапф, юный жмот съел хрящ.
+        # R = Чушь: гид вёз кэб цапф, жмот съел хрящ.
+
+    .. rst-class:: parameters
+
+    :param left: Ciąg znaków po lewej stronie.
+    :param right: Ciąg znaków po prawej stronie.
+    :return: Kod błędu zwracany przez funkcję raportu lub nic.
+
+.. c:macro:: part MST_STRINGIFY(literal func)
 
     Makro wstawiające w miejsce wystąpienia wskazanie na funkcję oraz jej nazwę w postaci ciągu znaków.
-    Makro jest częścią inicjalizacji struktury :c:type:`MST_TESTFUNC` i tylko wtedy powinno być stosowane.
+    Makro jest częścią inicjalizacji struktury :c:type:`MST_FUNCTION` i tylko wtedy powinno być stosowane.
     Jego użycie upraszcza nieco kod w przypadku funkcji o długich nazwach.
 
     Przykład użycia makra::
 
         /* ta inicjalizacja */
-        MST_TESTFUNC test1 = { MST_TFSTRINGIFY(some_test_function), "desc", NULL };
+        MST_FUNCTION test1 = { MST_STRINGIFY(some_test_function), "desc", NULL };
 
         /* jest równoznaczna z tą */
-        MST_TESTFUNC test2 = { some_test_function, "some_test_function", "desc", NULL };
+        MST_FUNCTION test2 = { some_test_function, "some_test_function", "desc", NULL };
 
     .. rst-class:: parameters
 
     :param func: Nazwa funkcji zamieniana na ciąg znaków.
     :return: Dwa pierwsze pola podczas inicjalizacji struktury.
 
-.. c:macro:: MST_TFLASTRECORD
+.. c:macro:: MST_LASTRECORD
 
     Makro pozwalające na szybką inicjalizację ostatniego rekordu testu dla struktury zestawu.
     Wystarczy użyć tego makra, zamiast wpisywać dla każdego pola wartość *NULL*.
-    Makro przeznaczone tylko do inicjalizacji struktury :c:type:`MST_TESTFUNC` wewnątrz :c:type:`MST_TESTSUITE`.
+    Makro przeznaczone tylko do inicjalizacji struktury :c:type:`MST_FUNCTION` wewnątrz :c:type:`MST_SUITE`.
 
     Przykład użycia makra::
 
         /* ta inicjalizacja */
-        MST_TESTFUNC test1 = { MST_TFLASTRECORD };
+        MST_FUNCTION test1 = { MST_LASTRECORD };
 
         /* jest równoznaczna z tą */
-        MST_TESTFUNC test2 = { NULL, NULL, NULL, NULL, 0 };
+        MST_FUNCTION test2 = { NULL, NULL, NULL, NULL, 0, NULL };
 
 Pokrycie kodu
 ---------------------------------------------------------
