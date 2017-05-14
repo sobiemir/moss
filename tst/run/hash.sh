@@ -35,6 +35,7 @@ cd $DIR1
 if gcc -g -O0 -Wall \
 	-I../../inc \
 	$DIR2/hash_test.c \
+	$DIR2/../src/test.c \
 	$DIR2/../src/hash/djb.c \
 	$DIR2/../src/hash/fnv.c \
 	$DIR2/../src/hash/joaat.c \

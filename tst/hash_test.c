@@ -49,18 +49,20 @@
  * Testuje funkcje skrótu oparte na algorytmie DJB2.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_djb2( MST_TESTFUNC *info )
+int mst_hash_djb2( MST_FUNCTION *info )
 {
 	const char    atest[] =  "DJBKey";
 	const wchar_t wtest[] = L"DJBKey";
 	
 	uint32_t result, wresult1, wresult2;
 
+	mst_prepare( info );
+
 	/* char */
 	result = ms_hash_32_djb2( atest, strlen(atest) );
-	mst_assert( result == 0xABDE625E );
+	mst_assert_uint( result, ==, 0xABDE625E );
 	result = ms_hash_mbs_32_djb2( atest );
-	mst_assert( result == 0xABDE625E );
+	mst_assert_uint( result, ==, 0xABDE625E );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_djb2( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -68,34 +70,36 @@ char *mst_hash_djb2( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( wresult1 == 0x1C78C0DE );
-		mst_assert( wresult2 == 0x1C78C0DE );
+		mst_assert_uint( wresult1, ==, 0x1C78C0DE );
+		mst_assert_uint( wresult2, ==, 0x1C78C0DE );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( wresult1 == 0x07DB25DE );
-		mst_assert( wresult2 == 0x07DB25DE );
+		mst_assert_uint( wresult1, ==, 0x07DB25DE );
+		mst_assert_uint( wresult2, ==, 0x07DB25DE );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
  * Testuje funkcje skrótu oparte na algorytmie DJB2A.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_djb2a( MST_TESTFUNC *info )
+int mst_hash_djb2a( MST_FUNCTION *info )
 {
 	const char    atest[] =  "DJBKey";
 	const wchar_t wtest[] = L"DJBKey";
 	
 	uint32_t result, wresult1, wresult2;
 
+	mst_prepare( info );
+
 	/* char */
 	result = ms_hash_32_djb2a( atest, strlen(atest) );
-	mst_assert( result == 0x99329EBE );
+	mst_assert_uint( result, ==, 0x99329EBE );
 	result = ms_hash_mbs_32_djb2a( atest );
-	mst_assert( result == 0x99329EBE );
+	mst_assert_uint( result, ==, 0x99329EBE );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_djb2a( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -103,16 +107,16 @@ char *mst_hash_djb2a( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( wresult1 == 0xB9704D7E );
-		mst_assert( wresult2 == 0xB9704D7E );
+		mst_assert_uint( wresult1, ==, 0xB9704D7E );
+		mst_assert_uint( wresult2, ==, 0xB9704D7E );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( wresult1 == 0x509BE3FE );
-		mst_assert( wresult2 == 0x509BE3FE );
+		mst_assert_uint( wresult1, ==, 0x509BE3FE );
+		mst_assert_uint( wresult2, ==, 0x509BE3FE );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -127,18 +131,20 @@ char *mst_hash_djb2a( MST_TESTFUNC *info )
  * Testuje funkcje skrótu oparte na algorytmie SDBM.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_sdbm( MST_TESTFUNC *info )
+int mst_hash_sdbm( MST_FUNCTION *info )
 {
 	const char    atest[] =  "SDBMKey";
 	const wchar_t wtest[] = L"SDBMKey";
 	
 	uint32_t result, wresult1, wresult2;
 
+	mst_prepare( info );
+
 	/* char */
 	result = ms_hash_32_sdbm( atest, strlen(atest) );
-	mst_assert( result == 0xFA861463 );
+	mst_assert_uint( result, ==, 0xFA861463 );
 	result = ms_hash_mbs_32_sdbm( atest );
-	mst_assert( result == 0xFA861463 );
+	mst_assert_uint( result, ==, 0xFA861463 );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_sdbm( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -146,16 +152,16 @@ char *mst_hash_sdbm( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( wresult1 == 0x3A38E971 );
-		mst_assert( wresult2 == 0x3A38E971 );
+		mst_assert_uint( wresult1, ==, 0x3A38E971 );
+		mst_assert_uint( wresult2, ==, 0x3A38E971 );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( wresult1 == 0x53C918F1 );
-		mst_assert( wresult2 == 0x53C918F1 );
+		mst_assert_uint( wresult1, ==, 0x53C918F1 );
+		mst_assert_uint( wresult2, ==, 0x53C918F1 );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -170,18 +176,20 @@ char *mst_hash_sdbm( MST_TESTFUNC *info )
  * Testuje funkcje skrótu oparte na algorytmie JOAAT.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_joaat( MST_TESTFUNC *info )
+int mst_hash_joaat( MST_FUNCTION *info )
 {
 	const char    atest[] =  "JoaaTKey";
 	const wchar_t wtest[] = L"JoaaTKey";
 	
 	uint32_t result, wresult1, wresult2;
 
+	mst_prepare( info );
+
 	/* char */
 	result = ms_hash_32_joaat( atest, strlen(atest) );
-	mst_assert( result == 0x94E6381F );
+	mst_assert_uint( result, ==, 0x94E6381F );
 	result = ms_hash_mbs_32_joaat( atest );
-	mst_assert( result == 0x94E6381F );
+	mst_assert_uint( result, ==, 0x94E6381F );
 
 	/* wchar_t */
 	wresult1 = ms_hash_32_joaat( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -189,16 +197,16 @@ char *mst_hash_joaat( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( wresult1 == 0xC24C203E );
-		mst_assert( wresult2 == 0xC24C203E );
+		mst_assert_uint( wresult1, ==, 0xC24C203E );
+		mst_assert_uint( wresult2, ==, 0xC24C203E );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( wresult1 == 0x311CEE84 );
-		mst_assert( wresult2 == 0x311CEE84 );
+		mst_assert_uint( wresult1, ==, 0x311CEE84 );
+		mst_assert_uint( wresult2, ==, 0x311CEE84 );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -213,7 +221,7 @@ char *mst_hash_joaat( MST_TESTFUNC *info )
  * Testuje funkcje skrótu oparte na algorytmie FNV-1.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_fnv1( MST_TESTFUNC *info )
+int mst_hash_fnv1( MST_FUNCTION *info )
 {
 	const char    atest[] =  "FNVFamilyKey";
 	const wchar_t wtest[] = L"FNVFamilyKey";
@@ -221,17 +229,19 @@ char *mst_hash_fnv1( MST_TESTFUNC *info )
 	uint32_t result32, w32result1, w32result2;
 	uint64_t result64, w64result1, w64result2;
 
+	mst_prepare( info );
+
 	/* char, wersja 32 bitowa */
 	result32 = ms_hash_32_fnv1( atest, strlen(atest) );
-	mst_assert( result32 == 0x7119B356 );
+	mst_assert_uint( result32, ==, 0x7119B356 );
 	result32 = ms_hash_mbs_32_fnv1( atest );
-	mst_assert( result32 == 0x7119B356 );
+	mst_assert_uint( result32, ==, 0x7119B356 );
 
 	/* char, wersja 64 bitowa */
 	result64 = ms_hash_64_fnv1( atest, strlen(atest) );
-	mst_assert( result64 == 0xC552531A28539836 );
+	mst_assert_uint( result64, ==, 0xC552531A28539836 );
 	result64 = ms_hash_mbs_64_fnv1( atest );
-	mst_assert( result64 == 0xC552531A28539836 );
+	mst_assert_uint( result64, ==, 0xC552531A28539836 );
 
 	/* wchar_t, wersja 32 bitowa */
 	w32result1 = ms_hash_32_fnv1( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -243,27 +253,27 @@ char *mst_hash_fnv1( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( w32result1 == 0x7AFBDF48 );
-		mst_assert( w32result2 == 0x7AFBDF48 );
-		mst_assert( w64result1 == 0x3CB9F0BF944BFFC8 );
-		mst_assert( w64result2 == 0x3CB9F0BF944BFFC8 );
+		mst_assert_uint( w32result1, ==, 0x7AFBDF48 );
+		mst_assert_uint( w32result2, ==, 0x7AFBDF48 );
+		mst_assert_uint( w64result1, ==, 0x3CB9F0BF944BFFC8 );
+		mst_assert_uint( w64result2, ==, 0x3CB9F0BF944BFFC8 );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( w32result1 == 0x20ED7910 );
-		mst_assert( w32result2 == 0x20ED7910 );
-		mst_assert( w64result1 == 0x211BBD1C5D42E1D0 );
-		mst_assert( w64result2 == 0x211BBD1C5D42E1D0 );
+		mst_assert_uint( w32result1, ==, 0x20ED7910 );
+		mst_assert_uint( w32result2, ==, 0x20ED7910 );
+		mst_assert_uint( w64result1, ==, 0x211BBD1C5D42E1D0 );
+		mst_assert_uint( w64result2, ==, 0x211BBD1C5D42E1D0 );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
  * Testuje funkcje skrótu oparte na algorytmie FNV-1A.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_fnv1a( MST_TESTFUNC *info )
+int mst_hash_fnv1a( MST_FUNCTION *info )
 {
 	const char    atest[] =  "FNVFamilyKey";
 	const wchar_t wtest[] = L"FNVFamilyKey";
@@ -271,17 +281,19 @@ char *mst_hash_fnv1a( MST_TESTFUNC *info )
 	uint32_t result32, w32result1, w32result2;
 	uint64_t result64, w64result1, w64result2;
 
+	mst_prepare( info );
+
 	/* char, wersja 32 bitowa */
 	result32 = ms_hash_32_fnv1a( atest, strlen(atest) );
-	mst_assert( result32 == 0x94A2258C );
+	mst_assert_uint( result32, ==, 0x94A2258C );
 	result32 = ms_hash_mbs_32_fnv1a( atest );
-	mst_assert( result32 == 0x94A2258C );
+	mst_assert_uint( result32, ==, 0x94A2258C );
 
 	/* char, wersja 64 bitowa */
 	result64 = ms_hash_64_fnv1a( atest, strlen(atest) );
-	mst_assert( result64 == 0x27693918C0BB3CCC );
+	mst_assert_uint( result64, ==, 0x27693918C0BB3CCC );
 	result64 = ms_hash_mbs_64_fnv1a( atest );
-	mst_assert( result64 == 0x27693918C0BB3CCC );
+	mst_assert_uint( result64, ==, 0x27693918C0BB3CCC );
 
 	/* wchar_t, wersja 32 bitowa */
 	w32result1 = ms_hash_32_fnv1a( wtest, wcslen(wtest) * sizeof(wchar_t) );
@@ -293,20 +305,20 @@ char *mst_hash_fnv1a( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( w32result1 == 0xFA945892 );
-		mst_assert( w32result2 == 0xFA945892 );
-		mst_assert( w64result1 == 0xBC28813FCFD3D0F2 );
-		mst_assert( w64result2 == 0xBC28813FCFD3D0F2 );
+		mst_assert_uint( w32result1, ==, 0xFA945892 );
+		mst_assert_uint( w32result2, ==, 0xFA945892 );
+		mst_assert_uint( w64result1, ==, 0xBC28813FCFD3D0F2 );
+		mst_assert_uint( w64result2, ==, 0xBC28813FCFD3D0F2 );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( w32result1 == 0x9D543B0A );
-		mst_assert( w32result2 == 0x9D543B0A );
-		mst_assert( w64result1 == 0x87D2CE8C5EFA642A );
-		mst_assert( w64result2 == 0x87D2CE8C5EFA642A );
+		mst_assert_uint( w32result1, ==, 0x9D543B0A );
+		mst_assert_uint( w32result2, ==, 0x9D543B0A );
+		mst_assert_uint( w64result1, ==, 0x87D2CE8C5EFA642A );
+		mst_assert_uint( w64result2, ==, 0x87D2CE8C5EFA642A );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -322,7 +334,7 @@ char *mst_hash_fnv1a( MST_TESTFUNC *info )
  * Sprawdza warianty: standardowy.
  * Ze względu na algorytm nie zostały utworzone warianty mbs i wcs.
  */
-char *mst_hash_murmur1( MST_TESTFUNC *info )
+int mst_hash_murmur1( MST_FUNCTION *info )
 {
 	const char *atest[] =
 	{
@@ -333,16 +345,18 @@ char *mst_hash_murmur1( MST_TESTFUNC *info )
 	};
 	uint32_t result;
 
-	result = ms_hash_32_murmur1( atest[0], strlen(atest[0]) );
-	mst_assert( result == 0xAF772697 );
-	result = ms_hash_32_murmur1( atest[1], strlen(atest[1]) );
-	mst_assert( result == 0xEF00677C );
-	result = ms_hash_32_murmur1( atest[2], strlen(atest[2]) );
-	mst_assert( result == 0x66F61852 );
-	result = ms_hash_32_murmur1( atest[3], strlen(atest[3]) );
-	mst_assert( result == 0xC0AE799F );
+	mst_prepare( info );
 
-	return MST_SUCCESS;
+	result = ms_hash_32_murmur1( atest[0], strlen(atest[0]) );
+	mst_assert_uint( result, ==, 0xAF772697 );
+	result = ms_hash_32_murmur1( atest[1], strlen(atest[1]) );
+	mst_assert_uint( result, ==, 0xEF00677C );
+	result = ms_hash_32_murmur1( atest[2], strlen(atest[2]) );
+	mst_assert_uint( result, ==, 0x66F61852 );
+	result = ms_hash_32_murmur1( atest[3], strlen(atest[3]) );
+	mst_assert_uint( result, ==, 0xC0AE799F );
+
+	return MSEC_OK;
 }
 
 /**
@@ -350,7 +364,7 @@ char *mst_hash_murmur1( MST_TESTFUNC *info )
  * Sprawdza warianty: standardowy.
  * Ze względu na algorytm nie zostały utworzone warianty mbs i wcs.
  */
-char *mst_hash_murmur2( MST_TESTFUNC *info )
+int mst_hash_murmur2( MST_FUNCTION *info )
 {
 	const char *atest[] =
 	{
@@ -366,42 +380,44 @@ char *mst_hash_murmur2( MST_TESTFUNC *info )
 	uint32_t result32;
 	uint64_t result64;
 
+	mst_prepare( info );
+
 	/* char, wersja 32 bitowa */
 	result32 = ms_hash_32_murmur2( atest[0], strlen(atest[0]) );
-	mst_assert( result32 == 0xA6A87356 );
+	mst_assert_uint( result32, ==, 0xA6A87356 );
 	result32 = ms_hash_32_murmur2( atest[1], strlen(atest[1]) );
-	mst_assert( result32 == 0xFE6E2293 );
+	mst_assert_uint( result32, ==, 0xFE6E2293 );
 	result32 = ms_hash_32_murmur2( atest[2], strlen(atest[2]) );
-	mst_assert( result32 == 0x5FF5020B );
+	mst_assert_uint( result32, ==, 0x5FF5020B );
 	result32 = ms_hash_32_murmur2( atest[3], strlen(atest[3]) );
-	mst_assert( result32 == 0xF1D9CC0B );
+	mst_assert_uint( result32, ==, 0xF1D9CC0B );
 
 	/* char, wersja 64 bitowa */
 	result64 = ms_hash_64_murmur2( atest[0], strlen(atest[0]) );
-	mst_assert( result64 == 0xE725056E186EB4D6 );
+	mst_assert_uint( result64, ==, 0xE725056E186EB4D6 );
 	result64 = ms_hash_64_murmur2( atest[1], strlen(atest[1]) );
-	mst_assert( result64 == 0x033CB80EC8BEB4BE );
+	mst_assert_uint( result64, ==, 0x033CB80EC8BEB4BE );
 	result64 = ms_hash_64_murmur2( atest[2], strlen(atest[2]) );
-	mst_assert( result64 == 0x2EB3FB4D381F500E );
+	mst_assert_uint( result64, ==, 0x2EB3FB4D381F500E );
 	result64 = ms_hash_64_murmur2( atest[3], strlen(atest[3]) );
-	mst_assert( result64 == 0xF68B2345BE9FAD33 );
+	mst_assert_uint( result64, ==, 0xF68B2345BE9FAD33 );
 	result64 = ms_hash_64_murmur2( atest[4], strlen(atest[4]) );
-	mst_assert( result64 == 0x18A99EA9BFB13235 );
+	mst_assert_uint( result64, ==, 0x18A99EA9BFB13235 );
 	result64 = ms_hash_64_murmur2( atest[5], strlen(atest[5]) );
-	mst_assert( result64 == 0x03E0C9B2EBC1F413 );
+	mst_assert_uint( result64, ==, 0x03E0C9B2EBC1F413 );
 	result64 = ms_hash_64_murmur2( atest[6], strlen(atest[6]) );
-	mst_assert( result64 == 0x2F972DF4971465F0 );
+	mst_assert_uint( result64, ==, 0x2F972DF4971465F0 );
 	result64 = ms_hash_64_murmur2( atest[7], strlen(atest[7]) );
-	mst_assert( result64 == 0xD10ECF806D50F7D9 );
+	mst_assert_uint( result64, ==, 0xD10ECF806D50F7D9 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
  * Testuje funkcje skrótu oparte na algorytmie Murmur3.
  * Sprawdza warianty: standardowy, mbs, wcs.
  */
-char *mst_hash_murmur3( MST_TESTFUNC *info )
+int mst_hash_murmur3( MST_FUNCTION *info )
 {
 	const char *atest[] =
 	{
@@ -421,23 +437,25 @@ char *mst_hash_murmur3( MST_TESTFUNC *info )
 	uint32_t wresult1[4];
 	uint32_t wresult2[4];
 
+	mst_prepare( info );
+
 	/* char */
 	result = ms_hash_32_murmur3( atest[0], strlen(atest[0]) );
-	mst_assert( result == 0xF3D48C5C );
+	mst_assert_uint( result, ==, 0xF3D48C5C );
 	result = ms_hash_mbs_32_murmur3( atest[0] );
-	mst_assert( result == 0xF3D48C5C );
+	mst_assert_uint( result, ==, 0xF3D48C5C );
 	result = ms_hash_32_murmur3( atest[1], strlen(atest[1]) );
-	mst_assert( result == 0xAEE175B3 );
+	mst_assert_uint( result, ==, 0xAEE175B3 );
 	result = ms_hash_mbs_32_murmur3( atest[1] );
-	mst_assert( result == 0xAEE175B3 );
+	mst_assert_uint( result, ==, 0xAEE175B3 );
 	result = ms_hash_32_murmur3( atest[2], strlen(atest[2]) );
-	mst_assert( result == 0x859648EE );
+	mst_assert_uint( result, ==, 0x859648EE );
 	result = ms_hash_mbs_32_murmur3( atest[2] );
-	mst_assert( result == 0x859648EE );
+	mst_assert_uint( result, ==, 0x859648EE );
 	result = ms_hash_32_murmur3( atest[3], strlen(atest[3]) );
-	mst_assert( result == 0xE2050FD7 );
+	mst_assert_uint( result, ==, 0xE2050FD7 );
 	result = ms_hash_mbs_32_murmur3( atest[3] );
-	mst_assert( result == 0xE2050FD7 );
+	mst_assert_uint( result, ==, 0xE2050FD7 );
 
 	/* wchar_t */
 	wresult1[0] = ms_hash_32_murmur3( wtest[0], wcslen(wtest[0]) * sizeof(wchar_t) );
@@ -451,28 +469,28 @@ char *mst_hash_murmur3( MST_TESTFUNC *info )
 
 	if( sizeof(wchar_t) == 2 )
 	{
-		mst_assert( wresult1[0] == 0xF3F54C78 );
-		mst_assert( wresult2[0] == 0xF3F54C78 );
-		mst_assert( wresult1[1] == 0x90A3A98D );
-		mst_assert( wresult2[1] == 0x90A3A98D );
-		mst_assert( wresult1[2] == 0x3849F3E5 );
-		mst_assert( wresult2[2] == 0x3849F3E5 );
-		mst_assert( wresult1[3] == 0x8AD19CEE );
-		mst_assert( wresult2[3] == 0x8AD19CEE );
+		mst_assert_uint( wresult1[0], ==, 0xF3F54C78 );
+		mst_assert_uint( wresult2[0], ==, 0xF3F54C78 );
+		mst_assert_uint( wresult1[1], ==, 0x90A3A98D );
+		mst_assert_uint( wresult2[1], ==, 0x90A3A98D );
+		mst_assert_uint( wresult1[2], ==, 0x3849F3E5 );
+		mst_assert_uint( wresult2[2], ==, 0x3849F3E5 );
+		mst_assert_uint( wresult1[3], ==, 0x8AD19CEE );
+		mst_assert_uint( wresult2[3], ==, 0x8AD19CEE );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
-		mst_assert( wresult1[0] == 0x26384360 );
-		mst_assert( wresult2[0] == 0x26384360 );
-		mst_assert( wresult1[1] == 0x6E196D7C );
-		mst_assert( wresult2[1] == 0x6E196D7C );
-		mst_assert( wresult1[2] == 0x955C377D );
-		mst_assert( wresult2[2] == 0x955C377D );
-		mst_assert( wresult1[3] == 0x47EC00B5 );
-		mst_assert( wresult2[3] == 0x47EC00B5 );
+		mst_assert_uint( wresult1[0], ==, 0x26384360 );
+		mst_assert_uint( wresult2[0], ==, 0x26384360 );
+		mst_assert_uint( wresult1[1], ==, 0x6E196D7C );
+		mst_assert_uint( wresult2[1], ==, 0x6E196D7C );
+		mst_assert_uint( wresult1[2], ==, 0x955C377D );
+		mst_assert_uint( wresult2[2], ==, 0x955C377D );
+		mst_assert_uint( wresult1[3], ==, 0x47EC00B5 );
+		mst_assert_uint( wresult2[3], ==, 0x47EC00B5 );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -488,7 +506,7 @@ char *mst_hash_murmur3( MST_TESTFUNC *info )
  * Sprawdza warianty: standardowy, mbs, wcs.
  * Wersje zostały oddzielone z racji skomplikowania algorytmu.
  */
-char *mst_hash_xxhash32( MST_TESTFUNC *info )
+int mst_hash_xxhash32( MST_FUNCTION *info )
 {
 	const char *atest[] =
 	{
@@ -541,12 +559,14 @@ char *mst_hash_xxhash32( MST_TESTFUNC *info )
 		0x6386F7BD, 0xBCBBC336, 0x94138B2E, 0x12D0EF9C  /* 13 */
 	};
 
+	mst_prepare( info );
+
 	/* char */
 	for( iter = 0; iter < 16; ++iter )
 	{
 		/* printf( "PASS: %zu\n", iter ); */
-		mst_assert( ms_hash_32_xxhash(atest[iter], strlen(atest[iter])) == svals[iter] );
-		mst_assert( ms_hash_mbs_32_xxhash(atest[iter]) == svals[iter] );
+		mst_assert_uint( ms_hash_32_xxhash(atest[iter], strlen(atest[iter])), ==, svals[iter] );
+		mst_assert_uint( ms_hash_mbs_32_xxhash(atest[iter]), ==, svals[iter] );
 	}
 
 	/* wchar_t */
@@ -565,11 +585,11 @@ char *mst_hash_xxhash32( MST_TESTFUNC *info )
 		for( iter = 0; iter < 16; ++iter )
 		{
 			/* printf( "PASS: %zu\n", iter ); */
-			mst_assert( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
-			mst_assert( ms_hash_wcs_32_xxhash(wtest[iter]) == wvals[iter] );
+			mst_assert_uint( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)), ==, wvals[iter] );
+			mst_assert_uint( ms_hash_wcs_32_xxhash(wtest[iter]), ==, wvals[iter] );
 		}
-		mst_assert( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)) == 0xE7A5359C );
-		mst_assert( ms_hash_wcs_32_xxhash(wtest[16]) == 0xE7A5359C );
+		mst_assert_uint( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)), ==, 0xE7A5359C );
+		mst_assert_uint( ms_hash_wcs_32_xxhash(wtest[16]), ==, 0xE7A5359C );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -586,14 +606,14 @@ char *mst_hash_xxhash32( MST_TESTFUNC *info )
 		for( iter = 0; iter < 16; ++iter )
 		{
 			/* printf( "PASS: %zu\n", iter ); */
-			mst_assert( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
-			mst_assert( ms_hash_wcs_32_xxhash(wtest[iter]) == wvals[iter] );
+			mst_assert_uint( ms_hash_32_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)), ==, wvals[iter] );
+			mst_assert_uint( ms_hash_wcs_32_xxhash(wtest[iter]), ==, wvals[iter] );
 		}
-		mst_assert( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)) == 0xE684C0C9 );
-		mst_assert( ms_hash_wcs_32_xxhash(wtest[16]) == 0xE684C0C9 );
+		mst_assert_uint( ms_hash_32_xxhash(wtest[16], wcslen(wtest[16]) * sizeof(wchar_t)), ==, 0xE684C0C9 );
+		mst_assert_uint( ms_hash_wcs_32_xxhash(wtest[16]), ==, 0xE684C0C9 );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -602,7 +622,7 @@ char *mst_hash_xxhash32( MST_TESTFUNC *info )
  * Sprawdza warianty: standardowy, mbs, wcs.
  * Wersje zostały oddzielone z racji skomplikowania algorytmu.
  */
-char *mst_hash_xxhash64( MST_TESTFUNC *info )
+int mst_hash_xxhash64( MST_FUNCTION *info )
 {
 	const char *atest[] =
 	{
@@ -691,12 +711,14 @@ char *mst_hash_xxhash64( MST_TESTFUNC *info )
 		0x137B4F591C02F472, 0xE7A8784CF718FAFA, 0x30D71242A787EF27, 0x9A3CD311BF4F0150  /* 29 */
 	};
 
+	mst_prepare( info );
+
 	/* char */
 	for( iter = 0; iter < 32; ++iter )
 	{
 		/* printf( "PASS: %zu\n", iter ); */
-		mst_assert( ms_hash_64_xxhash(atest[iter], strlen(atest[iter])) == svals[iter] );
-		mst_assert( ms_hash_mbs_64_xxhash(atest[iter]) == svals[iter] );
+		mst_assert_uint( ms_hash_64_xxhash(atest[iter], strlen(atest[iter])), ==, svals[iter] );
+		mst_assert_uint( ms_hash_mbs_64_xxhash(atest[iter]), ==, svals[iter] );
 	}
 
 	/* wchar_t */
@@ -719,11 +741,11 @@ char *mst_hash_xxhash64( MST_TESTFUNC *info )
 		for( iter = 0; iter < 32; ++iter )
 		{
 			/* printf( "PASS: %zu\n", iter ); */
-			mst_assert( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
-			mst_assert( ms_hash_wcs_64_xxhash(wtest[iter]) == wvals[iter] );
+			mst_assert_uint( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)), ==, wvals[iter] );
+			mst_assert_uint( ms_hash_wcs_64_xxhash(wtest[iter]), ==, wvals[iter] );
 		}
-		mst_assert( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)) == 0xED8644FBB587A3EA );
-		mst_assert( ms_hash_wcs_64_xxhash(wtest[32]) == 0xED8644FBB587A3EA );
+		mst_assert_uint( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)), ==, 0xED8644FBB587A3EA );
+		mst_assert_uint( ms_hash_wcs_64_xxhash(wtest[32]), ==, 0xED8644FBB587A3EA );
 	}
 	else if( sizeof(wchar_t) == 4 )
 	{
@@ -744,14 +766,14 @@ char *mst_hash_xxhash64( MST_TESTFUNC *info )
 		for( iter = 0; iter < 32; ++iter )
 		{
 			/* printf( "PASS: %zu\n", iter ); */
-			mst_assert( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)) == wvals[iter] );
-			mst_assert( ms_hash_wcs_64_xxhash(wtest[iter]) == wvals[iter] );
+			mst_assert_uint( ms_hash_64_xxhash(wtest[iter], wcslen(wtest[iter]) * sizeof(wchar_t)), ==, wvals[iter] );
+			mst_assert_uint( ms_hash_wcs_64_xxhash(wtest[iter]), ==, wvals[iter] );
 		}
-		mst_assert( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)) == 0x562A87F545E2D7A5 );
-		mst_assert( ms_hash_wcs_64_xxhash(wtest[32]) == 0x562A87F545E2D7A5 );
+		mst_assert_uint( ms_hash_64_xxhash(wtest[32], wcslen(wtest[32]) * sizeof(wchar_t)), ==, 0x562A87F545E2D7A5 );
+		mst_assert_uint( ms_hash_wcs_64_xxhash(wtest[32]), ==, 0x562A87F545E2D7A5 );
 	}
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -785,27 +807,27 @@ char *mst_hash_xxhash64( MST_TESTFUNC *info )
  * Dzięki zbiorowi funkcji zdefiniowanemu poniżej dzieje się to automatycznie.
  * Funkcje nie są ze sobą powiązane, więc mogą być wykonywane w dowolnej kolejności.
  */
-MST_TESTFUNC MSV_HashSuiteFunctions[] =
+MST_FUNCTION MSV_HashSuiteFunctions[] =
 {
-	{ MST_TFSTRINGIFY(mst_hash_djb2),     FUNC_DESC_01, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_djb2a),    FUNC_DESC_02, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_sdbm),     FUNC_DESC_03, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_joaat),    FUNC_DESC_04, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_fnv1),     FUNC_DESC_05, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_fnv1a),    FUNC_DESC_06, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_murmur1),  FUNC_DESC_07, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_murmur2),  FUNC_DESC_08, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_murmur3),  FUNC_DESC_09, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_xxhash32), FUNC_DESC_10, NULL },
-	{ MST_TFSTRINGIFY(mst_hash_xxhash64), FUNC_DESC_11, NULL },
-	{ MST_TFLASTRECORD }
+	{ MST_STRINGIFY(mst_hash_djb2),     FUNC_DESC_01, NULL },
+	{ MST_STRINGIFY(mst_hash_djb2a),    FUNC_DESC_02, NULL },
+	{ MST_STRINGIFY(mst_hash_sdbm),     FUNC_DESC_03, NULL },
+	{ MST_STRINGIFY(mst_hash_joaat),    FUNC_DESC_04, NULL },
+	{ MST_STRINGIFY(mst_hash_fnv1),     FUNC_DESC_05, NULL },
+	{ MST_STRINGIFY(mst_hash_fnv1a),    FUNC_DESC_06, NULL },
+	{ MST_STRINGIFY(mst_hash_murmur1),  FUNC_DESC_07, NULL },
+	{ MST_STRINGIFY(mst_hash_murmur2),  FUNC_DESC_08, NULL },
+	{ MST_STRINGIFY(mst_hash_murmur3),  FUNC_DESC_09, NULL },
+	{ MST_STRINGIFY(mst_hash_xxhash32), FUNC_DESC_10, NULL },
+	{ MST_STRINGIFY(mst_hash_xxhash64), FUNC_DESC_11, NULL },
+	{ MST_LASTRECORD }
 };
 
 /**
  * Zbiór funkcji testujących moduł.
  * Przekazywany do funkcji main, pozwala na uruchomienie wszystkich testów.
  */
-MST_TESTSUITE MSV_HashSuite =
+MST_SUITE MSV_HashSuite =
 {
 	">>> HASH MODULE",
 	TRUE,
