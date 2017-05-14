@@ -69,7 +69,7 @@ const int LIST[] =
  * Funkcja wywoływana przy kończeniu testu.
  * Zwalnia miejsce przydzielone w pamięci podczas działania programu.
  */
-void mst_array_teardown( MST_TESTSUITE *suite )
+void mst_array_teardown( MST_SUITE *suite )
 {
 	MSTST_ARRAY_DATA *data;
 
@@ -102,12 +102,12 @@ void mst_array_teardown( MST_TESTSUITE *suite )
  * Drugi sposób to bezpośrednie zwracanie tablicy lokalnej.
  * Trzeci sposób to zwykła inicjalizacja, zwracająca kod błędu.
  */
-char *mst_array_create( MST_TESTFUNC *info )
+int mst_array_create( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	int               ercode = 0;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 
 	/* tworzenie dwoma sposobami */
@@ -131,42 +131,42 @@ char *mst_array_create( MST_TESTFUNC *info )
 	mst_assert( data->Local2.Items );
 	
 	/* tylko tablice utworzone w pamięci mogą być usuwane w całości */
-	mst_assert( data->Pointer1->Destroy );
-	mst_assert( data->Pointer2->Destroy );
+	mst_assert(  data->Pointer1->Destroy );
+	mst_assert(  data->Pointer2->Destroy );
 	mst_assert( !data->Local1.Destroy );
 	mst_assert( !data->Local2.Destroy );
 
 	/* taki rozmiar został ustawiony przy tworzeniu */
-	mst_assert( data->Pointer1->Capacity == 2 );
-	mst_assert( data->Pointer2->Capacity == MSD_ARRAY_DEFAULT_SIZE );
-	mst_assert( data->Local1.Capacity == 2 );
-	mst_assert( data->Local2.Capacity == 2 );
+	mst_assert_uint( data->Pointer1->Capacity, ==, 2 );
+	mst_assert_uint( data->Pointer2->Capacity, ==, MSD_ARRAY_DEFAULT_SIZE );
+	mst_assert_uint( data->Local1.Capacity,    ==, 2 );
+	mst_assert_uint( data->Local2.Capacity,    ==, 2 );
 
 	/* długość jest 0, gdyż nie ma jeszcze żadnego elementu */
-	mst_assert( data->Pointer1->Length == 0 );
-	mst_assert( data->Pointer2->Length == 0 );
-	mst_assert( data->Local1.Length == 0 );
-	mst_assert( data->Local2.Length == 0 );
+	mst_assert_uint( data->Pointer1->Length, ==, 0 );
+	mst_assert_uint( data->Pointer2->Length, ==, 0 );
+	mst_assert_uint( data->Local1.Length,    ==, 0 );
+	mst_assert_uint( data->Local2.Length,    ==, 0 );
 
 	/* rozmiar elementu został podany przy tworzeniu, ma być taki sam */
-	mst_assert( data->Pointer1->ItemSize == sizeof(long double) );
-	mst_assert( data->Pointer2->ItemSize == sizeof(long double) );
-	mst_assert( data->Local1.ItemSize == sizeof(long double) );
-	mst_assert( data->Local2.ItemSize == sizeof(long double) );
+	mst_assert_uint( data->Pointer1->ItemSize, ==, sizeof(long double) );
+	mst_assert_uint( data->Pointer2->ItemSize, ==, sizeof(long double) );
+	mst_assert_uint( data->Local1.ItemSize,    ==, sizeof(long double) );
+	mst_assert_uint( data->Local2.ItemSize,    ==, sizeof(long double) );
 
 	/* początkowa funkcja odpowiadająca za zwiększanie */
 	mst_assert( data->Pointer1->FuncIncrease == MSC_ArrayFunctions.IncMultiply );
 	mst_assert( data->Pointer2->FuncIncrease == MSC_ArrayFunctions.IncMultiply );
-	mst_assert( data->Local1.FuncIncrease == MSC_ArrayFunctions.IncMultiply );
-	mst_assert( data->Local2.FuncIncrease == MSC_ArrayFunctions.IncMultiply );
+	mst_assert( data->Local1.FuncIncrease    == MSC_ArrayFunctions.IncMultiply );
+	mst_assert( data->Local2.FuncIncrease    == MSC_ArrayFunctions.IncMultiply );
 
 	/* początkowy modyfikator */
-	mst_assert( data->Pointer1->Modifier == 2.f );
-	mst_assert( data->Pointer2->Modifier == 2.f );
-	mst_assert( data->Local1.Modifier == 2.f );
-	mst_assert( data->Local2.Modifier == 2.f );
+	mst_assert_float( data->Pointer1->Modifier, ==, 2.f );
+	mst_assert_float( data->Pointer2->Modifier, ==, 2.f );
+	mst_assert_float( data->Local1.Modifier,    ==, 2.f );
+	mst_assert_float( data->Local2.Modifier,    ==, 2.f );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -174,11 +174,11 @@ char *mst_array_create( MST_TESTFUNC *info )
  * Pierwszym jest zwalnianie wszystkich zasobów które przydzieliła funkcja (ms_array_free).
  * Drugi sposób to usuwanie elementów z tablicy bez ingerencji w zasoby przydzielone dla tablicy.
  */
-char *mst_array_destroy( MST_TESTFUNC *info )
+int mst_array_destroy( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 
 	mst_assert( data->Pointer1 );
@@ -189,7 +189,8 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 	/* tutaj widać różnicę pomiędzy clear a free */
 	ms_array_clear( &data->Local1 );
 	mst_assert( data->Local1.Items );
-	mst_assert( data->Local1.Length == 0 );
+	mst_assert_uint( data->Local1.Length, ==, 0 );
+
 	ms_array_free( &data->Local1 );
 	mst_assert( !data->Local1.Items );
 
@@ -200,11 +201,11 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 
 	ms_array_free( &data->Local2 );
 	mst_assert( !data->Local2.Items );
+	mst_assert( !data->Local2.Destroy );
 
-	mst_assert( data->Local2.Capacity == 0 );
-	mst_assert( data->Local2.Items    == 0 );
-	mst_assert( data->Local2.ItemSize == 0 );
-	mst_assert( data->Local2.Destroy  == FALSE );
+	mst_assert_uint( data->Local2.Capacity, ==, 0 );
+	mst_assert_uint( data->Local2.Length,   ==, 0 );
+	mst_assert_uint( data->Local2.ItemSize, ==, 0 );
 
 	data->Pointer1 = NULL;
 	data->Pointer2 = NULL;
@@ -212,7 +213,7 @@ char *mst_array_destroy( MST_TESTFUNC *info )
 	/* próbuj zwolnić coś, co nie prowadzi do niczego */
 	ms_array_free( data->Pointer1 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -228,13 +229,13 @@ char *mst_array_destroy( MST_TESTFUNC *info )
  * Używana głównie w funkcjach, które dodają do tablicy po jednym elemencie.
  * Wykorzystuje odpowiednią funkcję do obliczania nowej pojemności, ustawianą bezpośrednio w strukturze.
  */
-char *mst_array_realloc( MST_TESTFUNC *info )
+int mst_array_realloc( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	int               ercode;
 	MS_ARRAY         *array;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( !data->Local1.Items );
 
@@ -249,13 +250,13 @@ char *mst_array_realloc( MST_TESTFUNC *info )
 	 * w takim przypadku do wartości dodawane powinno być 1 */
 	ercode = ms_array_realloc( array, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 3 );
+	mst_assert_uint( array->Capacity, ==, 3 );
 
 	/* 3^2.5 = ~16.83 co daje po zaokrągleniu 16 - zaokrąglanie następuje w dół */
 	array->Modifier = 2.57f;
 	ercode = ms_array_realloc( array, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 16 );
+	mst_assert_uint( array->Capacity, ==, 16 );
 
 	array->FuncIncrease = MSC_ArrayFunctions.IncMultiply;
 	array->Modifier     = 2.f;
@@ -263,40 +264,45 @@ char *mst_array_realloc( MST_TESTFUNC *info )
 	/* 16*2 = 32 */
 	ercode = ms_array_realloc( array, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 32 );
+	mst_assert_uint( array->Capacity, ==, 32 );
 
 	/* 32+2 = 34 */
 	array->FuncIncrease = MSC_ArrayFunctions.IncAdd;
 	ercode = ms_array_realloc( array, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 34 );
+	mst_assert_uint( array->Capacity, ==, 34 );
 
 	/* zmiana pojemności tablicy do podanej wartości, w tym przypadku powinno być 15 a nie 36 (34+2) */
 	ercode = ms_array_realloc( array, 15 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 15 );
+	mst_assert_uint( array->Capacity, ==, 15 );
 
-	/* symulacja 15 elementów i zmiana pojemności tablicy do podanej wartości
-	 * powinien wystąpić błąd, ponieważ chcemy za bardzo zmniejszyć pamięć */
-	array->Length = 15;
-	ercode = ms_array_realloc( array, 8 );
+	/* symulacja 7 elementów i zmiana pojemności tablicy do podanej wartości
+	   powinien wystąpić błąd, ponieważ chcemy za bardzo zmniejszyć pamięć */
+	array->Length = 8;
+	ercode = ms_array_realloc( array, 7 );
 	mst_assert( ercode == MSEC_DATA_OVERFLOW );
-	mst_assert( array->Capacity == 15 );
+	mst_assert_uint( array->Capacity, ==, 15 );
+
+	/* no ale do 8 powinno się zminejszyć - najmniejsza możliwa aktualnie pojemność */
+	ercode = ms_array_realloc( array, 8 );
+	mst_assert( ercode == MSEC_OK );
+	mst_assert_uint( array->Capacity, ==, 8 );
 
 	/* dokładne zwiększanie, w tym przypadku spodziewamy się błędu
-	 * ta technika nie działa na zwykłym realloc, lecz na min_realloc */
+	   ta technika nie działa na zwykłym realloc, lecz na min_realloc */
 	array->FuncIncrease = NULL;
 	ercode = ms_array_realloc( array, 0 );
 	mst_assert( ercode == MSEC_INVALID_VALUE );
-	mst_assert( array->Capacity == 15 );
+	mst_assert_uint( array->Capacity, ==, 8 );
 
-	/* w tym momencie powinno się już dać rady zmienić wielkość tablicy */
+	/* zmniejsz do 2 */
 	array->Length = 0;
 	ercode = ms_array_realloc( array, 2 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 2 );
+	mst_assert_uint( array->Capacity, ==, 2 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -305,13 +311,13 @@ char *mst_array_realloc( MST_TESTFUNC *info )
  * Pojemność obliczana jest w taki sam sposób jak w przypadku zwykłej ms_array_realloc, jednak
  * operacja ta powtarzana jest dopóty, dopóki nie zostanie osiągnięty satysfakcjonujący wynik.
  */
-char *mst_array_realloc_min( MST_TESTFUNC *info )
+int mst_array_realloc_min( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	int               ercode;
 	MS_ARRAY         *array;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 
 	mst_assert( data->Local1.Items );
@@ -323,32 +329,32 @@ char *mst_array_realloc_min( MST_TESTFUNC *info )
 
 	ercode = ms_array_realloc_min( array, 3 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 3 );
+	mst_assert_uint( array->Capacity, ==, 3 );
 
 	/* 3^1.5 ~= 5, 5^1.5 ~= 11, 11^1.5 ~= 36 -> STOP, wartość minimalna (20) została osiągnięta */
 	array->Modifier = 1.5f;
 	ercode = ms_array_realloc_min( array, 20 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 36 );
+	mst_assert_uint( array->Capacity, ==, 36 );
 
 	/* w tym przypadku wartość nie powinna się zmienić, wystąpiło żądanie mniejszej wartości niż jest
 	 * tutaj 0 nie oznacza wartości automatycznej, podawana jest wartość minimalna */
 	ercode = ms_array_realloc_min( array, 20 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 36 );
+	mst_assert_uint( array->Capacity, ==, 36 );
 
 	/* dokładne zwiększanie, powinna być osiągnięta tylko wartość minimalna */
 	array->FuncIncrease = NULL;
 	ercode = ms_array_realloc_min( array, 256 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* zmniejsz ilość elementów do 2 */
 	ercode = ms_array_realloc( array, 2 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Capacity == 2 );
+	mst_assert_uint( array->Capacity, ==, 2 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -364,13 +370,13 @@ char *mst_array_realloc_min( MST_TESTFUNC *info )
  * Wstawia cztery elementy z listy w różne miejsca i porównuje je z oryginałami.
  * Funkcja przyjmuje jako parametr wskaźnik na zmienną, która ma być wstawiona.
  */
-char *mst_array_insert_value( MST_TESTFUNC *info )
+int mst_array_insert_value( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	int               ercode, number;
 	MS_ARRAY         *array;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 
 	mst_assert( data->Local1.Items );
@@ -382,45 +388,45 @@ char *mst_array_insert_value( MST_TESTFUNC *info )
 	/* dodaj pierwszy element */
 	ercode = ms_array_push_value( array, &LIST[0] );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 1 );
-	mst_assert( array->Capacity == 2 );
+	mst_assert_uint( array->Length,   ==, 1 );
+	mst_assert_uint( array->Capacity, ==, 2 );
 
 	/* dodaj drugi element */
 	ercode = ms_array_push_value( array, &LIST[1] ); 
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 2 );
-	mst_assert( array->Capacity == 2 );
+	mst_assert_uint( array->Length,   ==, 2 );
+	mst_assert_uint( array->Capacity, ==, 2 );
 
 	/* dodaj trzeci - tutaj powinno nastąpić zwiększenie pojemności tablicy */
 	ercode = ms_array_push_value( array, &LIST[2] ); 
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 3 );
-	mst_assert( array->Capacity == 3 );
+	mst_assert_uint( array->Length,   ==, 3 );
+	mst_assert_uint( array->Capacity, ==, 3 );
 
 	/* próbuj dodać czwarty poza zakres */
 	ercode = ms_array_insert_value( array, 6, &LIST[3] );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array->Length == 3 );
-	mst_assert( array->Capacity == 3 );
+	mst_assert_uint( array->Length,   ==, 3 );
+	mst_assert_uint( array->Capacity, ==, 3 );
 
 	/* dodaj czwarty zaraz po pierwszym indeksie */
 	ercode = ms_array_insert_value( array, 1, &LIST[3] );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 4 );
-	mst_assert( array->Capacity == 4 );
+	mst_assert_uint( array->Length,   ==, 4 );
+	mst_assert_uint( array->Capacity, ==, 4 );
 
 	/* sprawdź czy wartości pobrane będą równe zapisanym
 	 * tutaj przetestuj pobieranie z lokalnej tablicy - getl - więc data->Local1 a nie array */
 	number = ms_array_getl( data->Local1, int, 0 );
-	mst_assert( number == LIST[0] );
+	mst_assert_sint( number, ==, LIST[0] );
 	number = ms_array_getl( data->Local1, int, 1 );
-	mst_assert( number == LIST[3] );
+	mst_assert_sint( number, ==, LIST[3] );
 	number = ms_array_getl( data->Local1, int, 2 );
-	mst_assert( number == LIST[1] );
+	mst_assert_sint( number, ==, LIST[1] );
 	number = ms_array_getl( data->Local1, int, 3 );
-	mst_assert( number == LIST[2] );
+	mst_assert_sint( number, ==, LIST[2] );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -429,7 +435,7 @@ char *mst_array_insert_value( MST_TESTFUNC *info )
  * Lista przekazywana do funkcji musi być w formacie standardowej tablicy języka C.
  * Wstawiane wartości można ograniczać poprzez uzupełnienie odpowiednich argumentów funkcji.
  */
-char *mst_array_insert_values( MST_TESTFUNC *info )
+int mst_array_insert_values( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	MS_ARRAY         *array;
@@ -437,7 +443,7 @@ char *mst_array_insert_values( MST_TESTFUNC *info )
 	size_t x, y;
 	int    ercode, *items;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( !data->Local2.Items );
 
@@ -449,45 +455,45 @@ char *mst_array_insert_values( MST_TESTFUNC *info )
 	 * 2 * 2 = 4 * 2 = 8 * 2 = 16 * 2 = 32 * 2 = 64 * 2 = 128 * 2 = 256 */
 	ercode = ms_array_push_values( array, LIST, 192 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 192 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 192 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* dodaj drugą część */
 	ercode = ms_array_insert_values( array, 64, &LIST[192], 32 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 224 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 224 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* próbuj wstawić bez rozmiaru */
 	ercode = ms_array_push_values( array, LIST, 0 );
 	mst_assert( ercode == MSEC_INVALID_ARGUMENT );
-	mst_assert( array->Length == 224 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 224 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* dodaj trzecią część */
 	ercode = ms_array_insert_values( array, 0, &LIST[224], 32 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 256 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 256 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* próbuj wstawić poza zakres */
 	ercode = ms_array_insert_values( array, 512, LIST, 32 );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array->Length == 256 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 256 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* sprawdź poprawność danych */
 	items = (int*)array->Items;
 	for( y = 224, x = 0; x < 32; ++y, ++x )
-		mst_assert( items[x] == LIST[y] );
+		mst_assert_sint( items[x], ==, LIST[y] );
 	for( y = 0; y < 64; ++x, ++y )
-		mst_assert( items[x] == LIST[y] );
+		mst_assert_sint( items[x], ==, LIST[y] );
 	for( y = 192; y < 224; ++x, ++y )
-		mst_assert( items[x] == LIST[y] );
+		mst_assert_sint( items[x], ==, LIST[y] );
 	for( y = 64; y < 192; ++x, ++y )
-		mst_assert( items[x] == LIST[y] );
+		mst_assert_sint( items[x], ==, LIST[y] );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -496,7 +502,7 @@ char *mst_array_insert_values( MST_TESTFUNC *info )
  * W przypadku podania zer jako zakresu, kopiowana jest cała tablica.
  * Warto zaznaczyć, że wszystkie dane wstawiane są na sam koniec tablicy.
  */
-char *mst_array_join_slice( MST_TESTFUNC *info )
+int mst_array_join_slice( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
@@ -504,9 +510,10 @@ char *mst_array_join_slice( MST_TESTFUNC *info )
 	int       ercode, *items1, *items2;
 	MS_ARRAY *array1, *array2, *array3;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
-	mst_assert( data->Local2.Items );
+
+	mst_assert(  data->Local2.Items );
 	mst_assert( !data->Pointer1 );
 	mst_assert( !data->Pointer2 );
 	array1 = &data->Local2;
@@ -521,36 +528,37 @@ char *mst_array_join_slice( MST_TESTFUNC *info )
 	 * wielkość tablicy nie powinna się zmienic */
 	ercode = ms_array_join_slice( array2, array1, 64, 64 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array2->Length == 64 );
-	mst_assert( array2->Capacity == 64 );
+	mst_assert_uint( array2->Length,   ==, 64 );
+	mst_assert_uint( array2->Capacity, ==, 64 );
 
 	/* dodaj wartości z podanego zakresu - kopiuj do końca */
 	ercode = ms_array_join_slice( array2, array1, 192, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array2->Length == 128 );
-	mst_assert( array2->Capacity == 128 );
+
+	mst_assert_uint( array2->Length,   ==, 128 );
+	mst_assert_uint( array2->Capacity, ==, 128 );
 
 	/* błąd - indeks poza zakresem */
 	ercode = ms_array_join_slice( array2, array1, 192, 256 );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array2->Length == 128 );
-	mst_assert( array2->Capacity == 128 );
+	mst_assert_uint( array2->Length,   ==, 128 );
+	mst_assert_uint( array2->Capacity, ==, 128 );
 
 	/* próbuj skopiować wartości do tablicy z innymi rozmiarami elementów */
 	ercode = ms_array_join( array3, array2 );
 	mst_assert( ercode == MSEC_INVALID_ARGUMENT );
-	mst_assert( array3->Length == 0 );
-	mst_assert( array3->Capacity == 64 );
+	mst_assert_uint( array3->Length,   ==, 0 );
+	mst_assert_uint( array3->Capacity, ==, 64 );
 
 	/* sprawdź czy w tablicy znajdują się poprawne elementy */
 	items2 = (int*)array2->Items;
 	items1 = (int*)array1->Items;
 	for( x = 0, y = 64; y < 128; ++x, ++y )
-		mst_assert( items2[x] == items1[y] );
+		mst_assert_sint( items2[x], ==, items1[y] );
 	for( y = 192; y < 256; ++x, ++y )
-		mst_assert( items2[x] == items1[y] );
+		mst_assert_sint( items2[x], ==, items1[y] );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -560,7 +568,7 @@ char *mst_array_join_slice( MST_TESTFUNC *info )
  * od 0-64 oraz od 192 do 256.
  * Zakres oznaczany jest przez indeks początkowy i ilość elementów do skopiowania.
  */
-char *mst_array_join_slice_inverse( MST_TESTFUNC *info )
+int mst_array_join_slice_inverse( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
@@ -568,7 +576,7 @@ char *mst_array_join_slice_inverse( MST_TESTFUNC *info )
 	int       ercode, *items1, *items2;
 	MS_ARRAY *array1, *array2, *array3;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Local2.Items );
 	mst_assert( data->Pointer1 );
@@ -580,49 +588,50 @@ char *mst_array_join_slice_inverse( MST_TESTFUNC *info )
 	array2 = data->Pointer1;
 	ms_array_clear( array2 );
 	mst_assert( array2->Items );
-	mst_assert( array2->ItemSize == sizeof(int) );
-	mst_assert( array2->Length == 0 );
 	mst_assert( array2->Destroy );
-	mst_assert( array2->Capacity == 128 );
+
+	mst_assert_uint( array2->ItemSize, ==, sizeof(int) );
+	mst_assert_uint( array2->Length,   ==, 0 );
+	mst_assert_uint( array2->Capacity, ==, 128 );
 
 	array3 = data->Pointer2;
-	mst_assert( array3->ItemSize == sizeof(int) * 2 );
+	mst_assert_uint( array3->ItemSize, ==, sizeof(int) * 2 );
 
 	/* dodaj wartości z innej tablicy z podanego zakresu (0:64, 192:256) */
 	ercode = ms_array_join_slice_inverse( array2, array1, 64, 128 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array2->Length == 128 );
-	mst_assert( array2->Capacity == 128 );
+	mst_assert_uint( array2->Length,   ==, 128 );
+	mst_assert_uint( array2->Capacity, ==, 128 );
 
 	/* próbuj dodać wartości spoza zakresu (0-64, 320-OVERFLOW) */
 	ercode = ms_array_join_slice_inverse( array2, array1, 64, 256 );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array2->Length == 128 );
-	mst_assert( array2->Capacity == 128 );
+	mst_assert_uint( array2->Length,   ==, 128 );
+	mst_assert_uint( array2->Capacity, ==, 128 );
 
 	/* zakres od wartości do końca (0:128, 256:256) */
 	ercode = ms_array_join_slice_inverse( array2, array1, 128, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array2->Length == 256 );
-	mst_assert( array2->Capacity == 256 );
+	mst_assert_uint( array2->Length,   ==, 256 );
+	mst_assert_uint( array2->Capacity, ==, 256 );
 
 	/* próbuj skopiować wartości do tablicy z innymi rozmiarami elementów */
 	ercode = ms_array_join_slice_inverse( array3, array2, 128, 64 );
 	mst_assert( ercode == MSEC_INVALID_ARGUMENT );
-	mst_assert( array3->Length == 0 );
-	mst_assert( array3->Capacity == 64 );
+	mst_assert_uint( array3->Length,   ==, 0 );
+	mst_assert_uint( array3->Capacity, ==, 64 );
 
 	/* sprawdź czy w tablicy znajdują się poprawne elementy */
 	items1 = (int*)array1->Items;
 	items2 = (int*)array2->Items;
 	for( x = 0, y = 0; y < 64; ++x, ++y )
-		mst_assert( items2[x] == items1[y] );
+		mst_assert_sint( items2[x], ==, items1[y] );
 	for( y = 192; y < 256; ++x, ++y )
-		mst_assert( items2[x] == items1[y] );
+		mst_assert_sint( items2[x], ==, items1[y] );
 	for( y = 0; y < 128; ++x, ++y )
-		mst_assert( items2[x] == items1[y] );
+		mst_assert_sint( items2[x], ==, items1[y] );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -638,7 +647,7 @@ char *mst_array_join_slice_inverse( MST_TESTFUNC *info )
  * Pierwszy sposób to kopiowanie do istniejącej już w pamięci tablicy (ms_array_copy).
  * Drugi sposób to kopiowanie do nowej tablicy i zwrócenie wskazania na nią (ms_array_copy_alloc).
  */
-char *mst_array_copy( MST_TESTFUNC *info )
+int mst_array_copy( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
@@ -646,7 +655,7 @@ char *mst_array_copy( MST_TESTFUNC *info )
 	int       ercode;
 	MS_ARRAY *array1, *array2, *array3;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Local2.Items );
 	mst_assert( data->Local1.Items );
@@ -664,14 +673,15 @@ char *mst_array_copy( MST_TESTFUNC *info )
 	mst_assert( ercode == MSEC_OK );
 
 	/* obie tablice są lokalne, więc o polu Destroy ustawionym na false nie ma mowy */
-	mst_assert( array1->Capacity == array2->Capacity );
-	mst_assert( array1->Length == array2->Length );
+	mst_assert_uint( array1->Capacity, ==, array2->Capacity );
+	mst_assert_uint( array1->Length,   ==, array2->Length );
+
 	mst_assert( array1->Destroy == array2->Destroy );
 	mst_assert( array1->Items != array2->Items );
 
 	/* sprawdź czy elementy są takie same */
 	for( iter = 0; iter < array1->Length; ++iter )
-		mst_assert( ms_array_get(array1, int, iter) == ms_array_get(array2, int, iter) );
+		mst_assert_uint( ms_array_get(array1, int, iter), ==, ms_array_get(array2, int, iter) );
 
 	/* tą tablicę należy usunąć gdyż jest to wskaźnik - inaczej mogą być wycieki pamięci */
 	ms_array_free( data->Pointer2 );
@@ -681,8 +691,8 @@ char *mst_array_copy( MST_TESTFUNC *info )
 
 	/* przyrównaj do drugiej tablicy, wartości muszą być te same */
 	mst_assert( array3 );
-	mst_assert( array2->Capacity == array3->Capacity );
-	mst_assert( array2->Length == array3->Length );
+	mst_assert_uint( array2->Capacity, ==, array3->Capacity );
+	mst_assert_uint( array2->Length,   ==, array3->Length );
 
 	/* oprócz destroy, pamięć przydzielona na strukturę musi być zawsze niszczona
 	 * więc w tym przypadku array3 musi mieć pole Destroy ustawione zawsze na true */
@@ -691,9 +701,9 @@ char *mst_array_copy( MST_TESTFUNC *info )
 
 	/* sprawdź czy elementy są takie same */
 	for( iter = 0; iter < array2->Length; ++iter )
-		mst_assert( ms_array_get(array2, int, iter) == ms_array_get(array3, int, iter) );
+		mst_assert_sint( ms_array_get(array2, int, iter), ==, ms_array_get(array3, int, iter) );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -709,7 +719,7 @@ char *mst_array_copy( MST_TESTFUNC *info )
  * Zmiany wykonane przez funkcje są trwałe, kopia tablicy nie jest tworzona.
  * Aby zrobić kopię z podanych wartości należy użyć ms_array_join_slice na nowej tablicy.
  */
-char *mst_array_slice( MST_TESTFUNC *info )
+int mst_array_slice( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
@@ -717,7 +727,7 @@ char *mst_array_slice( MST_TESTFUNC *info )
 	int       ercode;
 	MS_ARRAY *array;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Pointer2 );
 	mst_assert( data->Pointer2->Items );
@@ -727,51 +737,51 @@ char *mst_array_slice( MST_TESTFUNC *info )
 	/* pozostaw elementy od 32 do 160 -> 128 elementów po indeksie 32 */
 	ercode = ms_array_slice( array, 32, 128 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 128 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 128 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* sprawdź czy wartości się zgadzają */
 	for( x = 0, y = 32; x < 128; ++y, ++x )
-		mst_assert( ms_array_get(array, int, x) == ms_array_getl(data->Local2, int, y) );
+		mst_assert_sint( ms_array_get(array, int, x), ==, ms_array_getl(data->Local2, int, y) );
 
 	/* obcinanie poza zakres (32:160, elementów jest 128) */
 	ercode = ms_array_slice( array, 32, 128 );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array->Length == 128 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 128 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* obcinanie od indeksu do końca */
 	ercode = ms_array_slice( array, 64, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 64 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 64 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* sprawdź czy wartości się zgadzają po przesunięciu */
 	for( x = 0, y = 96; x < 64; ++y, ++x )
-		mst_assert( ms_array_get(array, int, x) == ms_array_getl(data->Local2, int, y) );
+		mst_assert_sint( ms_array_get(array, int, x), ==, ms_array_getl(data->Local2, int, y) );
 
 	/* obcinanie od indeksu od początku - bez przesuwania elementów w pamięci */
 	ercode = ms_array_slice( array, 0, 32 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 32 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 32 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* sprawdź czy wartości się zgadzają po usunięciu ogona od podanego indeksu */
 	for( x = 0, y = 96; x < 32; ++y, ++x )
-		mst_assert( ms_array_get(array, int, x) == ms_array_getl(data->Local2, int, y) );
+		mst_assert_sint( ms_array_get(array, int, x), ==, ms_array_getl(data->Local2, int, y) );
 
 	/* wyczyść tablicę nie zwalniając jednak pamięci przechowującej elementy */
 	ms_array_clear( array );
-	mst_assert( array->Length == 0 );
+	mst_assert_uint( array->Length, ==, 0 );
 	mst_assert( array->Items );
 
 	/* próbuj obciąć pustą tablicę */
 	ercode = ms_array_slice( array, 32, 128 );
 	mst_assert( ercode == MSEC_INVALID_ARGUMENT );
-	mst_assert( array->Length == 0 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 0 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -779,7 +789,7 @@ char *mst_array_slice( MST_TESTFUNC *info )
  * Aliasem tej funkcji jest makro o nazwie ms_array_slice_inverse.
  * Zmiany wykonywane na tablicy są trwałe.
  */
-char *mst_array_remove_range( MST_TESTFUNC *info )
+int mst_array_remove_range( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
@@ -787,7 +797,7 @@ char *mst_array_remove_range( MST_TESTFUNC *info )
 	int       ercode;
 	MS_ARRAY *array;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Local1.Items );
 	mst_assert( data->Local2.Items );
@@ -796,39 +806,39 @@ char *mst_array_remove_range( MST_TESTFUNC *info )
 	/* usuń elementy od 64 do 128 (64+64) */
 	ercode = ms_array_remove_range( array, 64, 64 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 192 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 192 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* sprawdź czy wartości się zgadzają */
 	for( x = 0, y = 0; x < 64; ++y, ++x )
-		mst_assert( ms_array_get(array, int, x) == ms_array_getl(data->Local2, int, y) );
+		mst_assert_sint( ms_array_get(array, int, x), ==, ms_array_getl(data->Local2, int, y) );
 	for( y = 128; y < 256; ++y, ++x )
-		mst_assert( ms_array_get(array, int, x) == ms_array_getl(data->Local2, int, y) );
+		mst_assert_sint( ms_array_get(array, int, x), ==, ms_array_getl(data->Local2, int, y) );
 
 	/* usuwaj od indeksu 128 do końca - usuwanie bez przesuwania */
 	ercode = ms_array_remove_range( array, 128, 0 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 128 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 128 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* próbuj usunąć spoza zakresu */
 	ercode = ms_array_remove_range( array, 128, 128 );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array->Length == 128 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 128 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
 	/* wyczyść */
 	ms_array_clear( array );
-	mst_assert( array->Length == 0 );
+	mst_assert_uint( array->Length, ==, 0 );
 	mst_assert( array->Items );
 
 	/* próbuj teraz coś usunąć */
 	ercode = ms_array_remove_range( array, 0, 5 );
 	mst_assert( ercode == MSEC_INVALID_ARGUMENT );
-	mst_assert( array->Length == 0 );
-	mst_assert( array->Capacity == 256 );
+	mst_assert_uint( array->Length,   ==, 0 );
+	mst_assert_uint( array->Capacity, ==, 256 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -836,20 +846,20 @@ char *mst_array_remove_range( MST_TESTFUNC *info )
  * Istnieje alias do wywołania funkcji, który usuwa ostani element tablicy (ms_array_remove_last).
  * Funkcja nie zmniejsza pojemności tablicy, aby to zrobić należy wywołać funkcję ms_array_realloc.
  */
-char *mst_array_remove( MST_TESTFUNC *info )
+int mst_array_remove( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
 	int       ercode;
 	MS_ARRAY *array1, *array2;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Pointer1 );
 	mst_assert( data->Pointer2 );
 	mst_assert( data->Pointer1->Items );
 	mst_assert( data->Pointer2->Items );
-	mst_assert( data->Pointer1->Capacity == 256 );
+	mst_assert_uint( data->Pointer1->Capacity, ==, 256 );
 	array1 = data->Pointer1;
 
 	ms_array_free( data->Pointer2 );
@@ -861,46 +871,46 @@ char *mst_array_remove( MST_TESTFUNC *info )
 	array2 = data->Pointer2;
 
 	/* sprawdź czy ten konkretny element jest taki sam - musi być, skoro tablica była kopiowana */
-	mst_assert( ms_array_get(array1, int, 64) == ms_array_get(array2, int, 64) );
+	mst_assert_sint( ms_array_get(array1, int, 64), ==, ms_array_get(array2, int, 64) );
 
 	/* usuń ostatni element */
 	ercode = ms_array_remove_last( array1 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array1->Length == 255 );
-	mst_assert( array1->Capacity == 256 );
+	mst_assert_uint( array1->Length,   ==, 255 );
+	mst_assert_uint( array1->Capacity, ==, 256 );
 
 	/* nadal musi być taki sam, skoro usuwany był tylko ostatni element */
-	mst_assert( ms_array_get(array1, int, 64) == ms_array_get(array2, int, 64) );
+	mst_assert_sint( ms_array_get(array1, int, 64), ==, ms_array_get(array2, int, 64) );
 
 	/* usuń z wybranej pozycji */
 	ercode = ms_array_remove( array1, 64 );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array1->Length == 254 );
-	mst_assert( array1->Capacity == 256 );
+	mst_assert_uint( array1->Length,   ==, 254 );
+	mst_assert_uint( array1->Capacity, ==, 256 );
 
 	/* sprawdź czy element został usunięty poprawnie */
-	mst_assert( ms_array_get(array1, int, 64) != ms_array_get(array2, int, 64) );
-	mst_assert( ms_array_get(array1, int, 64) == ms_array_get(array2, int, 65) );
+	mst_assert_sint( ms_array_get(array1, int, 64), !=, ms_array_get(array2, int, 64) );
+	mst_assert_sint( ms_array_get(array1, int, 64), ==, ms_array_get(array2, int, 65) );
 
 	/* próbuj usunąć spoza zakresu */
 	ercode = ms_array_remove( array1, 255 );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array1->Length == 254 );
-	mst_assert( array1->Capacity == 256 );
+	mst_assert_uint( array1->Length,   ==, 254 );
+	mst_assert_uint( array1->Capacity, ==, 256 );
 
 	/* wyczyść tablicę */
 	ms_array_clear( array1 );
 	mst_assert( array1->Items );
-	mst_assert( array1->Length == 0 );
-	mst_assert( array1->Capacity == 256 );
+	mst_assert_uint( array1->Length,   ==, 0 );
+	mst_assert_uint( array1->Capacity, ==, 256 );
 
 	/* próbuj usunąć z pustej tablicy */
 	ercode = ms_array_remove( array1, 255 );
 	mst_assert( ercode == MSEC_INVALID_ARGUMENT );
-	mst_assert( array1->Length == 0 );
-	mst_assert( array1->Capacity == 256 );
+	mst_assert_uint( array1->Length,   ==, 0 );
+	mst_assert_uint( array1->Capacity, ==, 256 );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -916,11 +926,11 @@ char *mst_array_remove( MST_TESTFUNC *info )
  * Tutaj typem jest typ standardowy - wskaźnik na typ void.
  * Jest to funkcja bazowa, co oznacza że istnie makro, pozwalające na rozszerzenie jej dla innych typów.
  */
-char *mst_array_base_return( MST_TESTFUNC *info )
+int mst_array_base_return( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Local1.Items );
 
@@ -933,11 +943,11 @@ char *mst_array_base_return( MST_TESTFUNC *info )
 
 	/* sprawdź podstawwe pola struktury */
 	mst_assert( !data->Local1.Destroy );
-	mst_assert( data->Local1.Capacity == 2 );
-	mst_assert( data->Local1.Length == 0 );
-	mst_assert( data->Local1.ItemSize == (sizeof *data->Local1.Items) );
+	mst_assert_uint( data->Local1.Capacity, ==, 2 );
+	mst_assert_uint( data->Local1.Length,   ==, 0 );
+	mst_assert_uint( data->Local1.ItemSize, ==, (sizeof *data->Local1.Items) );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -946,13 +956,13 @@ char *mst_array_base_return( MST_TESTFUNC *info )
  * Tutaj typem jest typ standardowy - wskaźnik na typ void.
  * Jest to funkcja bazowa, co oznacza że istnie makro, pozwalające na rozszerzenie jej dla innych typów.
  */
-char *mst_array_base_insert( MST_TESTFUNC *info )
+int mst_array_base_insert( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	MS_ARRAY         *array;
 	int               ercode;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Local1.Items );
 	array = &data->Local1;
@@ -963,32 +973,32 @@ char *mst_array_base_insert( MST_TESTFUNC *info )
 	/* dodaj pierwszy element */
 	ercode = ms_array_push( array, &LIST[0] );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 1 );
-	mst_assert( array->Capacity == 2 );
+	mst_assert_uint( array->Length,   ==, 1 );
+	mst_assert_uint( array->Capacity, ==, 2 );
 
 	/* dodaj drugi element */
 	ercode = ms_array_insert( array, 0, &LIST[1] );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 2 );
-	mst_assert( array->Capacity == 2 );
+	mst_assert_uint( array->Length,   ==, 2 );
+	mst_assert_uint( array->Capacity, ==, 2 );
 
 	/* dodaj trzeci element - tutaj powinno nastąpić zwiększenie pojemności tablicy */
 	ercode = ms_array_insert( array, 1, &LIST[2] );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 3 );
-	mst_assert( array->Capacity == 3 );
+	mst_assert_uint( array->Length,   ==, 3 );
+	mst_assert_uint( array->Capacity, ==, 3 );
 
 	/* dodaj czwarty element - tutaj również zwiększenie tablicy */
 	ercode = ms_array_insert( array, 1, &LIST[3] );
 	mst_assert( ercode == MSEC_OK );
-	mst_assert( array->Length == 4 );
-	mst_assert( array->Capacity == 4 );
+	mst_assert_uint( array->Length,   ==, 4 );
+	mst_assert_uint( array->Capacity, ==, 4 );
 
 	/* dodaj piąty - powinien wystąpić bład, próba dodania elementu poza zakres */
 	ercode = ms_array_insert( array, 6, &LIST[1] );
 	mst_assert( ercode == MSEC_OUT_OF_RANGE );
-	mst_assert( array->Length == 4 );
-	mst_assert( array->Capacity == 4 );
+	mst_assert_uint( array->Length,   ==, 4 );
+	mst_assert_uint( array->Capacity, ==, 4 );
 
 	/* sprawdź czy wartości pobrane będą równe zapisanym */
 	mst_assert( array->Items[0] == &LIST[1] );
@@ -996,7 +1006,7 @@ char *mst_array_base_insert( MST_TESTFUNC *info )
 	mst_assert( array->Items[2] == &LIST[2] );
 	mst_assert( array->Items[3] == &LIST[0] );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /**
@@ -1005,13 +1015,13 @@ char *mst_array_base_insert( MST_TESTFUNC *info )
  * Tutaj typem jest typ standardowy - wskaźnik na typ void.
  * Jest to funkcja bazowa, co oznacza że istnie makro, pozwalające na rozszerzenie jej dla innych typów.
  */
-char *mst_array_base_copy_return( MST_TESTFUNC *info )
+int mst_array_base_copy_return( MST_FUNCTION *info )
 {
 	MSTST_ARRAY_DATA *data;
 	MS_ARRAY         *array1, *array2;
 	size_t            iter;
 
-	mst_assert( info );
+	mst_prepare( info );
 	data = info->Data;
 	mst_assert( data->Local1.Items );
 	mst_assert( data->Local2.Items );
@@ -1025,8 +1035,8 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
 	mst_assert( data->Local2.Items );
 	array2 = &data->Local2;
 
-	mst_assert( array1->Capacity == array2->Capacity );
-	mst_assert( array1->Length == array2->Length );
+	mst_assert_uint( array1->Capacity, ==, array2->Capacity );
+	mst_assert_uint( array1->Length,   ==, array2->Length );
 
 	/* w tym momencie destroy powinien być taki sam, jednak w przypadku kopiowania
 	 * z wskaźnika powinien być inny */
@@ -1046,7 +1056,7 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
 	/* wyczyść drugą tablicę */
 	ms_array_free( array2 );
 	mst_assert( !array2->Items );
-	mst_assert( array2->Length == 0 );
+	mst_assert_uint( array2->Length, ==, 0 );
 
 	/* kopiuj nową metodą */
 	data->Local2 = ms_array_copy_return( data->Pointer1 );
@@ -1056,7 +1066,7 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
 	/* i sprawdź to nieszczęsne Destroy */
 	mst_assert( data->Pointer1->Destroy != array2->Destroy );
 
-	return MST_SUCCESS;
+	return MSEC_OK;
 }
 
 /*
@@ -1097,31 +1107,31 @@ char *mst_array_base_copy_return( MST_TESTFUNC *info )
  * ZMIANA KOLEJNOŚCI WYWOŁYWANIA FUNKCJI MOŻE ZMIENIĆ WYNIKI A NAWET WYWOŁAĆ
  * BŁĄD NARUSZENIA OCHRONY PAMIĘCI.
  */
-MST_TESTFUNC MSV_ArraySuiteFunctions[] =
+MST_FUNCTION MSV_ArraySuiteFunctions[] =
 {
-	{ MST_TFSTRINGIFY(mst_array_create),             FUNC_DESC_01, NULL },
-	{ MST_TFSTRINGIFY(mst_array_destroy),            FUNC_DESC_02, NULL },
-	{ MST_TFSTRINGIFY(mst_array_realloc),            FUNC_DESC_03, NULL },
-	{ MST_TFSTRINGIFY(mst_array_realloc_min),        FUNC_DESC_04, NULL },
-	{ MST_TFSTRINGIFY(mst_array_insert_value),       FUNC_DESC_05, NULL },
-	{ MST_TFSTRINGIFY(mst_array_insert_values),      FUNC_DESC_06, NULL },
-	{ MST_TFSTRINGIFY(mst_array_join_slice),         FUNC_DESC_07, NULL },
-	{ MST_TFSTRINGIFY(mst_array_join_slice_inverse), FUNC_DESC_08, NULL },
-	{ MST_TFSTRINGIFY(mst_array_copy),               FUNC_DESC_09, NULL },
-	{ MST_TFSTRINGIFY(mst_array_slice),              FUNC_DESC_10, NULL },
-	{ MST_TFSTRINGIFY(mst_array_remove_range),       FUNC_DESC_11, NULL },
-	{ MST_TFSTRINGIFY(mst_array_remove),             FUNC_DESC_12, NULL },
-	{ MST_TFSTRINGIFY(mst_array_base_return),        FUNC_DESC_13, NULL },
-	{ MST_TFSTRINGIFY(mst_array_base_insert),        FUNC_DESC_14, NULL },
-	{ MST_TFSTRINGIFY(mst_array_base_copy_return),   FUNC_DESC_15, NULL },
-	{ MST_TFLASTRECORD }
+	{ MST_STRINGIFY(mst_array_create),             FUNC_DESC_01, NULL },
+	{ MST_STRINGIFY(mst_array_destroy),            FUNC_DESC_02, NULL },
+	{ MST_STRINGIFY(mst_array_realloc),            FUNC_DESC_03, NULL },
+	{ MST_STRINGIFY(mst_array_realloc_min),        FUNC_DESC_04, NULL },
+	{ MST_STRINGIFY(mst_array_insert_value),       FUNC_DESC_05, NULL },
+	{ MST_STRINGIFY(mst_array_insert_values),      FUNC_DESC_06, NULL },
+	{ MST_STRINGIFY(mst_array_join_slice),         FUNC_DESC_07, NULL },
+	{ MST_STRINGIFY(mst_array_join_slice_inverse), FUNC_DESC_08, NULL },
+	{ MST_STRINGIFY(mst_array_copy),               FUNC_DESC_09, NULL },
+	{ MST_STRINGIFY(mst_array_slice),              FUNC_DESC_10, NULL },
+	{ MST_STRINGIFY(mst_array_remove_range),       FUNC_DESC_11, NULL },
+	{ MST_STRINGIFY(mst_array_remove),             FUNC_DESC_12, NULL },
+	{ MST_STRINGIFY(mst_array_base_return),        FUNC_DESC_13, NULL },
+	{ MST_STRINGIFY(mst_array_base_insert),        FUNC_DESC_14, NULL },
+	{ MST_STRINGIFY(mst_array_base_copy_return),   FUNC_DESC_15, NULL },
+	{ MST_LASTRECORD }
 };
 
 /**
  * Zbiór funkcji testujących moduł.
  * Przekazywany do funkcji main, pozwala na uruchomienie wszystkich testów.
  */
-MST_TESTSUITE MSV_ArraySuite =
+MST_SUITE MSV_ArraySuite =
 {
 	">>> ARRAY MODULE",
 	TRUE,

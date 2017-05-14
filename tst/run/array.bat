@@ -57,6 +57,7 @@ cd "%dir1%"
 cl /Zi /Od /W4^
 	/I../../inc^
 	"%dir2%/array_test.c"^
+	"%dir2%/../src/test.c"^
 	"%dir2%/../src/array.c"^
 	/Fe"array.exe"^
 	/link^

@@ -34,6 +34,7 @@ cd $DIR1
 if gcc -g -O0 -Wall \
 	-I../../inc \
 	$DIR2/array_test.c \
+	$DIR2/../src/test.c \
 	$DIR2/../src/array.c \
 	-D MSD_CCMACRO \
 	-lm \
