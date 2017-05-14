@@ -30,32 +30,22 @@ if [ ! -d $DIR1 ]; then
 fi
 cd $DIR1
 
-	# -D MSD_CCMACRO \
-	# -D MSD_HASH_MBS_FUNCTIONS \
-	# -D MSD_HASH_WCS_FUNCTIONS \
-	# -D MSD_HASH_MURMUR \
-	# -D MSD_HASH_JOAAT \
-	# -D MSD_HASH_FNV \
-	# -D MSD_HASH_SDBM \
-	# -D MSD_HASH_DJB \
-	# -D MSD_HASH_XXHASH \
-	# -D MSD_HASH_SEED=1234 \
-
 # kompiluj moduł i przetestuj go
 # należy przetestować wszystkie dostępne funkcje skrótu
 if gcc -g -O0 -Wall \
 	-I../../inc \
 	$DIR2/string_test.c \
+	$DIR2/../src/test.c \
 	$DIR2/../src/string.c \
 	$DIR2/../src/array.c \
 	$DIR2/../src/hash/sdbm.c \
-    -D MSD_CCMACRO \
-    -D MSD_HASH_MBS_FUNCTIONS \
-    -D MSD_HASH_WCS_FUNCTIONS \
-    -D MSD_HASH_SDBM \
-    -D MSD_HASH_SEED=1234 \
-    -D MSD_STRING_HASH=sdbm \
-    -lm \
+	-D MSD_CCMACRO \
+	-D MSD_HASH_MBS_FUNCTIONS \
+	-D MSD_HASH_WCS_FUNCTIONS \
+	-D MSD_HASH_SDBM \
+	-D MSD_HASH_SEED=1234 \
+	-D MSD_STRING_HASH=sdbm \
+	-lm \
 	-o string \
 	-fprofile-arcs \
 	-ftest-coverage;

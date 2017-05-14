@@ -41,7 +41,9 @@ MS_STRING *ms_string_alloc_cs( const char *cstr, size_t capacity )
 		return NULL;
 
 	if( ms_string_init_cs(str, cstr, capacity) )
-		return NULL;
+		return
+			free( str ),
+			NULL;
 
 	str->Destroy = TRUE;
 	return str;
@@ -59,7 +61,9 @@ MS_STRING *ms_string_alloc_mbs( const char *mbstr, size_t capacity )
 		return NULL;
 
 	if( ms_string_init_mbs(str, mbstr, capacity) )
-		return NULL;
+		return
+			free( str ),
+			NULL;
 
 	str->Destroy = TRUE;
 	return str;
@@ -77,7 +81,9 @@ MS_STRING *ms_string_alloc_wcs( const wchar_t *wstr, size_t capacity )
 		return NULL;
 
 	if( ms_string_init_wcs(str, wstr, capacity) )
-		return NULL;
+		return
+			free( str ),
+			NULL;
 
 	str->Destroy = TRUE;
 	return str;
