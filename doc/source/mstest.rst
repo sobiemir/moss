@@ -1227,6 +1227,8 @@ Dzięki temu zabiegowi, program wygeneruje jedną stronę zawierającą statysty
 Prezentacja pokrycia kodu zapisana w plikach *.html*, przedstawia odpowiednio pokolorowane linie.
 Te, które nie zostały wykorzystane w trakcie działania programu oznaczone są na czerwono, pozostałe zaś na zielono.
 
+.. _MemoryLeaks:
+
 Wycieki pamięci
 ---------------------------------------------------------
 
