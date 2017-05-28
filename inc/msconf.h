@@ -145,9 +145,13 @@
 /* wyłącz ostrzeżenia o niebezpiecznych funkcjach w MSC */
 #ifdef MSD_COMPILER_MSC
 #	define _CRT_SECURE_NO_WARNINGS
-#	define PFSIZET "Iu"
+#	define PFSIZET   "Iu"
+#	define PFSIZETLH "Ix"
+#	define PFSIZETUH "IX"
 #else
-#	define PFSIZET "zu"
+#	define PFSIZET   "zu"
+#	define PFSIZETLH "zx"
+#	define PFSIZETUH "zX"
 #endif
 
 /* różny inline w zależności od kompilatora */

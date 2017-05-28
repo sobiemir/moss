@@ -116,3 +116,6 @@ div.sphinxsidebar a {
 div.sphinxsidebar p {
 	padding: 0 20px;
 }
+.output.highlight-none .highlight pre {
+	background: #E8FAF1;
+}

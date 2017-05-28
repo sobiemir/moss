@@ -1,5 +1,6 @@
 *.out
 doc/build/*
+doc/xml/*
 tst/gen/*
 .vscode/*
 .sublime/*
