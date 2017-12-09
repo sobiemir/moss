@@ -70,24 +70,24 @@ int main( int argc, char **argv )
 
 	// _setmode( _fileno(stdout), 0x00020000 );
 
-	printf( "%s\n", str2.CData );
+	printf( "%s\n", str2.Data.Char );
 
 	if( (retval = ms_string_insert_cs(&str2, 7, "- porzeczka - ", 0)) )
 		printf( "Błąd podczas wstawiania CSTR\n" );
 
-	printf( "%S\n", str3.WData );
+	printf( "%S\n", str3.Data.Wide );
 
 	if( (retval = ms_string_insert_cs(&str3, 9, "no zaraz ", 0)) )
 		printf( "Błąd podczas wstawiania CSTR\n" );
 
-	printf( "%S\n", str3.WData );
+	printf( "%S\n", str3.Data.Wide );
 
 	if( (retval = ms_string_insert_cs(&str3, str3.Length, " Jak cudne manowce.", 0)) )
 		printf( "Błąd podczas wstawiania CSTR\n" );
 
-	printf( "%S\n", str3.WData );
+	printf( "%S\n", str3.Data.Wide );
 
-	printf( "%s\n", str2.CData );
+	printf( "%s\n", str2.Data.Char );
 
 	if( (retval = ms_string_insert_mbs(&str2, 7, "- przełęcz ", 0)) )
 		printf( "Błąd podczas wstawiania CSTR\n" );
@@ -95,17 +95,17 @@ int main( int argc, char **argv )
 	if( (retval = ms_string_insert_cs(&str2, str2.MBInfo->Length, " STOP COMP.", 0)) )
 		printf( "Błąd podczas wstawiania CSTR\n" );
 
-	printf( "%s\n", str2.CData );
+	printf( "%s\n", str2.Data.Char );
 
 	if( (retval = ms_string_insert_wcs(&str2, 7, L"Łącki", 0)) )
 		printf( "Błąd podczas wstawiania CSTR\n" );
 
-	printf( "%s\n", str2.CData );
+	printf( "%s\n", str2.Data.Char );
 
 	for( retval = 0; retval < str2.MBInfo->Length; ++retval )
 	{
 		MS_MBINFO info = ms_array_get( str2.MBInfo, MS_MBINFO, retval );
-		memcpy( chr, &str2.CData[info.Offset], info.Bytes );
+		memcpy( chr, &str2.Data.Char[info.Offset], info.Bytes );
 		chr[info.Bytes] = '\0';
 		printf( "Size: %d > Char: %s > Shift: 0x%02lX\n", info.Bytes, chr, info.Offset );
 	}
