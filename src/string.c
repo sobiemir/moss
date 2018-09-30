@@ -321,7 +321,13 @@ int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t 
 
 	/* gdy ilość znaków nie została podana, oblicz ją */
 	if( !count )
+	{
 		count = strlen( cstr );
+
+		/* wszystko w porządku, po prostu ciąg znaków pozostaje bez zmian */
+		if( !count )
+			return MSEC_OK;
+	}
 	
 	/* ilość znaków jest zależna od typu tekstu
 	   w przypadku typu wielobajtowego znaki mogą się składać z kilku bajtów... */
@@ -339,8 +345,6 @@ int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t 
 		if( ercode )
 			return ercode;
 	}
-	else if( !count )
-		SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
 
 	/* kopiuj w przypadku gdy jest to standardowy ciąg znaków */
 	if( !str->MBInfo && !str->Wide )
@@ -436,7 +440,13 @@ int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_
 
 	/* gdy ilość znaków nie została podana, oblicz ją */
 	if( !count )
+	{
 		count = strlen( mbstr );
+
+		/* pusty ciąg znaków, nie zmienaj nic */
+		if( !count )
+			return MSEC_OK;
+	}
 	
 	/* ilość znaków jest zależna od typu tekstu */
 	length = str->MBInfo
@@ -467,12 +477,6 @@ int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_
 			return
 				ms_array_free( &mbinfo ),
 				ercode;
-		else;
-	else if( !count )
-	{
-		ms_array_free( &mbinfo );
-		SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
-	}
 
 	/* gdy jest to zwykły ciąg znaków, skracaj wielobajtowe ciągi do jednobajtowego */
 	if( !str->MBInfo && !str->Wide )
@@ -562,9 +566,13 @@ int ms_string_insert_wcs( MS_STRING *str, size_t index, const wchar_t *wstr, siz
 
 	/* gdy ilość znaków nie została podana, oblicz ją */
 	if( !count )
+	{
 		count = wcslen( wstr );
-	if( !count )
-		SETERRNOANDRETURN( MSEC_INVALID_ARGUMENT );
+		
+		/* nic nie jest dodawane, zostaw jak jest */
+		if( !count )
+			return MSEC_OK;
+	}
 
 	/* ciąg znaków o zmiennej wielkości */
 	if( str->MBInfo )
@@ -660,7 +668,7 @@ int ms_string_insert_wcs( MS_STRING *str, size_t index, const wchar_t *wstr, siz
 			IGRET memmove( ptr + count * sizeof(wchar_t), ptr, (length - index) * sizeof(wchar_t) );
 		IGRET memcpy( ptr, wstr, count * sizeof(wchar_t) );
 
-		str->Length            += count;
+		str->Length += count;
 		str->Data.Wide[str->Length] = L'\0';
 
 		return MSEC_OK;

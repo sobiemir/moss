@@ -123,12 +123,23 @@ int ms_string_realloc( MS_STRING *str, size_t capacity );
 int ms_string_realloc_min( MS_STRING *str, size_t min );
 
 int ms_string_insert_cs( MS_STRING *str, size_t index, const char *cstr, size_t count );
-int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_t bytes );
-// int ms_string_insert_mbsc( MS_STRING *str, size_t index, const char *mbstr, size_t count );
+int ms_string_insert_mbs( MS_STRING *str, size_t index, const char *mbstr, size_t count );
 int ms_string_insert_wcs( MS_STRING *str, size_t index, const wchar_t *wcstr, size_t count );
 
-// int ms_string_insert_c( MS_STRING *str, size_t index, char chr );
-// int ms_string_insert_wc( MS_STRING *str, size_t index, wchar_t wchr );
+#define ms_string_insert_c(str, index, chr) \
+	ms_string_insert_cs( str, index, &chr, 1 )
+#define ms_string_push_c(str, chr) \
+	ms_string_insert_cs( str, (str)->Length, &chr, 1 )
+
+#define ms_string_insert_mbc(str, index, mbc) \
+	ms_string_insert_mbs( str, index, mbc, 1 )
+#define ms_string_push_mbc(str, mbc) \
+	ms_string_insert_mbs( str, (str)->Length, mbc, 1 )
+
+#define ms_string_insert_wc(str, index, wchr) \
+	ms_string_insert_wcs( str, index, &wchr, 1 )
+#define ms_string_push_wc(str, wchr) \
+	ms_string_insert_wcs( str, (str)->Length, &wchr, 1 )
 
 // size_t ms_string_hash( MS_STRING *str );
 
@@ -145,10 +156,10 @@ void ms_string_free( MS_STRING *str );
 		? (str)->MBInfo->Length \
 		: (str)->Length, cstr, count )
 
-#define ms_string_push_mbs(str, mbstr, bytes) \
+#define ms_string_push_mbs(str, mbstr, count) \
 	ms_string_insert_mbs( str, (str)->MBInfo \
 		? (str)->MBInfo->Length \
-		: (str)->Length, mbstr, bytes )
+		: (str)->Length, mbstr, count )
 
 #define ms_string_push_wcs(str, wcstr, count) \
 	ms_string_insert_wcs( str, (str)->MBInfo \

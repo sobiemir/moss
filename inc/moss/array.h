@@ -31,7 +31,6 @@
 #define __MSH_ARRAY__
 
 #include <msconf.h>
-#include <mstpl/array_template.h>
 
 #include <stdlib.h>
 #include <math.h>

@@ -63,7 +63,7 @@ int main( int argc, char **argv )
 	if( ms_string_init_cs(&str1, "TestCSTRc", 0) )
 		printf( "Błąd podczas tworzenia CSTR\n" );
 	if( (retval = ms_string_init_mbs(&str2, "Zażółć gęślą jaźń", 0)) )
-		printf( "Błąd podczas tworzenia MBSTR %X\n", retval );
+		printf( "Błąd podczas tworzenia MBSTR 0x%X\n", retval );
 	// if( ms_string_init_wcs(&str3, L"Źdźbło łączy trawy", 0) )
 	if( ms_string_init_wcs(&str3, L"Poczekaj tu!", 0) )
 		printf( "Błąd podczas tworzenia WSTR\n" );
@@ -106,7 +106,7 @@ int main( int argc, char **argv )
 	{
 		MS_MBINFO info = ms_array_get( str2.MBInfo, MS_MBINFO, retval );
 		memcpy( chr, &str2.Data.Char[info.Offset], info.Bytes );
-		chr[info.Bytes] = '\0';
+		chr[(int)info.Bytes] = '\0';
 		printf( "Size: %d > Char: %s > Shift: 0x%02lX\n", info.Bytes, chr, info.Offset );
 	}
 

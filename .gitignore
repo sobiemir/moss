@@ -7,3 +7,5 @@ tst/gen/*
 obj/*
 moss
 !moss/
+
+.vscode

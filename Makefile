@@ -18,9 +18,10 @@ OBJS  = $(patsubst %,$(ODIR)/%,$(_OBJS))
 .PHONY: doc
 
 moss: obj/main.o $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o build/$@ $^ $(CFLAGS) $(LIBS)
 
 directories:
+	$(MKDIR) $(ODIR)
 	$(MKDIR) $(ODIR)/hash
 
 obj/main.o: main.c $(DEPS)
